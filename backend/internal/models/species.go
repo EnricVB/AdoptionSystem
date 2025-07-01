@@ -1,6 +1,6 @@
 package models
 
 type Species struct {
-	id   uint
-	name string
+	ID   uint   `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name string `json:"name" gorm:"type:varchar(100);not null;unique"`
 }
