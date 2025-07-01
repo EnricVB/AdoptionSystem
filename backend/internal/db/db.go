@@ -26,7 +26,7 @@ It uses environment variables to configure the connection parameters.
 func buildDSN() string {
 	user := "user"           //os.Getenv("DB_USER")
 	password := "1234"       //os.Getenv("DB_PASSWORD")
-	host := "172.20.73.150"  //os.Getenv("DB_HOST")
+	host := "127.0.0.1"      //os.Getenv("DB_HOST")
 	port := "3306"           //os.Getenv("DB_PORT")
 	dbname := "ADOPTION_SYS" //os.Getenv("DB_NAME")
 
