@@ -29,6 +29,8 @@ and configures CORS middleware to allow requests from a specific origin.
 func setupCORS() {
 	e := echo.New()
 	api.RegisterUserRoutes(e)
+	api.RegisterPetRoutes(e)
+	api.RegisterSpeciesRoutes(e)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},
