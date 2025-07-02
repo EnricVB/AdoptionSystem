@@ -1,9 +1,9 @@
-package utils
+package security
 
 import "crypto/rand"
 
 func Generate2FA(length int) string {
-	var characters = "0123456789"
+	var characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	code := make([]byte, length)
 	_, err := rand.Read(code)
