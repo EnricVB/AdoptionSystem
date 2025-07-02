@@ -1,0 +1,133 @@
+# REST API client for interacting with the backend service
+@BASE_URL=http://localhost:4200
+
+
+### Get all users
+
+GET {{BASE_URL}}/api/users
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Get user by ID
+@userId=2
+
+GET {{BASE_URL}}/api/users/{{userId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Create a new user
+
+POST {{BASE_URL}}/api/users
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phone": "123-456-7890",
+  "address": "123 Main St, City, State"
+}
+
+### Update user by ID
+
+PUT {{BASE_URL}}/api/users/{{userId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+{
+  "name": "John Smith",
+  "email": "john.smith@example.com",
+  "phone": "098-765-4321",
+  "address": "456 Oak Ave, City, State"
+}
+
+### Delete user by ID
+
+DELETE {{BASE_URL}}/api/users/{{userId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### === PET ROUTES ===
+
+### Get all pets
+
+GET {{BASE_URL}}/api/pets
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Get pet by ID
+@petId=1
+
+GET {{BASE_URL}}/api/pets/{{petId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Create a new pet
+
+POST {{BASE_URL}}/api/pets
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+{
+  "name": "Buddy",
+  "species_id": 1,
+  "breed": "Golden Retriever",
+  "age": 3,
+  "description": "Friendly and energetic dog looking for a loving home",
+  "status": "available",
+  "image_url": "https://example.com/buddy.jpg"
+}
+
+### Update pet by ID
+
+PUT {{BASE_URL}}/api/pets/{{petId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+{
+  "name": "Buddy Updated",
+  "species_id": 1,
+  "breed": "Golden Retriever",
+  "age": 4,
+  "description": "Updated: Friendly and energetic dog looking for a loving home",
+  "status": "adopted",
+  "image_url": "https://example.com/buddy-updated.jpg"
+}
+
+### Delete pet by ID
+
+DELETE {{BASE_URL}}/api/pets/{{petId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### === SPECIES ROUTES ===
+
+### Get all species
+
+GET {{BASE_URL}}/api/species
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Get species by ID
+@speciesId=1
+
+GET {{BASE_URL}}/api/species/{{speciesId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+### Create a new species
+
+POST {{BASE_URL}}/api/species
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
+{
+  "name": "Dog",
+  "description": "Domestic dog - man's best friend"
+}
+
+### Delete species by ID
+
+DELETE {{BASE_URL}}/api/species/{{speciesId}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
