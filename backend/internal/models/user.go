@@ -13,7 +13,7 @@ type User struct {
 	Email         string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`
 	Address       string    `json:"address" gorm:"type:varchar(255)"`
 	Password      string    `json:"password" gorm:"type:varchar(255);not null"`
-	TwoFactorAuth uint      `json:"two_factor_auth" gorm:"default:0"`
+	TwoFactorAuth string    `json:"two_factor_auth" gorm:"type:varchar(6)"`
 	FailedLogins  uint      `json:"failed_logins" gorm:"default:0"`
 	IsBlocked     bool      `json:"is_blocked" gorm:"default:false"`
 	CrtDate       time.Time `json:"crt_date" gorm:"autoCreateTime"`
@@ -26,7 +26,7 @@ type NonValidatedUser struct {
 	Surname       string    `json:"surname" gorm:"type:varchar(100);not null"`
 	Email         string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`
 	Address       string    `json:"address" gorm:"type:varchar(255)"`
-	TwoFactorAuth uint      `json:"two_factor_auth" gorm:"default:0"`
+	TwoFactorAuth string    `json:"two_factor_auth" gorm:"type:varchar(6)"`
 	FailedLogins  uint      `json:"failed_logins" gorm:"default:0"`
 	IsBlocked     bool      `json:"is_blocked" gorm:"default:false"`
 	CrtDate       time.Time `json:"crt_date" gorm:"autoCreateTime"`
