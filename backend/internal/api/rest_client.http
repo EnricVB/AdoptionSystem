@@ -1,79 +1,94 @@
-# REST API client for interacting with the backend service
+# ========================================
+# REST API Client - Pet Adoption System
+# ========================================
+# Base URL configuration (ajustar según el puerto del backend)
 @BASE_URL=http://localhost:4200
 
-
-### Get all users
-
-GET {{BASE_URL}}/api/users
-User-Agent: PostmanRuntime/7.28.4
-Content-Type: application/json
-
-### Get validated user by ID and password
+# Common variables
+@userId=1
+@petId=1
+@speciesId=1
 @email=enricvbufi@gmail.com
 @password=1
 
-GET {{BASE_URL}}/api/login/{{email}}:{{password}}
-User-Agent: PostmanRuntime/7.28.4
+
+# ========================================
+# USER MANAGEMENT ROUTES
+# ========================================
+
+### Obtener todos los usuarios
+GET {{BASE_URL}}/api/users
 Content-Type: application/json
 
-### Get user by ID
-@userId=1
+###
 
+### Autenticar usuario (Login)
+POST {{BASE_URL}}/api/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+
+### Obtener usuario por ID
 GET {{BASE_URL}}/api/users/{{userId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### Create a new user
+###
 
+### Crear un nuevo usuario
 POST {{BASE_URL}}/api/users
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com",
+  "name": "Juan Pérez",
+  "email": "juan.perez@example.com",
   "phone": "123-456-7890",
-  "address": "123 Main St, City, State"
+  "address": "Calle Principal 123, Ciudad, Estado"
 }
 
-### Update user by ID
+###
 
+### Actualizar usuario existente
 PUT {{BASE_URL}}/api/users/{{userId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
 {
-  "name": "John Smith",
-  "email": "john.smith@example.com",
+  "name": "Juan Carlos Pérez",
+  "email": "juan.carlos@example.com",
   "phone": "098-765-4321",
-  "address": "456 Oak Ave, City, State"
+  "address": "Avenida Central 456, Ciudad, Estado"
 }
 
-### Delete user by ID
+###
 
+### Eliminar usuario por ID
 DELETE {{BASE_URL}}/api/users/{{userId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### === PET ROUTES ===
+###
 
-### Get all pets
+# ========================================
+# GESTIÓN DE MASCOTAS
+# ========================================
 
+### Obtener todas las mascotas
 GET {{BASE_URL}}/api/pets
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### Get pet by ID
-@petId=1
+###
 
+### Obtener mascota por ID
 GET {{BASE_URL}}/api/pets/{{petId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### Create a new pet
+###
 
+### Crear una nueva mascota
 POST {{BASE_URL}}/api/pets
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
 {
@@ -81,61 +96,86 @@ Content-Type: application/json
   "species_id": 1,
   "breed": "Golden Retriever",
   "age": 3,
-  "description": "Friendly and energetic dog looking for a loving home",
+  "description": "Perro amigable y enérgico buscando un hogar amoroso",
   "status": "available",
   "image_url": "https://example.com/buddy.jpg"
 }
 
-### Update pet by ID
+###
 
+### Actualizar mascota existente
 PUT {{BASE_URL}}/api/pets/{{petId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
 {
-  "name": "Buddy Updated",
+  "name": "Buddy Actualizado",
   "species_id": 1,
   "breed": "Golden Retriever",
   "age": 4,
-  "description": "Updated: Friendly and energetic dog looking for a loving home",
+  "description": "Actualizado: Perro amigable y enérgico buscando un hogar amoroso",
   "status": "adopted",
   "image_url": "https://example.com/buddy-updated.jpg"
 }
 
-### Delete pet by ID
+###
 
+### Eliminar mascota por ID
 DELETE {{BASE_URL}}/api/pets/{{petId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### === SPECIES ROUTES ===
+###
 
-### Get all species
+# ========================================
+# GESTIÓN DE ESPECIES
+# ========================================
 
+### Obtener todas las especies
 GET {{BASE_URL}}/api/species
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### Get species by ID
-@speciesId=1
+###
 
+### Obtener especie por ID
 GET {{BASE_URL}}/api/species/{{speciesId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
-### Create a new species
+###
 
+### Crear una nueva especie
 POST {{BASE_URL}}/api/species
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
 {
-  "name": "Dog",
-  "description": "Domestic dog - man's best friend"
+  "name": "Perro",
+  "description": "Perro doméstico - el mejor amigo del hombre"
 }
 
-### Delete species by ID
+###
 
+### Eliminar especie por ID
 DELETE {{BASE_URL}}/api/species/{{speciesId}}
-User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
+
+###
+
+# ========================================
+# NOTAS DE USO
+# ========================================
+# 
+# Variables disponibles:
+# - BASE_URL: URL base del servidor (http://localhost:4200)
+# - userId: ID de usuario para pruebas (1)
+# - petId: ID de mascota para pruebas (1)
+# - speciesId: ID de especie para pruebas (1)
+# - email: Email para login (enricvbufi@gmail.com)
+# - password: Contraseña para login (1)
+#
+# Para ejecutar una petición:
+# 1. Coloca el cursor sobre el "###" o la línea de la petición
+# 2. Presiona Ctrl+Alt+R (o Cmd+Alt+R en Mac)
+# 3. O haz clic en "Send Request" que aparece sobre cada petición
+#
+# Para cambiar variables:
+# - Modifica los valores al inicio del archivo
+# - O sobrescribe variables específicas antes de cada petición
+#
