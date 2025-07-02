@@ -4,7 +4,6 @@ import (
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	"backend/internal/models"
-	"fmt"
 )
 
 func HandleLogin(req r_models.LoginRequest) (*models.User, error) {
@@ -13,7 +12,7 @@ func HandleLogin(req r_models.LoginRequest) (*models.User, error) {
 	if err != nil {
 		dao.IncrementFailedLogins(req.Email)
 
-		return nil, fmt.Errorf("invalid email or password")
+		return nil, err
 	}
 
 	// Reset failed login attempts and generate two-factor authentication code for the user
