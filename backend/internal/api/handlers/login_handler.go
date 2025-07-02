@@ -18,7 +18,6 @@ func HandleLogin(req r_models.LoginRequest) (*models.User, error) {
 
 	// Reset failed login attempts and generate two-factor authentication code for the user
 	dao.ResetFailedLogins(req.Email)
-	dao.UpdateTwoFactorCode(req.Email)
 
 	// Update user's data
 	user, _ := dao.GetValidatedUser(req.Email, req.Password)
