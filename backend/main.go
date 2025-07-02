@@ -37,7 +37,7 @@ func setupCORS() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
-	e.Start(":8080")
+	e.Start(":4200")
 }
 
 /*
