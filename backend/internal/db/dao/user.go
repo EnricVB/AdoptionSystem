@@ -58,10 +58,12 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 func GetValidatedUser(email string, password string) (*m.User, error) {
 	gormDB := db.ORMOpen()
 
+	hashedPassword, _ := security.HashPassword(password)
+
 	var user m.User
 	result := gormDB.
 		Where("email = ?", email).
-		Where("password = ?", password).
+		Where("password = ?", hashedPassword).
 		First(&user)
 
 	if result.Error != nil {
