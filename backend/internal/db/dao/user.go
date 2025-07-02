@@ -4,8 +4,11 @@ import (
 	"backend/internal/db"
 	m "backend/internal/models"
 	"backend/internal/utils/security"
+	"errors"
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func GetAllUsers() ([]m.NonValidatedUser, error) {
@@ -58,16 +61,22 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 func GetValidatedUser(email string, password string) (*m.User, error) {
 	gormDB := db.ORMOpen()
 
-	hashedPassword, _ := security.HashPassword(password)
-
 	var user m.User
-	result := gormDB.
-		Where("email = ?", email).
-		Where("password = ?", hashedPassword).
-		First(&user)
+	result := gormDB.Debug().Where("email = ?", email).First(&user)
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al leer usuario con email %s usando contraseña: %v", email, result.Error)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("usuario con email %s no encontrado", email)
+		}
+		return nil, fmt.Errorf("error al buscar usuario: %v", result.Error)
+	}
+
+	if user.IsBlocked {
+		return nil, fmt.Errorf("usuario bloqueado")
+	}
+
+	if !security.VerifyPassword(user.Password, password) {
+		return nil, fmt.Errorf("credenciales inválidas")
 	}
 
 	return &user, nil

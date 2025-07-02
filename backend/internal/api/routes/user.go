@@ -32,7 +32,7 @@ func handleLoginUser(c echo.Context) error {
 	user, err := handlers.HandleLogin(req)
 
 	if err != nil {
-		return response.ErrorResponse(c, http.StatusUnauthorized, "credenciales inválidas")
+		return response.ErrorResponse(c, http.StatusUnauthorized, fmt.Sprintf("error al inciar sesion: %v", err))
 	}
 
 	return response.MarshalResponse(c, user)
