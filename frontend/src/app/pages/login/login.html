@@ -1,19 +1,24 @@
-<div class="login-container">
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <h2>Login</h2>
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full max-w-sm p-6 bg-white rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
 
-        <label for="email">Email</label>
-        <input id="email" type="email" formControlName="email" />
-        <div class="error" *ngIf="submitted">
-            Valid email is required
+        <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input id="email" type="email" formControlName="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/>
+            <p *ngIf="submitted" class="text-red-500 text-sm mt-1">
+                Valid email is required
+            </p>
         </div>
-
-        <label for="password">Password</label>
-        <input id="password" type="password" formControlName="password" />
-        <div class="error" *ngIf="submitted">
-            Password is required
+        
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input id="password" type="password" formControlName="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"/>
+            <p *ngIf="submitted" class="text-red-500 text-sm mt-1">
+                Password is required
+            </p>
         </div>
+        
 
-        <button type="submit">Login</button>
+        <button type="submit" class="w-full bg-indigo-600 cursor-pointer text-white py-2 rounded-md hover:bg-indigo-700 transition duration-200">Login</button>
     </form>
 </div>
