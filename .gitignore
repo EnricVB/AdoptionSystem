@@ -35,7 +35,6 @@ Thumbs.db
 *.js.map
 
 # Compiled Sass/CSS files
-*.css
 *.css.map
 
 # Others
