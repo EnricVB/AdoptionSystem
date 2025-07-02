@@ -1,6 +1,7 @@
 package api
 
 import (
+	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
 	response "backend/internal/utils"
@@ -14,25 +15,27 @@ import (
 func RegisterUserRoutes(e *echo.Echo) {
 	e.GET("/api/users", handleListUsers)
 	e.GET("/api/users/:id", handleGetUserByID)
+	e.POST("/api/login", handleLoginUser)
 	e.POST("/api/users", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
-	e.GET("/api/login/:email:password", handleLoginUser)
 }
 
 func handleLoginUser(c echo.Context) error {
-	email := c.Param("email")
-	password := c.Param("password")
-	user, err := dao.GetValidatedUser(email, password)
+	var req r_models.LoginRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
+	}
+
+	user, err := dao.GetValidatedUser(req.Email, req.Password)
+
+	if req.Email == "" || req.Password == "" {
+		return response.ErrorResponse(c, http.StatusBadRequest, "email y contraseña son obligatorios")
+	}
 
 	if err != nil {
-		_, userFoundErr := dao.GetUserByEmail(email)
-
-		if userFoundErr != nil {
-			return response.ErrorResponse(c, http.StatusNotFound, fmt.Sprintf("usuario con id %d no encontrado", id))
-		} else {
-			return response.ErrorResponse(c, http.StatusInternalServerError, err.Error())
-		}
+		return response.ErrorResponse(c, http.StatusUnauthorized, "usuario o contraseña incorrectos")
 	}
 
 	return response.MarshalResponse(c, user)
