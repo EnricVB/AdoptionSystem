@@ -1,6 +1,7 @@
 package api
 
 import (
+	"backend/internal/api/handlers"
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
@@ -28,14 +29,10 @@ func handleLoginUser(c echo.Context) error {
 		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
 	}
 
-	user, err := dao.GetValidatedUser(req.Email, req.Password)
-
-	if req.Email == "" || req.Password == "" {
-		return response.ErrorResponse(c, http.StatusBadRequest, "email y contraseña son obligatorios")
-	}
+	user, err := handlers.HandleLogin(req)
 
 	if err != nil {
-		return response.ErrorResponse(c, http.StatusUnauthorized, "usuario o contraseña incorrectos")
+		return response.ErrorResponse(c, http.StatusUnauthorized, "credenciales inválidas")
 	}
 
 	return response.MarshalResponse(c, user)
