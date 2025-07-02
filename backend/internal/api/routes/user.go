@@ -5,7 +5,7 @@ import (
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
-	response "backend/internal/utils"
+	response "backend/internal/utils/rest"
 	"fmt"
 	"net/http"
 	"strconv"

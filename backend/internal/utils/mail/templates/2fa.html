@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin-inline: 50px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .code-container {
+            background-color: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Código de Verificación</h1>
+            <p>Sistema de Adopciones</p>
+        </div>
+        
+        <div class="content">
+            <h2>Tu código de autenticación</h2>
+            <p>Hemos recibido una solicitud de verificación para tu cuenta. Utiliza el siguiente código para completar el proceso:</p>
+            
+            <div class="code-container">
+                {{.Code}}
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Este código no expira. Si olvidaste este código, puedes solicitar uno nuevo en cualquier momento.
+            </div>
+            
+            <p>Si no solicitaste este código, puedes ignorar este mensaje de forma segura.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Sistema de Adopciones</p>
+            <p>Este es un mensaje automático, por favor no respondas a este correo.</p>
+        </div>
+    </div>
+</body>
+</html>

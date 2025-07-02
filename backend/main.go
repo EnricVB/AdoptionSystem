@@ -3,7 +3,6 @@ package main
 import (
 	api "backend/internal/api/routes"
 	"backend/internal/db"
-	"backend/internal/utils"
 	"database/sql"
 	"log"
 
@@ -19,11 +18,6 @@ This function initializes the database connection and sets up the CORS middlewar
 It also registers user routes defined in the API package and starts the Echo server on port 8080.
 */
 func main() {
-
-	utils.SendMail("enric.velasco@csa.es",
-		"Código de verificación Two-Factor",
-		"Tu código de verificación Two-Factor es: 123456")
-
 	defer setupDatabase().Close()
 	setupCORS()
 }

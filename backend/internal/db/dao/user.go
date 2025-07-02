@@ -3,7 +3,7 @@ package dao
 import (
 	"backend/internal/db"
 	m "backend/internal/models"
-	utils "backend/internal/utils"
+	"backend/internal/utils/security"
 	"fmt"
 	"time"
 )
@@ -196,23 +196,24 @@ func UnblockUser(email string) error {
 	return UpdateLoginData(email, 0, false)
 }
 
-func UpdateTwoFactorCode(email string) error {
+func UpdateTwoFactorCode(email string) (string, error) {
 	gormDB := db.ORMOpen()
+	_2fa := security.Generate2FA(6)
 
 	result := gormDB.Model(&m.User{}).
 		Where("email =?", email).
 		Updates(map[string]any{
-			"two_factor_auth": utils.Generate2FA(6),
+			"two_factor_auth": _2fa,
 		})
 
 	user, err := GetUserByEmail(email)
 	if result.Error != nil || err != nil || user.TwoFactorAuth == "" {
-		return fmt.Errorf("error al actualizarTwoFactorAuth para usuario %s: %v", email, result.Error)
+		return "", fmt.Errorf("error al actualizarTwoFactorAuth para usuario %s: %v", email, result.Error)
 	}
 
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("usuario con email %s no encontrado", email)
+		return "", fmt.Errorf("usuario con email %s no encontrado", email)
 	}
 
-	return nil
+	return _2fa, nil
 }
