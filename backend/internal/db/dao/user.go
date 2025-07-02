@@ -54,17 +54,17 @@ func GetUserByEmail(email string) (*m.SimplifiedUser, error) {
 	return &user, nil
 }
 
-func ValidateUser(id uint, password string) (*m.User, error) {
+func GetValidatedUser(email string, password string) (*m.User, error) {
 	gormDB := db.ORMOpen()
 
 	var user m.User
 	result := gormDB.
-		Where("id = ?", id).
+		Where("email = ?", email).
 		Where("password = ?", password).
 		First(&user)
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al leer usuario con id %d usando contraseña: %v", id, result.Error)
+		return nil, fmt.Errorf("error al leer usuario con email %s usando contraseña: %v", email, result.Error)
 	}
 
 	return &user, nil

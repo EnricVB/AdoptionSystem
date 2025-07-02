@@ -8,8 +8,16 @@ GET {{BASE_URL}}/api/users
 User-Agent: PostmanRuntime/7.28.4
 Content-Type: application/json
 
+### Get validated user by ID and password
+@email=enricvbufi@gmail.com
+@password=1
+
+GET {{BASE_URL}}/api/login/{{email}}:{{password}}
+User-Agent: PostmanRuntime/7.28.4
+Content-Type: application/json
+
 ### Get user by ID
-@userId=2
+@userId=1
 
 GET {{BASE_URL}}/api/users/{{userId}}
 User-Agent: PostmanRuntime/7.28.4

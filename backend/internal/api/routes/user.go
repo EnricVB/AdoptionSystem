@@ -17,6 +17,25 @@ func RegisterUserRoutes(e *echo.Echo) {
 	e.POST("/api/users", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
+	e.GET("/api/login/:email:password", handleLoginUser)
+}
+
+func handleLoginUser(c echo.Context) error {
+	email := c.Param("email")
+	password := c.Param("password")
+	user, err := dao.GetValidatedUser(email, password)
+
+	if err != nil {
+		_, userFoundErr := dao.GetUserByEmail(email)
+
+		if userFoundErr != nil {
+			return response.ErrorResponse(c, http.StatusNotFound, fmt.Sprintf("usuario con id %d no encontrado", id))
+		} else {
+			return response.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	return response.MarshalResponse(c, user)
 }
 
 func handleListUsers(c echo.Context) error {
