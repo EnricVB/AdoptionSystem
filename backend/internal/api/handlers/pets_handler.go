@@ -31,7 +31,7 @@ func HandleListPets() (*[]m.SimplifiedPet, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return pets, response.HTTPError{}
+	return pets, response.EmptyError
 }
 
 // HandleGetPetByID processes requests to retrieve a specific pet by its ID.
@@ -59,7 +59,7 @@ func HandleGetPetByID(id uint) (*m.Pet, response.HTTPError) {
 		return nil, response.Error(http.StatusNotFound, err.Error())
 	}
 
-	return pet, response.HTTPError{}
+	return pet, response.EmptyError
 }
 
 // HandleCreatePet processes pet creation requests.
@@ -87,7 +87,7 @@ func HandleCreatePet(pet *m.Pet) (*m.Pet, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return pet, response.HTTPError{}
+	return pet, response.EmptyError
 }
 
 // HandleUpdatePet processes pet update requests.
@@ -120,7 +120,7 @@ func HandleUpdatePet(pet *m.Pet) (*m.Pet, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return pet, response.HTTPError{}
+	return pet, response.EmptyError
 }
 
 // HandleDeletePet processes pet deletion requests.
@@ -147,5 +147,5 @@ func HandleDeletePet(id uint) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.HTTPError{}
+	return response.EmptyError
 }
