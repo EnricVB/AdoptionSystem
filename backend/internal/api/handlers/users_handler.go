@@ -214,7 +214,7 @@ func HandleListUsers() (*[]models.NonValidatedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return users, response.EmptyError
+	return users, response.HTTPError{}
 }
 
 // HandleGetUserByID processes requests to retrieve a specific user by ID.
@@ -242,7 +242,7 @@ func HandleGetUserByID(id uint) (*models.NonValidatedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusNotFound, err.Error())
 	}
 
-	return user, response.EmptyError
+	return user, response.HTTPError{}
 }
 
 // HandleCreateUser processes user registration requests.
@@ -283,7 +283,7 @@ func HandleCreateUser(user *r_models.CreateUserRequest) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.EmptyError
+	return response.HTTPError{}
 }
 
 // HandleUpdateUser processes user profile update requests.
@@ -317,7 +317,7 @@ func HandleUpdateUser(user *models.User) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.EmptyError
+	return response.HTTPError{}
 }
 
 func HandleUpdateUserPassword(email string, password string) response.HTTPError {
@@ -360,5 +360,5 @@ func HandleDeleteUser(id uint) (*models.SimplifiedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return deleted, response.EmptyError
+	return deleted, response.HTTPError{}
 }
