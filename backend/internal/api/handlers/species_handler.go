@@ -31,7 +31,7 @@ func HandleListSpecies() ([]m.Species, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return species, response.EmptyError
+	return species, response.HTTPError{}
 }
 
 // HandleGetSpeciesByID processes requests to retrieve a specific species by its ID.
@@ -59,7 +59,7 @@ func HandleGetSpeciesByID(id uint) (*m.Species, response.HTTPError) {
 		return nil, response.Error(http.StatusNotFound, err.Error())
 	}
 
-	return species, response.EmptyError
+	return species, response.HTTPError{}
 }
 
 // HandleCreateSpecies processes species creation requests.
@@ -87,7 +87,7 @@ func HandleCreateSpecies(species *m.Species) (*m.Species, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return species, response.EmptyError
+	return species, response.HTTPError{}
 }
 
 // HandleDeleteSpecies processes species deletion requests.
@@ -117,5 +117,5 @@ func HandleDeleteSpecies(id uint) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.EmptyError
+	return response.HTTPError{}
 }
