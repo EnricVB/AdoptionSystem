@@ -29,9 +29,18 @@ func Error(code int, message string) HTTPError {
 	}
 }
 
+/*
+ConvertToErrorResponse converts an HTTPError to a JSON response.
+This function is used to send error responses in a consistent format.
+It takes an echo.Context and an HTTPError, and returns an error that can be used in
+the Echo framework.
+*/
 func ConvertToErrorResponse(c echo.Context, err HTTPError) error {
 	return c.JSON(err.Code, HTTPError{
 		Code:    err.Code,
 		Message: err.Message,
 	})
 }
+
+// EmptyError is a variable for an empty error message.
+var EmptyError = HTTPError{}
