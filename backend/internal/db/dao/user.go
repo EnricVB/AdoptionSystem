@@ -3,7 +3,7 @@ package dao
 import (
 	"backend/internal/db"
 	m "backend/internal/models"
-	"backend/internal/utils/security"
+	"backend/internal/services/security"
 	"errors"
 	"fmt"
 	"time"
@@ -124,7 +124,7 @@ func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 	return &user, nil
 }
 
-func CreateUser(user *m.User) (*m.User, error) {
+func CreateUser(user *m.User) error {
 	gormDB := db.ORMOpen()
 
 	now := time.Now()
@@ -133,13 +133,13 @@ func CreateUser(user *m.User) (*m.User, error) {
 
 	result := gormDB.Create(user)
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al crear usuario: %v", result.Error)
+		return fmt.Errorf("error al crear usuario: %v", result.Error)
 	}
 
-	return user, nil
+	return nil
 }
 
-func UpdateUser(user *m.User) (*m.NonValidatedUser, error) {
+func UpdateUser(user *m.User) error {
 	gormDB := db.ORMOpen()
 
 	user.UptDate = time.Now()
@@ -148,21 +148,10 @@ func UpdateUser(user *m.User) (*m.NonValidatedUser, error) {
 		Updates(user)
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al actualizar usuario con id %d: %v", user.ID, result.Error)
+		return fmt.Errorf("error al actualizar usuario con id %d: %v", user.ID, result.Error)
 	}
 
-	simplified := &m.NonValidatedUser{
-		ID:            user.ID,
-		Name:          user.Name,
-		Surname:       user.Surname,
-		Email:         user.Email,
-		Address:       user.Address,
-		TwoFactorAuth: user.TwoFactorAuth,
-		FailedLogins:  user.FailedLogins,
-		IsBlocked:     user.IsBlocked,
-	}
-
-	return simplified, nil
+	return nil
 }
 
 func UpdateLoginData(email string, failedLogins int, isBlocked bool) error {
