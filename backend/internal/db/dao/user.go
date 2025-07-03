@@ -45,7 +45,6 @@ func GetAllUsers() ([]m.NonValidatedUser, error) {
 		return nil, fmt.Errorf("error al leer usuarios: %v", result.Error)
 	}
 
-	// Map to non-validated user DTOs (exclude sensitive data)
 	var nonValidatedUsers []m.NonValidatedUser
 	for _, user := range users {
 		nonValidatedUser := m.NonValidatedUser{
