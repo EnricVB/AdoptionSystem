@@ -7,5 +7,5 @@ type LoginRequest struct {
 
 type TwoFactorRequest struct {
 	Email string `json:"email"`
-	_2fa  string `json:"two_factor_auth"`
+	Code  string `json:"two_factor_auth"`
 }
