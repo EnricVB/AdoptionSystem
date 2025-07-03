@@ -18,7 +18,20 @@ func HandleLogin(req r_models.LoginRequest) (*models.User, response.HTTPError) {
 		return nil, response.Error(http.StatusUnauthorized, err.Error())
 	}
 
-	return user, response.HTTPError{}
+	return user, response.EmptyError
+}
+
+func Handle2faAuth(req r_models.TwoFactorRequest) (*models.User, response.HTTPError) {
+	if req.Email == "" || req.Code == "" {
+		return nil, response.Error(http.StatusBadRequest, "email y código de 2FA son obligatorios")
+	}
+
+	user, err := s.AuthenticateUser2FA(req)
+	if err != nil {
+		return nil, response.Error(http.StatusUnauthorized, err.Error())
+	}
+
+	return user, response.EmptyError
 }
 
 func HandleListUsers() (*[]models.NonValidatedUser, response.HTTPError) {
@@ -27,7 +40,7 @@ func HandleListUsers() (*[]models.NonValidatedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return users, response.HTTPError{}
+	return users, response.EmptyError
 }
 
 func HandleGetUserByID(id uint) (*models.NonValidatedUser, response.HTTPError) {
@@ -40,7 +53,7 @@ func HandleGetUserByID(id uint) (*models.NonValidatedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusNotFound, err.Error())
 	}
 
-	return user, response.HTTPError{}
+	return user, response.EmptyError
 }
 
 func HandleCreateUser(user *models.User) response.HTTPError {
@@ -57,7 +70,7 @@ func HandleCreateUser(user *models.User) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.HTTPError{}
+	return response.EmptyError
 }
 
 func HandleUpdateUser(user *models.User) response.HTTPError {
@@ -66,7 +79,7 @@ func HandleUpdateUser(user *models.User) response.HTTPError {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return response.HTTPError{}
+	return response.EmptyError
 }
 
 func HandleDeleteUser(id uint) (*models.SimplifiedUser, response.HTTPError) {
@@ -79,5 +92,5 @@ func HandleDeleteUser(id uint) (*models.SimplifiedUser, response.HTTPError) {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}
 
-	return deleted, response.HTTPError{}
+	return deleted, response.EmptyError
 }
