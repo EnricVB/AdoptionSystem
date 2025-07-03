@@ -1,10 +1,9 @@
 package api
 
 import (
-	"backend/internal/db/dao"
+	"backend/internal/api/handlers"
 	m "backend/internal/models"
 	response "backend/internal/utils/rest"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -20,18 +19,22 @@ func RegisterPetRoutes(e *echo.Echo) {
 }
 
 func handleListPets(c echo.Context) error {
-	pets, err := dao.GetAllPets()
-	if err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al obtener mascotas: %v", err))
+	pets, httpErr := handlers.HandleListPets()
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, pets)
 }
 
 func handleGetPetByID(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	pet, err := dao.GetPetByID(uint(id))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return response.ErrorResponse(c, http.StatusNotFound, fmt.Sprintf("mascota no encontrada: %v", err))
+		return response.ErrorResponse(c, http.StatusBadRequest, "ID de mascota inválido")
+	}
+
+	pet, httpErr := handlers.HandleGetPetByID(uint(id))
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, pet)
 }
@@ -41,31 +44,43 @@ func handleCreatePet(c echo.Context) error {
 	if err := c.Bind(&pet); err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "datos de mascota inválidos")
 	}
-	created, err := dao.CreatePet(&pet)
-	if err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al crear mascota: %v", err))
+
+	created, httpErr := handlers.HandleCreatePet(&pet)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, created)
 }
 
 func handleUpdatePet(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "ID de mascota inválido")
+	}
+
 	var pet m.Pet
 	if err := c.Bind(&pet); err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "datos de mascota inválidos")
 	}
 	pet.ID = uint(id)
-	updated, err := dao.UpdatePet(&pet)
-	if err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al actualizar mascota: %v", err))
+
+	updated, httpErr := handlers.HandleUpdatePet(&pet)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, updated)
 }
 
 func handleDeletePet(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	if err := dao.DeletePetByID(uint(id)); err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al eliminar mascota: %v", err))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "ID de mascota inválido")
 	}
+
+	httpErr := handlers.HandleDeletePet(uint(id))
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+
 	return response.MarshalResponse(c, map[string]string{"status": "deleted"})
 }
