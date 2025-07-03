@@ -14,48 +14,77 @@ import (
 func GetAllUsers() ([]m.NonValidatedUser, error) {
 	gormDB := db.ORMOpen()
 
-	var users []m.NonValidatedUser
-	result := gormDB.Model(&m.User{}).
-		Select("id, name, surname, email, address, two_factor_auth, failed_logins, is_blocked, crt_date, upt_date").
-		Find(&users)
+	var users []m.User
+	result := gormDB.Find(&users)
 
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer usuarios: %v", result.Error)
 	}
 
-	return users, nil
+	var nonValidatedUsers []m.NonValidatedUser
+	for _, user := range users {
+		nonValidatedUser := m.NonValidatedUser{
+			ID:            user.ID,
+			Name:          user.Name,
+			Surname:       user.Surname,
+			Email:         user.Email,
+			Address:       user.Address,
+			TwoFactorAuth: user.TwoFactorAuth,
+			FailedLogins:  user.FailedLogins,
+			IsBlocked:     user.IsBlocked,
+		}
+		nonValidatedUsers = append(nonValidatedUsers, nonValidatedUser)
+	}
+
+	return nonValidatedUsers, nil
 }
 
 func GetUserByID(id uint) (*m.NonValidatedUser, error) {
 	gormDB := db.ORMOpen()
 
-	var user m.NonValidatedUser
-	result := gormDB.Model(&m.User{}).
-		Select("id, name, surname, email, address, two_factor_auth, failed_logins, is_blocked").
-		Where("id = ?", id).
-		First(&user)
+	var user m.User
+	result := gormDB.Where("id = ?", id).First(&user)
 
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer usuario con id %d: %v", id, result.Error)
 	}
 
-	return &user, nil
+	nonValidatedUser := &m.NonValidatedUser{
+		ID:            user.ID,
+		Name:          user.Name,
+		Surname:       user.Surname,
+		Email:         user.Email,
+		Address:       user.Address,
+		TwoFactorAuth: user.TwoFactorAuth,
+		FailedLogins:  user.FailedLogins,
+		IsBlocked:     user.IsBlocked,
+	}
+
+	return nonValidatedUser, nil
 }
 
 func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 	gormDB := db.ORMOpen()
 
-	var user m.NonValidatedUser
-	result := gormDB.Model(&m.User{}).
-		Select("id, name, surname, email, address, two_factor_auth, failed_logins, is_blocked").
-		Where("email = ?", email).
-		First(&user)
+	var user m.User
+	result := gormDB.Where("email = ?", email).First(&user)
 
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer usuario con email %s: %v", email, result.Error)
 	}
 
-	return &user, nil
+	nonValidatedUser := &m.NonValidatedUser{
+		ID:            user.ID,
+		Name:          user.Name,
+		Surname:       user.Surname,
+		Email:         user.Email,
+		Address:       user.Address,
+		TwoFactorAuth: user.TwoFactorAuth,
+		FailedLogins:  user.FailedLogins,
+		IsBlocked:     user.IsBlocked,
+	}
+
+	return nonValidatedUser, nil
 }
 
 func GetValidatedUser(email string, password string) (*m.User, error) {
