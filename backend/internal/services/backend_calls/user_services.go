@@ -25,6 +25,25 @@ func AuthenticateUser(userData r_models.LoginRequest) (*m.User, error) {
 	return user, nil
 }
 
+func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.User, error) {
+	user, err := dao.GetUserByEmail(userData.Email)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener usuario: %v", err)
+	}
+
+	if user.TwoFactorAuth == "" || user.TwoFactorAuth != userData.Code {
+		return nil, fmt.Errorf("código de autenticación de dos factores inválido")
+	}
+
+	// Reset failed login attempts after successful 2FA authentication
+	dao.ResetFailedLogins(user.Email)
+
+	// Update user's data
+	user, _ = dao.GetValidatedUser(userData.Email, user.Password)
+
+	return user, nil
+}
+
 func ListAllUsers() (*[]m.NonValidatedUser, error) {
 	users, err := dao.GetAllUsers()
 	if err != nil {
