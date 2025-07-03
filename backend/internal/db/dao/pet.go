@@ -46,7 +46,7 @@ func CreatePet(pet *m.Pet) (*m.Pet, error) {
 	return pet, nil
 }
 
-func UpdatePet(pet *m.Pet) (*m.Pet, error) {
+func UpdatePet(pet *m.Pet) error {
 	gormDB := db.ORMOpen()
 
 	pet.UptDate = time.Now()
@@ -57,10 +57,10 @@ func UpdatePet(pet *m.Pet) (*m.Pet, error) {
 		Updates(pet)
 
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al actualizar mascota con id %d: %v", pet.ID, result.Error)
+		return fmt.Errorf("error al actualizar mascota con id %d: %v", pet.ID, result.Error)
 	}
 
-	return pet, nil
+	return nil
 }
 
 func DeletePetByID(id uint) error {

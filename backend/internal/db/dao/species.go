@@ -30,15 +30,15 @@ func GetSpeciesByID(id uint) (*m.Species, error) {
 	return &s, nil
 }
 
-func CreateSpecies(s *m.Species) (*m.Species, error) {
+func CreateSpecies(s *m.Species) error {
 	gormDB := db.ORMOpen()
 
 	result := gormDB.Create(s)
 	if result.Error != nil {
-		return nil, fmt.Errorf("error al crear especie: %v", result.Error)
+		return fmt.Errorf("error al crear especie: %v", result.Error)
 	}
 
-	return s, nil
+	return nil
 }
 
 func DeleteSpeciesByID(id uint) error {
