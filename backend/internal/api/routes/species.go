@@ -88,7 +88,6 @@ func handleGetSpeciesByID(c echo.Context) error {
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
-
 	return response.MarshalResponse(c, species)
 }
 
