@@ -1,10 +1,9 @@
 package api
 
 import (
-	"backend/internal/db/dao"
+	"backend/internal/api/handlers"
 	m "backend/internal/models"
 	response "backend/internal/utils/rest"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,38 +18,48 @@ func RegisterSpeciesRoutes(e *echo.Echo) {
 }
 
 func handleListSpecies(c echo.Context) error {
-	species, err := dao.GetAllSpecies()
-	if err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al obtener especies: %v", err))
+	species, httpErr := handlers.HandleListSpecies()
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, species)
 }
 
 func handleGetSpeciesByID(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	s, err := dao.GetSpeciesByID(uint(id))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return response.ErrorResponse(c, http.StatusNotFound, fmt.Sprintf("especie no encontrada: %v", err))
+		return response.ErrorResponse(c, http.StatusBadRequest, "ID de especie inválido")
 	}
-	return response.MarshalResponse(c, s)
+
+	species, httpErr := handlers.HandleGetSpeciesByID(uint(id))
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+	return response.MarshalResponse(c, species)
 }
 
 func handleCreateSpecies(c echo.Context) error {
-	var s m.Species
-	if err := c.Bind(&s); err != nil {
+	var species m.Species
+	if err := c.Bind(&species); err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "datos de especie inválidos")
 	}
-	created, err := dao.CreateSpecies(&s)
-	if err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al crear especie: %v", err))
+
+	created, httpErr := handlers.HandleCreateSpecies(&species)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, created)
 }
 
 func handleDeleteSpecies(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	if err := dao.DeleteSpeciesByID(uint(id)); err != nil {
-		return response.ErrorResponse(c, http.StatusInternalServerError, fmt.Sprintf("error al eliminar especie: %v", err))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "ID de especie inválido")
+	}
+
+	httpErr := handlers.HandleDeleteSpecies(uint(id))
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, map[string]string{"status": "deleted"})
 }
