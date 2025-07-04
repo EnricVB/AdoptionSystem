@@ -33,7 +33,7 @@ export class Login {
       password: this.loginForm.value.password
     };
 
-    this.http.post(`/api/login`, payload, {
+    this.http.post(`/api/auth/login`, payload, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
