@@ -82,10 +82,7 @@ func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.NonValidatedUse
 		return nil, fmt.Errorf("error al obtener 2fa: %v", err)
 	}
 
-	// Validate 2FA code
 	if _2fa == "" || _2fa != userData.Code {
-		return nil, fmt.Errorf("código de autenticación de dos factores inválido")
-	}
 
 	// Reset failed login attempts after successful 2FA authentication
 	dao.ResetFailedLogins(user.Email)
@@ -226,7 +223,22 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 		}
 	}
 
-	return user, nil
+	return validatedUser, nil
+}
+
+func RefreshUser2FAToken(userData r_models.RefreshTokenRequest) (string, error) {
+	generated2FAToken, _2faErr := dao.UpdateTwoFactorCode(userData.Email)
+
+	if generated2FAToken == "" || _2faErr != nil {
+		return "", fmt.Errorf("error al generar el token 2FA: %v", _2faErr)
+	}
+
+	mailerErr := mailer.Send2FAToken(userData.Email, generated2FAToken)
+	if mailerErr != nil {
+		return "", fmt.Errorf("error al enviar el token 2FA al email %s: %v", userData.Email, mailerErr)
+	}
+
+	return generated2FAToken, nil
 }
 
 // ResetPassword resets the password for a user with the given email address.
