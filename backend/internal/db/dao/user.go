@@ -143,7 +143,12 @@ func GetValidatedUser(email string, password string) (*m.User, error) {
 		return nil, fmt.Errorf("usuario bloqueado")
 	}
 
-	if !security.VerifyPassword(user.Password, password) {
+	hashedPassword, err := GetUserHashedPassword(email)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener contraseña para usuario %s: %v", email, err)
+	}
+
+	if !security.VerifyPassword(hashedPassword, password) {
 		return nil, fmt.Errorf("credenciales inválidas")
 	}
 
@@ -163,7 +168,7 @@ func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 	return &user, nil
 }
 
-func CreateUser(user *m.User) error {
+func CreateUser(user *m.FullUser) error {
 	gormDB := db.ORMOpen()
 
 	now := time.Now()
@@ -233,6 +238,19 @@ func IncrementFailedLogins(email string) error {
 	isBlocked := newFailedLogins >= 5
 
 	return UpdateLoginData(email, newFailedLogins, isBlocked)
+}
+
+func GetUserHashedPassword(email string) (string, error) {
+	gormDB := db.ORMOpen()
+
+	var password string
+	result := gormDB.Select("password").Where("email = ?", email).First(&password)
+
+	if result.Error != nil {
+		return "", fmt.Errorf("error al obtener contraseña para usuario %s: %v", email, result.Error)
+	}
+
+	return password, nil
 }
 
 func ResetFailedLogins(email string) error {
