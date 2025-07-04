@@ -22,8 +22,8 @@ Content-Type: application/json
 
 ###
 
-### Autenticar usuario (Login)
-POST {{BASE_URL}}/api/login
+### Autenticar usuario (Login) - DEPRECATED - Usar /api/auth/login
+POST {{BASE_URL}}/api/auth/login
 Content-Type: application/json
 
 {
@@ -68,6 +68,42 @@ Content-Type: application/json
 ### Eliminar usuario por ID
 DELETE {{BASE_URL}}/api/users/{{userId}}
 Content-Type: application/json
+
+###
+
+# ========================================
+# AUTENTICACIÓN DE USUARIO
+# ========================================
+
+### Login de usuario (Paso 1: Autenticación inicial)
+POST {{BASE_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+
+### Verificar código 2FA (Paso 2: Verificación de dos factores)
+POST {{BASE_URL}}/api/auth/verify-2fa
+Content-Type: application/json
+
+{
+  "session_id": "THJHKPZS475HSHZSZ3MYXZHMO8KG03EWZCAS3TSBJNXQHT5K24",
+  "code": "XR7YHT"
+}
+
+###
+
+### Reenviar código 2FA
+POST {{BASE_URL}}/api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}
 
 ###
 
