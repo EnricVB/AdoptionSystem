@@ -33,14 +33,16 @@ export class Login {
       password: this.loginForm.value.password
     };
 
-    this.http.post(`/api/auth/login`, payload, {
+    this.http.post<any>(`/api/auth/login`, payload, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     }).subscribe({
       next: (response) => {
         console.log('Login successful', response);
-        this.router.navigate(['/twofa']);
+        const sessionID = response.content.session_id;
+        this.sendmail(this.loginForm.value.email);
+        this.router.navigate(['/twofa'], {state: {sessionID}});
       },
       error: (err) => {
         console.error('Login failed:', err);
@@ -48,4 +50,20 @@ export class Login {
       }
     });
   }
+
+ sendmail(email: string) {
+  const payload = { email };
+
+  this.http.post<any>('/api/auth/refresh-token', payload, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  }).subscribe({
+    next: (response) => {
+      console.log('Email sent successfully', response);
+    },
+    error: (error) => {
+      console.error('Error sending email:', error);
+      this.error = error.error?.message || 'Failed to send email. Please try again later.';
+    }
+  });
+}
 }
