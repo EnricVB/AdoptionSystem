@@ -11,10 +11,15 @@ import { Router } from '@angular/router';
   styleUrl: './twofa.css'
 })
 export class Twofa {
-codeForm!: FormGroup;
+  codeForm!: FormGroup;
   error: string | null = null;
+  sessionID: string = '';
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras.state as { sessionID?: string };
+    this.sessionID = state?.sessionID || '';
+
     this.codeForm = this.fb.group({
       code: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{6}$/)]]
     });
@@ -31,12 +36,20 @@ codeForm!: FormGroup;
 
     if (this.codeForm.invalid) return;
 
-    const payload = { code: this.codeForm.value.code };
+    const payload = { 
+      code: this.codeForm.value.code,
+      session_id: this.sessionID
+    };
 
     this.http.post('/api/auth/verify-2fa', payload, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      headers: new HttpHeaders({ 
+        'Content-Type': 'application/json' 
+      })
     }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: (response) =>{  
+         console.log('Sent', response);
+        this.router.navigate(['/dashboard'])
+      },
       error: (err) => {
         this.error = err.error?.message || 'Invalid 2FA code.';
       }

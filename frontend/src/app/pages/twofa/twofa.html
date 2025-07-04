@@ -1,8 +1,8 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <form [formGroup]="codeForm" (ngSubmit)="onSubmit()" class="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 class="block text-sm font-medium mb-2">Enter the 6-digit code</h2>
+        <h2 class="block text-sm font-medium mb-2">Enter the 2fa code</h2>
         <input type="text" formControlName="code" maxlength="6" class="uppercase tracking-widest text-center w-full px-4 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:border-blue-400">
-        <div *ngIf="error" class="text-red-600 text-sm mb-2">{{ error }}</div>
+        <div *ngIf="error" class="text-red-600 text-sm mb-2 error">{{ error }}</div>
 
         <button type="submit" 
         [disabled]="codeForm.invalid" 
