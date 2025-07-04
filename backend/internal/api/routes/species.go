@@ -88,6 +88,7 @@ func handleGetSpeciesByID(c echo.Context) error {
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
+
 	return response.MarshalResponse(c, species)
 }
 
@@ -138,11 +139,13 @@ func handleCreateSpecies(c echo.Context) error {
 //   - Success: Deletion confirmation message
 //   - Error: HTTP error with appropriate status code (including constraint violations)
 func handleDeleteSpecies(c echo.Context) error {
+	// Extract and validate species ID from path parameter
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "ID de especie inválido")
 	}
 
+	// Delegate species deletion to handler layer
 	httpErr := handlers.HandleDeleteSpecies(uint(id))
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
