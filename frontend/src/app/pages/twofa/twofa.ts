@@ -16,8 +16,14 @@ codeForm!: FormGroup;
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
     this.codeForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+      code: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{6}$/)]]
     });
+
+    this.codeForm.get('code')?.valueChanges.subscribe(value => {
+    if (value && value !== value.toUpperCase()) {
+      this.codeForm.get('code')?.setValue(value.toUpperCase(), { emitEvent: false });
+    }
+  })
   }
 
   onSubmit() {
@@ -27,7 +33,7 @@ codeForm!: FormGroup;
 
     const payload = { code: this.codeForm.value.code };
 
-    this.http.post('/api/2fa', payload, {
+    this.http.post('/api/auth/verify-2fa', payload, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     }).subscribe({
       next: () => this.router.navigate(['/dashboard']),

@@ -1,9 +1,17 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <form [formGroup]="codeForm" (ngSubmit)="onSubmit()" class="bg-white p-8 rounded shadow-md w-full max-w-sm">
         <h2 class="block text-sm font-medium mb-2">Enter the 6-digit code</h2>
-        <input type="text" pattern="^\S+$" formControlName="code" maxlength="6" inputmode="numeric" class="uppercase tracking-widest text-center w-full px-4 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:boder-blue-400">
+        <input type="text" formControlName="code" maxlength="6" class="uppercase tracking-widest text-center w-full px-4 py-2 border border-gray-300 rounded mb-4 focus:outline-none focus:border-blue-400">
         <div *ngIf="error" class="text-red-600 text-sm mb-2">{{ error }}</div>
 
-        <button type="submit" [disabled]="codeForm.invalid" class="w-full bg-indigo-500 text-white py-0.5 pb-1 rounded text-center align-middle cursor-pointer ">Verify</button>
+        <button type="submit" 
+        [disabled]="codeForm.invalid" 
+        [ngClass]="{
+            'bg-indigo-400 opacity-50 cursor-not-allowed': codeForm.invalid,
+            'bg-indigo-500 hover:bg-indigo-600 cursor-pointer': codeForm.valid
+        }"
+        class="w-full bg-indigo-500 text-white py-0.5 pb-1 rounded text-center align-middle  transition duration-500">
+            Verify
+        </button>
     </form>
 </div>
