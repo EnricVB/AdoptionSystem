@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-card',
   imports: [CommonModule],
   templateUrl: './card.html',
+  styleUrl: './card.css'
 })
 export class Card {
   @Input() title: string = 'Nombre';
