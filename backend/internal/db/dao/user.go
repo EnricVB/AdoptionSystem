@@ -1,3 +1,10 @@
+// Package dao implements data access objects for user management.
+// This layer is responsible for:
+// - Direct database operations and queries
+// - Data mapping between database and domain models
+// - Transaction management and data integrity
+// - Raw SQL queries and complex database operations
+// - Database connection handling and error management
 package dao
 
 import (
@@ -11,9 +18,26 @@ import (
 	"gorm.io/gorm"
 )
 
+// ========================================
+// USER RETRIEVAL OPERATIONS
+// ========================================
+
+// GetAllUsers retrieves all user records from the database.
+// Returns non-validated user data (excluding sensitive information like passwords).
+//
+// Database Operations:
+// - Performs SELECT * FROM users
+// - Maps User entities to NonValidatedUser DTOs
+// - Excludes sensitive fields for security
+//
+// Returns:
+//   - []m.NonValidatedUser: Slice of all users without sensitive data
+//   - error: Database error or nil on success
 func GetAllUsers() ([]m.NonValidatedUser, error) {
+	// Open database connection
 	gormDB := db.ORMOpen()
 
+	// Retrieve all users from database
 	var users []m.User
 	result := gormDB.Find(&users)
 
@@ -21,6 +45,7 @@ func GetAllUsers() ([]m.NonValidatedUser, error) {
 		return nil, fmt.Errorf("error al leer usuarios: %v", result.Error)
 	}
 
+	// Map to non-validated user DTOs (exclude sensitive data)
 	var nonValidatedUsers []m.NonValidatedUser
 	for _, user := range users {
 		nonValidatedUser := m.NonValidatedUser{
@@ -38,9 +63,25 @@ func GetAllUsers() ([]m.NonValidatedUser, error) {
 	return nonValidatedUsers, nil
 }
 
+// GetUserByID retrieves a specific user by their unique identifier.
+// Returns non-validated user data (excluding sensitive information).
+//
+// Database Operations:
+// - Performs SELECT * FROM users WHERE id = ?
+// - Maps User entity to NonValidatedUser DTO
+// - Handles record not found scenarios
+//
+// Parameters:
+//   - id: Unique identifier of the user to retrieve
+//
+// Returns:
+//   - *m.NonValidatedUser: User data without sensitive information
+//   - error: Database error or record not found error
 func GetUserByID(id uint) (*m.NonValidatedUser, error) {
+	// Open database connection
 	gormDB := db.ORMOpen()
 
+	// Retrieve specific user by ID
 	var user m.User
 	result := gormDB.Where("id = ?", id).First(&user)
 
@@ -61,6 +102,20 @@ func GetUserByID(id uint) (*m.NonValidatedUser, error) {
 	return nonValidatedUser, nil
 }
 
+// GetUserByEmail retrieves a user by their email address.
+// Returns non-validated user data for authentication and profile lookups.
+//
+// Database Operations:
+// - Performs SELECT * FROM users WHERE email = ?
+// - Maps User entity to NonValidatedUser DTO
+// - Used for email-based authentication flows
+//
+// Parameters:
+//   - email: Email address of the user to retrieve
+//
+// Returns:
+//   - *m.NonValidatedUser: User data without sensitive information
+//   - error: Database error or record not found error
 func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 	gormDB := db.ORMOpen()
 
@@ -84,6 +139,20 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 	return nonValidatedUser, nil
 }
 
+// GetUserBySessionID retrieves a user by their active session identifier.
+// Used for validating user sessions and maintaining authentication state.
+//
+// Database Operations:
+// - Performs SELECT * FROM users WHERE Session_ID = ?
+// - Maps User entity to NonValidatedUser DTO
+// - Handles session validation and user lookup
+//
+// Parameters:
+//   - sessionID: Active session identifier to lookup
+//
+// Returns:
+//   - *m.NonValidatedUser: User data without sensitive information
+//   - error: Database error or session not found error
 func GetUserBySessionID(sessionID string) (*m.NonValidatedUser, error) {
 	gormDB := db.ORMOpen()
 
@@ -110,6 +179,20 @@ func GetUserBySessionID(sessionID string) (*m.NonValidatedUser, error) {
 	return nonValidatedUser, nil
 }
 
+// Get2FA retrieves the current 2FA token for a user session.
+// Used during two-factor authentication verification process.
+//
+// Database Operations:
+// - Performs SELECT Two_Factor_Auth FROM users WHERE Session_ID = ?
+// - Returns only the 2FA token field for security
+// - Used in authentication flow validation
+//
+// Parameters:
+//   - sessionID: Session identifier to lookup 2FA token
+//
+// Returns:
+//   - string: Current 2FA token for the session
+//   - error: Database error or session not found error
 func Get2FA(sessionID string) (string, error) {
 	gormDB := db.ORMOpen()
 
@@ -126,6 +209,30 @@ func Get2FA(sessionID string) (string, error) {
 	return _2fa, nil
 }
 
+// ========================================
+// USER AUTHENTICATION OPERATIONS
+// ========================================
+
+// GetValidatedUser performs user authentication by validating email and password.
+// Returns complete user data including sensitive information for authenticated users.
+//
+// Database Operations:
+// - Performs SELECT * FROM users WHERE email = ?
+// - Validates password using bcrypt comparison
+// - Returns full User entity for authenticated sessions
+//
+// Security Features:
+// - Password hashing validation
+// - Account blocking verification
+// - Failed login attempt tracking
+//
+// Parameters:
+//   - email: User's email address
+//   - password: Plain text password to validate
+//
+// Returns:
+//   - *m.User: Complete user data for authenticated user
+//   - error: Authentication error or database error
 func GetValidatedUser(email string, password string) (*m.User, error) {
 	gormDB := db.ORMOpen()
 
@@ -155,6 +262,24 @@ func GetValidatedUser(email string, password string) (*m.User, error) {
 	return &user, nil
 }
 
+// ========================================
+// USER CRUD OPERATIONS
+// ========================================
+
+// DeleteUserByID removes a user from the database by their ID.
+// Performs hard deletion of user records.
+//
+// Database Operations:
+// - Performs DELETE FROM users WHERE id = ?
+// - Returns simplified user data after deletion
+// - Handles referential integrity constraints
+//
+// Parameters:
+//   - id: Unique identifier of the user to delete
+//
+// Returns:
+//   - *m.SimplifiedUser: Basic user data of deleted record
+//   - error: Database error or constraint violation error
 func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 	gormDB := db.ORMOpen()
 
@@ -168,6 +293,24 @@ func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 	return &user, nil
 }
 
+// CreateUser creates a new user record in the database.
+// Handles complete user registration with proper timestamp management.
+//
+// Database Operations:
+// - Performs INSERT INTO users with all user data
+// - Sets creation and update timestamps automatically
+// - Handles password hashing and validation
+//
+// Business Logic:
+// - Assigns creation timestamp (CrtDate)
+// - Assigns update timestamp (UptDate)
+// - Validates user data integrity
+//
+// Parameters:
+//   - user: Complete user data for registration
+//
+// Returns:
+//   - error: Database error or validation error, nil on success
 func CreateUser(user *m.FullUser) error {
 	gormDB := db.ORMOpen()
 
@@ -183,6 +326,24 @@ func CreateUser(user *m.FullUser) error {
 	return nil
 }
 
+// UpdateUser updates an existing user's information in the database.
+// Handles partial updates with automatic timestamp management.
+//
+// Database Operations:
+// - Performs UPDATE users SET ... WHERE id = ?
+// - Updates modification timestamp automatically
+// - Handles selective field updates
+//
+// Business Logic:
+// - Updates UptDate timestamp automatically
+// - Preserves data integrity during updates
+// - Validates user existence before update
+//
+// Parameters:
+//   - user: User data with updated information (must include valid ID)
+//
+// Returns:
+//   - error: Database error or validation error, nil on success
 func UpdateUser(user *m.User) error {
 	gormDB := db.ORMOpen()
 
@@ -198,6 +359,30 @@ func UpdateUser(user *m.User) error {
 	return nil
 }
 
+// ========================================
+// USER SECURITY AND LOGIN MANAGEMENT
+// ========================================
+
+// UpdateLoginData updates user login-related security information.
+// Manages failed login attempts and account blocking status.
+//
+// Database Operations:
+// - Performs UPDATE users SET failed_logins, is_blocked, upt_date WHERE email = ?
+// - Updates security-related fields atomically
+// - Handles account locking mechanisms
+//
+// Security Features:
+// - Failed login attempt tracking
+// - Account blocking management
+// - Timestamp tracking for security audits
+//
+// Parameters:
+//   - email: User's email address
+//   - failedLogins: Number of failed login attempts
+//   - isBlocked: Account blocking status
+//
+// Returns:
+//   - error: Database error or user not found error
 func UpdateLoginData(email string, failedLogins int, isBlocked bool) error {
 	gormDB := db.ORMOpen()
 
@@ -220,6 +405,24 @@ func UpdateLoginData(email string, failedLogins int, isBlocked bool) error {
 	return nil
 }
 
+// IncrementFailedLogins increments the failed login counter for a user.
+// Implements automatic account blocking after threshold is reached.
+//
+// Database Operations:
+// - Performs SELECT failed_logins FROM users WHERE email = ?
+// - Calculates new failed login count
+// - Updates login data with blocking logic
+//
+// Security Logic:
+// - Increments failed login counter by 1
+// - Automatically blocks account if failed logins >= 5
+// - Maintains security audit trail
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - error: Database error or user not found error
 func IncrementFailedLogins(email string) error {
 	gormDB := db.ORMOpen()
 
@@ -240,6 +443,25 @@ func IncrementFailedLogins(email string) error {
 	return UpdateLoginData(email, newFailedLogins, isBlocked)
 }
 
+// GetUserHashedPassword retrieves the hashed password for a user.
+// Used for password validation during authentication processes.
+//
+// Database Operations:
+// - Performs SELECT password FROM users WHERE email = ?
+// - Returns only the password field for security
+// - Used in authentication and password change flows
+//
+// Security Note:
+// - Returns hashed password for bcrypt comparison
+// - Should only be used in authentication contexts
+// - Never expose raw passwords
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - string: Hashed password from database
+//   - error: Database error or user not found error
 func GetUserHashedPassword(email string) (string, error) {
 	gormDB := db.ORMOpen()
 
@@ -253,10 +475,46 @@ func GetUserHashedPassword(email string) (string, error) {
 	return password, nil
 }
 
+// ResetFailedLogins resets the failed login counter for a user.
+// Used after successful authentication to clear security flags.
+//
+// Database Operations:
+// - Calls UpdateLoginData with failedLogins = 0 and isBlocked = false
+// - Clears security restrictions after successful login
+// - Updates modification timestamp
+//
+// Security Logic:
+// - Resets failed login counter to 0
+// - Unblocks the account if previously blocked
+// - Restores normal account access
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - error: Database error or user not found error
 func ResetFailedLogins(email string) error {
 	return UpdateLoginData(email, 0, false)
 }
 
+// BlockUser manually blocks a user account.
+// Used for administrative account management and security enforcement.
+//
+// Database Operations:
+// - Performs UPDATE users SET is_blocked = true, upt_date WHERE email = ?
+// - Sets account blocking flag to true
+// - Updates modification timestamp for audit trail
+//
+// Security Features:
+// - Immediate account blocking
+// - Audit trail maintenance
+// - Administrative control over account access
+//
+// Parameters:
+//   - email: User's email address to block
+//
+// Returns:
+//   - error: Database error or user not found error
 func BlockUser(email string) error {
 	gormDB := db.ORMOpen()
 
@@ -278,10 +536,51 @@ func BlockUser(email string) error {
 	return nil
 }
 
+// UnblockUser unblocks a previously blocked user account.
+// Used for administrative account recovery and access restoration.
+//
+// Database Operations:
+// - Calls UpdateLoginData with failedLogins = 0 and isBlocked = false
+// - Restores account access and clears security flags
+// - Updates modification timestamp
+//
+// Security Logic:
+// - Removes account blocking flag
+// - Resets failed login counter
+// - Restores full account functionality
+//
+// Parameters:
+//   - email: User's email address to unblock
+//
+// Returns:
+//   - error: Database error or user not found error
 func UnblockUser(email string) error {
 	return UpdateLoginData(email, 0, false)
 }
 
+// ========================================
+// TWO-FACTOR AUTHENTICATION OPERATIONS
+// ========================================
+
+// UpdateTwoFactorCode generates and updates a new 2FA token for a user.
+// Used for two-factor authentication setup and token refresh.
+//
+// Database Operations:
+// - Generates a new 6-digit 2FA code using security.Generate2FA
+// - Performs UPDATE users SET two_factor_auth WHERE email = ?
+// - Validates user existence after update
+//
+// Security Features:
+// - Generates cryptographically secure 2FA codes
+// - Updates 2FA token atomically
+// - Validates operation success
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - string: Generated 2FA token
+//   - error: Database error or user not found error
 func UpdateTwoFactorCode(email string) (string, error) {
 	gormDB := db.ORMOpen()
 	_2fa := security.Generate2FA(6)
@@ -304,6 +603,25 @@ func UpdateTwoFactorCode(email string) (string, error) {
 	return _2fa, nil
 }
 
+// GenerateSessionID creates and updates a new session identifier for a user.
+// Used for session management and user authentication state tracking.
+//
+// Database Operations:
+// - Generates a new 50-character session ID using security.Generate2FA
+// - Performs UPDATE users SET session_id WHERE email = ?
+// - Validates user existence after update
+//
+// Session Management:
+// - Creates unique session identifiers
+// - Maintains user authentication state
+// - Enables session-based authentication flows
+//
+// Parameters:
+//   - email: User's email address
+//
+// Returns:
+//   - string: Generated session identifier
+//   - error: Database error or user not found error
 func GenerateSessionID(email string) (string, error) {
 	gormDB := db.ORMOpen()
 	sessionID := security.Generate2FA(50)
