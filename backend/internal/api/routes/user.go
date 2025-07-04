@@ -1,3 +1,10 @@
+// Package api implements HTTP route handlers and endpoint registration for user management.
+// This layer is responsible for:
+// - HTTP endpoint registration and routing
+// - Request binding and basic input validation
+// - Calling appropriate handler functions
+// - HTTP response formatting and status code management
+// - Middleware integration for authentication and logging
 package api
 
 import (
@@ -11,6 +18,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// ========================================
+// ROUTE REGISTRATION
+// ========================================
+
+// RegisterUserRoutes registers all user-related HTTP endpoints with the Echo router.
+// Organizes endpoints by functionality for better maintainability.
+//
+// Endpoint Organization:
+// - User CRUD operations: Standard REST endpoints for user management
+// - Authentication endpoints: Login and 2FA verification endpoints
+//
+// Parameters:
+//   - e: Echo router instance for endpoint registration
 func RegisterUserRoutes(e *echo.Echo) {
 	// User CRUD operations
 	e.GET("/api/users", handleListUsers)
