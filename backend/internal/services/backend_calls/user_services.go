@@ -4,6 +4,7 @@ import (
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
+	mailer "backend/internal/services/mail"
 	"fmt"
 )
 
@@ -16,8 +17,9 @@ func AuthenticateUser(userData r_models.LoginRequest) (*m.User, error) {
 		return nil, err
 	}
 
-	// Reset failed login attempts and generate two-factor authentication code for the user
+	// Reset failed login attempts and generate two-factor authentication code for the user, and generate new SessionID
 	dao.ResetFailedLogins(userData.Email)
+	dao.GenerateSessionID(userData.Email)
 
 	// Update user's data
 	user, _ := dao.GetValidatedUser(userData.Email, userData.Password)
@@ -25,13 +27,18 @@ func AuthenticateUser(userData r_models.LoginRequest) (*m.User, error) {
 	return user, nil
 }
 
-func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.User, error) {
-	user, err := dao.GetUserByEmail(userData.Email)
+func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.NonValidatedUser, error) {
+	user, err := dao.GetUserBySessionID(userData.SessionID)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener usuario: %v", err)
 	}
 
-	if user.TwoFactorAuth == "" || user.TwoFactorAuth != userData.Code {
+	_2fa, err := dao.Get2FA(userData.SessionID)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener 2fa: %v", err)
+	}
+
+	if _2fa == "" || _2fa != userData.Code {
 		return nil, fmt.Errorf("código de autenticación de dos factores inválido")
 	}
 
@@ -39,9 +46,24 @@ func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.User, error) {
 	dao.ResetFailedLogins(user.Email)
 
 	// Update user's data
-	user, _ = dao.GetValidatedUser(userData.Email, user.Password)
+	validatedUser, _ := dao.GetUserBySessionID(userData.SessionID)
 
-	return user, nil
+	return validatedUser, nil
+}
+
+func RefreshUser2FAToken(userData r_models.RefreshTokenRequest) (string, error) {
+	generated2FAToken, _2faErr := dao.UpdateTwoFactorCode(userData.Email)
+
+	if generated2FAToken == "" || _2faErr != nil {
+		return "", fmt.Errorf("error al generar el token 2FA: %v", _2faErr)
+	}
+
+	mailerErr := mailer.Send2FAToken(userData.Email, generated2FAToken)
+	if mailerErr != nil {
+		return "", fmt.Errorf("error al enviar el token 2FA al email %s: %v", userData.Email, mailerErr)
+	}
+
+	return generated2FAToken, nil
 }
 
 func ListAllUsers() (*[]m.NonValidatedUser, error) {
