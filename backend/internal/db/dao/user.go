@@ -24,14 +24,13 @@ func GetAllUsers() ([]m.NonValidatedUser, error) {
 	var nonValidatedUsers []m.NonValidatedUser
 	for _, user := range users {
 		nonValidatedUser := m.NonValidatedUser{
-			ID:            user.ID,
-			Name:          user.Name,
-			Surname:       user.Surname,
-			Email:         user.Email,
-			Address:       user.Address,
-			TwoFactorAuth: user.TwoFactorAuth,
-			FailedLogins:  user.FailedLogins,
-			IsBlocked:     user.IsBlocked,
+			ID:           user.ID,
+			Name:         user.Name,
+			Surname:      user.Surname,
+			Email:        user.Email,
+			Address:      user.Address,
+			FailedLogins: user.FailedLogins,
+			IsBlocked:    user.IsBlocked,
 		}
 		nonValidatedUsers = append(nonValidatedUsers, nonValidatedUser)
 	}
@@ -50,14 +49,13 @@ func GetUserByID(id uint) (*m.NonValidatedUser, error) {
 	}
 
 	nonValidatedUser := &m.NonValidatedUser{
-		ID:            user.ID,
-		Name:          user.Name,
-		Surname:       user.Surname,
-		Email:         user.Email,
-		Address:       user.Address,
-		TwoFactorAuth: user.TwoFactorAuth,
-		FailedLogins:  user.FailedLogins,
-		IsBlocked:     user.IsBlocked,
+		ID:           user.ID,
+		Name:         user.Name,
+		Surname:      user.Surname,
+		Email:        user.Email,
+		Address:      user.Address,
+		FailedLogins: user.FailedLogins,
+		IsBlocked:    user.IsBlocked,
 	}
 
 	return nonValidatedUser, nil
@@ -74,17 +72,58 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 	}
 
 	nonValidatedUser := &m.NonValidatedUser{
-		ID:            user.ID,
-		Name:          user.Name,
-		Surname:       user.Surname,
-		Email:         user.Email,
-		Address:       user.Address,
-		TwoFactorAuth: user.TwoFactorAuth,
-		FailedLogins:  user.FailedLogins,
-		IsBlocked:     user.IsBlocked,
+		ID:           user.ID,
+		Name:         user.Name,
+		Surname:      user.Surname,
+		Email:        user.Email,
+		Address:      user.Address,
+		FailedLogins: user.FailedLogins,
+		IsBlocked:    user.IsBlocked,
 	}
 
 	return nonValidatedUser, nil
+}
+
+func GetUserBySessionID(sessionID string) (*m.NonValidatedUser, error) {
+	gormDB := db.ORMOpen()
+
+	var user m.User
+	result := gormDB.Where("Session_ID = ?", sessionID).First(&user)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("usuario con sessionID %s no encontrado", sessionID)
+		}
+		return nil, fmt.Errorf("error al buscar usuario por sessionID: %v", result.Error)
+	}
+
+	nonValidatedUser := &m.NonValidatedUser{
+		ID:           user.ID,
+		Name:         user.Name,
+		Surname:      user.Surname,
+		Email:        user.Email,
+		Address:      user.Address,
+		FailedLogins: user.FailedLogins,
+		IsBlocked:    user.IsBlocked,
+	}
+
+	return nonValidatedUser, nil
+}
+
+func Get2FA(sessionID string) (string, error) {
+	gormDB := db.ORMOpen()
+
+	var _2fa string
+	result := gormDB.Model(&m.User{}).
+		Select("Two_Factor_Auth").
+		Where("Session_ID = ?", sessionID).
+		First(&_2fa)
+
+	if result.Error != nil {
+		return "", fmt.Errorf("error al obtener 2fa para usuario %s: %v", sessionID, result.Error)
+	}
+
+	return _2fa, nil
 }
 
 func GetValidatedUser(email string, password string) (*m.User, error) {
@@ -230,14 +269,14 @@ func UpdateTwoFactorCode(email string) (string, error) {
 	_2fa := security.Generate2FA(6)
 
 	result := gormDB.Model(&m.User{}).
-		Where("email =?", email).
+		Where("email = ?", email).
 		Updates(map[string]any{
 			"two_factor_auth": _2fa,
 		})
 
-	user, err := GetUserByEmail(email)
-	if result.Error != nil || err != nil || user.TwoFactorAuth == "" {
-		return "", fmt.Errorf("error al actualizarTwoFactorAuth para usuario %s: %v", email, result.Error)
+	_, err := GetUserByEmail(email)
+	if result.Error != nil || err != nil {
+		return "", fmt.Errorf("error al actualizar TwoFactorAuth para usuario %s: %v", email, result.Error)
 	}
 
 	if result.RowsAffected == 0 {
@@ -245,4 +284,26 @@ func UpdateTwoFactorCode(email string) (string, error) {
 	}
 
 	return _2fa, nil
+}
+
+func GenerateSessionID(email string) (string, error) {
+	gormDB := db.ORMOpen()
+	sessionID := security.Generate2FA(50)
+
+	result := gormDB.Model(&m.User{}).
+		Where("email = ?", email).
+		Updates(map[string]any{
+			"session_id": sessionID,
+		})
+
+	_, err := GetUserByEmail(email)
+	if result.Error != nil || err != nil {
+		return "", fmt.Errorf("error al actualizar SessionID para usuario %s: %v", email, result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return "", fmt.Errorf("usuario con email %s no encontrado", email)
+	}
+
+	return sessionID, nil
 }
