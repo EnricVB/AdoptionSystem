@@ -12,13 +12,17 @@ import (
 )
 
 func RegisterUserRoutes(e *echo.Echo) {
+	// User CRUD operations
 	e.GET("/api/users", handleListUsers)
 	e.GET("/api/users/:id", handleGetUserByID)
-	e.POST("/api/login", handleLoginUser)
-	e.POST("/api/2fa", handle2faAuth)
 	e.POST("/api/users", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
+
+	// Authentication endpoints
+	e.POST("/api/auth/login", handleLoginUser)
+	e.POST("/api/auth/verify-2fa", handle2FAAuth)
+	e.POST("/api/auth/refresh-token", handleRefresh2FAToken)
 }
 
 func handleLoginUser(c echo.Context) error {
@@ -37,14 +41,30 @@ func handleLoginUser(c echo.Context) error {
 	return response.MarshalResponse(c, user)
 }
 
-func handle2faAuth(c echo.Context) error {
+func handle2FAAuth(c echo.Context) error {
 	var req r_models.TwoFactorRequest
 
 	if err := c.Bind(&req); err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
 	}
 
-	_, err := handlers.Handle2faAuth(req)
+	_, err := handlers.Handle2FAAuth(req)
+
+	if err != response.EmptyError {
+		return response.ConvertToErrorResponse(c, err)
+	}
+
+	return response.MarshalResponse(c, "OK")
+}
+
+func handleRefresh2FAToken(c echo.Context) error {
+	var req r_models.RefreshTokenRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
+	}
+
+	_, err := handlers.HandleRefresh2FAToken(req)
 
 	if err != response.EmptyError {
 		return response.ConvertToErrorResponse(c, err)
