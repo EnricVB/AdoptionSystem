@@ -21,6 +21,7 @@ func RegisterUserRoutes(e *echo.Echo) {
 
 	// Authentication endpoints
 	e.POST("/api/auth/login", handleLoginUser)
+	e.POST("/api/auth/login/google", handleLoginUser)
 	e.POST("/api/auth/verify-2fa", handle2FAAuth)
 	e.POST("/api/auth/refresh-token", handleRefresh2FAToken)
 }
@@ -32,7 +33,7 @@ func handleLoginUser(c echo.Context) error {
 		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
 	}
 
-	user, err := handlers.HandleLogin(req)
+	user, err := handlers.HandleManualLogin(req)
 
 	if err != response.EmptyError {
 		return response.ConvertToErrorResponse(c, err)
@@ -73,6 +74,22 @@ func handleRefresh2FAToken(c echo.Context) error {
 	return response.MarshalResponse(c, "OK")
 }
 
+func handleLoginWithGoogle(c echo.Context) error {
+	var req r_models.GoogleLoginRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
+	}
+
+	user, err := handlers.HandleGoogleLogin(req)
+
+	if err != response.EmptyError {
+		return response.ConvertToErrorResponse(c, err)
+	}
+
+	return response.MarshalResponse(c, user)
+}
+
 func handleListUsers(c echo.Context) error {
 	users, httpErr := handlers.HandleListUsers()
 	if httpErr.Code != 0 {
@@ -95,16 +112,18 @@ func handleGetUserByID(c echo.Context) error {
 }
 
 func handleCreateUser(c echo.Context) error {
-	var user m.User
-	if err := c.Bind(&user); err != nil {
+	var req r_models.CreateUserRequest
+
+	if err := c.Bind(&req); err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "datos inválidos")
 	}
 
-	httpErr := handlers.HandleCreateUser(&user)
+	httpErr := handlers.HandleCreateUser(&req)
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
-	return response.MarshalResponse(c, user)
+
+	return response.MarshalResponse(c, "OK")
 }
 
 func handleUpdateUser(c echo.Context) error {
