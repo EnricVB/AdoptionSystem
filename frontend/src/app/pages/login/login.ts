@@ -40,7 +40,7 @@ export class Login {
     }).subscribe({
       next: (response) => {
         console.log('Login successful', response);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/twofa']);
       },
       error: (err) => {
         console.error('Login failed:', err);
