@@ -21,9 +21,9 @@ func HandleLogin(req r_models.LoginRequest) (*models.User, response.HTTPError) {
 	return user, response.EmptyError
 }
 
-func Handle2faAuth(req r_models.TwoFactorRequest) (*models.User, response.HTTPError) {
-	if req.Email == "" || req.Code == "" {
-		return nil, response.Error(http.StatusBadRequest, "email y código de 2FA son obligatorios")
+func Handle2FAAuth(req r_models.TwoFactorRequest) (*models.NonValidatedUser, response.HTTPError) {
+	if req.SessionID == "" || req.Code == "" {
+		return nil, response.Error(http.StatusBadRequest, "sessionID y código de 2FA son obligatorios")
 	}
 
 	user, err := s.AuthenticateUser2FA(req)
@@ -32,6 +32,19 @@ func Handle2faAuth(req r_models.TwoFactorRequest) (*models.User, response.HTTPEr
 	}
 
 	return user, response.EmptyError
+}
+
+func HandleRefresh2FAToken(req r_models.RefreshTokenRequest) (string, response.HTTPError) {
+	if req.Email == "" {
+		return "", response.Error(http.StatusBadRequest, "email es obligatorio")
+	}
+
+	token, err := s.RefreshUser2FAToken(req)
+	if err != nil {
+		return "", response.Error(http.StatusUnauthorized, err.Error())
+	}
+
+	return token, response.EmptyError
 }
 
 func HandleListUsers() (*[]models.NonValidatedUser, response.HTTPError) {
