@@ -6,9 +6,10 @@ import (
 	s "backend/internal/services/backend_calls"
 	response "backend/internal/utils/rest"
 	"net/http"
+	"time"
 )
 
-func HandleLogin(req r_models.LoginRequest) (*models.User, response.HTTPError) {
+func HandleManualLogin(req r_models.LoginRequest) (*models.User, response.HTTPError) {
 	if req.Email == "" || req.Password == "" {
 		return nil, response.Error(http.StatusBadRequest, "email y contraseña son obligatorios")
 	}
@@ -47,6 +48,19 @@ func HandleRefresh2FAToken(req r_models.RefreshTokenRequest) (string, response.H
 	return token, response.EmptyError
 }
 
+func HandleGoogleLogin(req r_models.GoogleLoginRequest) (*models.User, response.HTTPError) {
+	if req.Email == "" || req.IDToken == "" {
+		return nil, response.Error(http.StatusBadRequest, "email y ID Token son obligatorios")
+	}
+
+	user, err := s.AuthenticateGoogleUser(req)
+	if err != nil {
+		return nil, response.Error(http.StatusUnauthorized, err.Error())
+	}
+
+	return user, response.EmptyError
+}
+
 func HandleListUsers() (*[]models.NonValidatedUser, response.HTTPError) {
 	users, err := s.ListAllUsers()
 	if err != nil {
@@ -69,16 +83,25 @@ func HandleGetUserByID(id uint) (*models.NonValidatedUser, response.HTTPError) {
 	return user, response.EmptyError
 }
 
-func HandleCreateUser(user *models.User) response.HTTPError {
-	if user.Email == "" || user.Password == "" {
-		return response.Error(http.StatusBadRequest, "email y contraseña son obligatorios")
-	}
-
+func HandleCreateUser(user *r_models.CreateUserRequest) response.HTTPError {
 	if user.Name == "" {
 		return response.Error(http.StatusBadRequest, "nombre es obligatorio")
 	}
 
-	err := s.RegisterUser(user)
+	fullUser := &models.FullUser{
+		Name:       user.Name,
+		Surname:    user.Surname,
+		Email:      user.Email,
+		Password:   user.Password,
+		Address:    user.Address,
+		Provider:   user.Provider,
+		ProviderID: user.ProviderID,
+
+		CrtDate: time.Now(),
+		UptDate: time.Now(),
+	}
+
+	err := s.RegisterUser(fullUser)
 	if err != nil {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}
