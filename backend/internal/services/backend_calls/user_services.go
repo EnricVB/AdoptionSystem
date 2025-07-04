@@ -82,12 +82,15 @@ func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.NonValidatedUse
 		return nil, fmt.Errorf("error al obtener 2fa: %v", err)
 	}
 
+	// Validate 2FA code
 	if _2fa == "" || _2fa != userData.Code {
+		return nil, fmt.Errorf("código 2FA inválido")
+	}
 
 	// Reset failed login attempts after successful 2FA authentication
 	dao.ResetFailedLogins(user.Email)
 
-	// Update user's data
+	// Return updated user data
 	validatedUser, _ := dao.GetUserBySessionID(userData.SessionID)
 
 	return validatedUser, nil
@@ -200,7 +203,9 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 	}
 
 	// Get complete user data with session
-	user, err := dao.GetValidatedUser(email, "")
+	_, err = dao.GetValidatedUser(email, "")
+	validatedUser := &m.User{}
+
 	if err != nil {
 		// For Google users, we need to get user data differently since there's no password
 		nonValidatedUser, getUserErr := dao.GetUserByEmail(email)
@@ -209,7 +214,7 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 		}
 
 		// Convert NonValidatedUser to User for response
-		user = &m.User{
+		validatedUser = &m.User{
 			ID:           nonValidatedUser.ID,
 			Name:         nonValidatedUser.Name,
 			Surname:      nonValidatedUser.Surname,
@@ -221,24 +226,10 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 			FailedLogins: nonValidatedUser.FailedLogins,
 			IsBlocked:    nonValidatedUser.IsBlocked,
 		}
+		return validatedUser, nil
 	}
 
 	return validatedUser, nil
-}
-
-func RefreshUser2FAToken(userData r_models.RefreshTokenRequest) (string, error) {
-	generated2FAToken, _2faErr := dao.UpdateTwoFactorCode(userData.Email)
-
-	if generated2FAToken == "" || _2faErr != nil {
-		return "", fmt.Errorf("error al generar el token 2FA: %v", _2faErr)
-	}
-
-	mailerErr := mailer.Send2FAToken(userData.Email, generated2FAToken)
-	if mailerErr != nil {
-		return "", fmt.Errorf("error al enviar el token 2FA al email %s: %v", userData.Email, mailerErr)
-	}
-
-	return generated2FAToken, nil
 }
 
 // ResetPassword resets the password for a user with the given email address.
