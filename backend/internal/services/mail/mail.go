@@ -31,11 +31,10 @@ func SendMail(to string, subject string, body string) error {
 		return err
 	}
 
-	log.Println("Email sent!")
 	return nil
 }
 
-func Send2fa(to string, _2fa string) error {
+func Send2FAToken(to string, _2fa string) error {
 	m := mail.NewMessage()
 	m.SetHeader("From", "Adoption System <zanckor002@gmail.com>")
 	m.SetHeader("To", to)
@@ -68,6 +67,5 @@ func Send2fa(to string, _2fa string) error {
 		return err
 	}
 
-	log.Println("2FA Email sent!")
 	return nil
 }
