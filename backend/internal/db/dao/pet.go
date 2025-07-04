@@ -35,6 +35,7 @@ import (
 //   - []m.SimplifiedPet: Slice of all pets with essential information and adoption status
 //   - error: Database error or nil on success
 func GetAllPets() ([]m.SimplifiedPet, error) {
+	// Open database connection
 	gormDB := db.ORMOpen()
 
 	var pets []m.Pet
@@ -81,8 +82,10 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 //   - *m.Pet: Complete pet data with all relationships
 //   - error: Database error or record not found error
 func GetPetByID(id uint) (*m.Pet, error) {
+	// Open database connection
 	gormDB := db.ORMOpen()
 
+	// Retrieve specific pet by ID with relationships
 	var pet m.Pet
 	result := gormDB.Preload("Species").Preload("AdoptUser").First(&pet, id)
 
@@ -123,6 +126,7 @@ func GetPetByID(id uint) (*m.Pet, error) {
 //   - *m.Pet: Created pet data with assigned ID and timestamps
 //   - error: Database error or validation error
 func CreatePet(pet *m.Pet) (*m.Pet, error) {
+	// Open database connection
 	gormDB := db.ORMOpen()
 	now := time.Now()
 	pet.CrtDate = now
@@ -163,8 +167,10 @@ func CreatePet(pet *m.Pet) (*m.Pet, error) {
 // Returns:
 //   - error: Database error or validation error, nil on success
 func UpdatePet(pet *m.Pet) error {
+	// Open database connection
 	gormDB := db.ORMOpen()
 
+	// Update modification timestamp
 	pet.UptDate = time.Now()
 	result := gormDB.Model(&m.Pet{}).
 		Where("id = ?", pet.ID).
