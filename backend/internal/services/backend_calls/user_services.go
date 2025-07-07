@@ -85,6 +85,15 @@ func GetUserProfile(id uint) (*m.NonValidatedUser, error) {
 	return user, nil
 }
 
+func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
+	user, err := dao.GetUserByEmail(email)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener usuario con email %s: %v", email, err)
+	}
+
+	return user, nil
+}
+
 func RegisterUser(user *m.User) error {
 	user.Password, _ = security.HashPassword(user.Password)
 

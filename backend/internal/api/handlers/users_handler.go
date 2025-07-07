@@ -78,6 +78,12 @@ func HandleCreateUser(user *models.User) response.HTTPError {
 		return response.Error(http.StatusBadRequest, "nombre es obligatorio")
 	}
 
+	userByEmail, _ := s.GetUserByEmail(user.Email)
+
+	if userByEmail != nil {
+		return response.Error(http.StatusConflict, "el email ya está registrado")
+	}
+
 	err := s.RegisterUser(user)
 	if err != nil {
 		return response.Error(http.StatusInternalServerError, err.Error())
