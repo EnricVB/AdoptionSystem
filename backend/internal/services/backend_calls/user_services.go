@@ -5,6 +5,7 @@ import (
 	"backend/internal/db/dao"
 	m "backend/internal/models"
 	mailer "backend/internal/services/mail"
+	"backend/internal/services/security"
 	"fmt"
 )
 
@@ -85,9 +86,11 @@ func GetUserProfile(id uint) (*m.NonValidatedUser, error) {
 }
 
 func RegisterUser(user *m.User) error {
+	user.Password, _ = security.HashPassword(user.Password)
+
 	err := dao.CreateUser(user)
 	if err != nil {
-		return fmt.Errorf("error al crear usuario: %v", err)
+		return fmt.Errorf("error al crear usuario")
 	}
 
 	return nil
