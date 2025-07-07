@@ -1,0 +1,43 @@
+/* Register specific adjustments */
+.register-form {
+  max-width: 500px;
+}
+
+/* Grid adjustments for name fields */
+.name-grid input {
+  font-size: 0.875rem;
+}
+
+/* Phone number specific styling */
+input[type="tel"] {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05rem;
+}
+
+/* Success message styling */
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0;
+}
+
+/* Password strength indicator */
+.password-strength {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.password-strength.weak {
+  color: #ef4444;
+}
+
+.password-strength.medium {
+  color: #f59e0b;
+}
+
+.password-strength.strong {
+  color: #10b981;
+}
