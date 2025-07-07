@@ -1,5 +1,0 @@
-@import "tailwindcss";
-
-.error:first-letter {
-  text-transform: uppercase;
-}
