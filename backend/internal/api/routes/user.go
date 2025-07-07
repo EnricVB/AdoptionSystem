@@ -35,7 +35,7 @@ func RegisterUserRoutes(e *echo.Echo) {
 	// User CRUD operations
 	e.GET("/api/users", handleListUsers)
 	e.GET("/api/users/:id", handleGetUserByID)
-	e.POST("/api/users", handleCreateUser)
+	e.POST("/api/register", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
 
