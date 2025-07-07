@@ -227,7 +227,7 @@ func GetUserProfile(id uint) (*m.NonValidatedUser, error) {
 func RegisterUser(user *m.FullUser) error {
 	err := dao.CreateUser(user)
 	if err != nil {
-		return fmt.Errorf("error al crear usuario: %v", err)
+		return fmt.Errorf("error al crear usuario")
 	}
 
 	return nil
