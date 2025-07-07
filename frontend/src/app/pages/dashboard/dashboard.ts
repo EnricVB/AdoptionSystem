@@ -4,7 +4,9 @@ import { Component } from '@angular/core';
   selector: 'app-dashboard',
   imports: [],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  host: {
+    'style': 'view-transition-name: dashboard-page'
+  }
 })
 export class Dashboard {
 
