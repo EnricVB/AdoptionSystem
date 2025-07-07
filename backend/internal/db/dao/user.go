@@ -172,6 +172,7 @@ func CreateUser(user *m.User) error {
 
 	result := gormDB.Create(user)
 	if result.Error != nil {
+
 		return fmt.Errorf("error al crear usuario: %v", result.Error)
 	}
 
