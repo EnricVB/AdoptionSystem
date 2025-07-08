@@ -33,6 +33,8 @@ type FullUser struct {
 	Provider   string `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
 	ProviderID string `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`           // Provider-specific user ID
 
+	ChangePassword bool `json:"change_password" gorm:"default:false;column:Change_Password"` // Flag indicating if user must change password on next login
+
 	CrtDate time.Time `json:"crt_date" gorm:"autoCreateTime"` // Record creation timestamp
 	UptDate time.Time `json:"upt_date" gorm:"autoUpdateTime"` // Record last update timestamp
 }
@@ -49,7 +51,10 @@ type User struct {
 	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`
 	SessionID    string    `json:"session_id" gorm:"type:varchar(50);uniqueIndex;column:Session_ID"`
 	Address      string    `json:"address" gorm:"type:varchar(255)"`
+	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
+	ProviderID   string    `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`           // Provider-specific user ID
 	Password     string    `json:"password" gorm:"type:varchar(255);not null"`
+	ChangePass   bool      `json:"change_pass" gorm:"default:false;column:Change_Password"`
 	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`
 	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`
 	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`
@@ -68,6 +73,7 @@ type NonValidatedUser struct {
 	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`
 	Address      string    `json:"address" gorm:"type:varchar(255)"`
 	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`
+	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
 	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`
 	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`
 	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`

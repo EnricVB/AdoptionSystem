@@ -87,3 +87,45 @@ type CreateUserRequest struct {
 	Provider   string `json:"provider"`    // Authentication provider ('local', 'google', etc.)
 	ProviderID string `json:"provider_id"` // Provider-specific user identifier (for external providers)
 }
+
+// ResetPasswordRequest represents the request payload for initiating a password reset process.
+// Used when users forget their password and need to reset it via email verification.
+//
+// Validation Requirements:
+//   - Email: Must be a valid email format and exist in the system
+//
+// Business Rules:
+//   - A password reset token is generated and sent to the provided email
+//   - Rate limiting may apply to prevent abuse of the reset functionality
+//   - Previous reset tokens for the same user may be invalidated
+//   - Only works for users with 'local' authentication provider
+//
+// Security Notes:
+//   - Reset tokens have a limited time window for validity
+//   - Email verification is required before password can be changed
+//   - Process is logged for security auditing purposes
+type ResetPasswordRequest struct {
+	Email string `json:"email"` // User's email address (required, must be unique)
+}
+
+// ChangePasswordRequest represents the request payload for changing a user's password.
+// Used when authenticated users want to update their current password.
+//
+// Validation Requirements:
+//   - Email: Must be a valid email format and exist in the system
+//   - Password: Must meet security requirements and be different from current password
+//
+// Business Rules:
+//   - User must be authenticated to perform this operation
+//   - Only works for users with 'local' authentication provider
+//   - Password will be hashed before storage
+//   - Previous sessions may be invalidated for security
+//
+// Security Notes:
+//   - New password is transmitted in plain text (ensure HTTPS is used)
+//   - Password change events are logged for security auditing
+//   - May trigger email notifications to the user about the password change
+type ChangePasswordRequest struct {
+	Email    string `json:"email"`    // User's email address (required for identification)
+	Password string `json:"password"` // New password (required, will be hashed for storage)
+}

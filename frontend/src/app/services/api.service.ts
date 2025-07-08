@@ -116,6 +116,46 @@ export class ApiService {
     );
   }
 
+  /**
+   * Reset user password with a random one
+   * 
+   * @param emailData - User's email address
+   * @returns Observable with recovery response
+   */
+  resetPassword(emailData: { email: string }): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/auth/reset-password`, 
+      emailData, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Send email with password recovery instructions
+   * 
+   * @param emailData - User's email address
+   * @returns Observable with email sending response
+   */
+  sendRecoverPasswordMail(emailData: { email: string }): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/auth/forgot-password`, 
+      emailData, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Cambia la contraseña del usuario usando PUT /api/users/:id
+   * @param data - { email, newPassword }
+   */
+  changePassword(data: { email: string; password: string }): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/users/change-password`,
+      data,
+      { headers: this.defaultHeaders }
+    );
+  }
+
   // ========================================
   // USER MANAGEMENT ENDPOINTS
   // ========================================

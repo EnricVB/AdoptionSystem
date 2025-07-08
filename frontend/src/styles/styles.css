@@ -10,6 +10,45 @@
   position: relative;
 }
 
+/* Button Styles */
+.pet-button {
+  border: none;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.pet-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.pet-button:hover::before {
+  width: 500px;
+  height: 500px;
+}
+
+.pet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+}
+
+.pet-button:active {
+  transform: translateY(0);
+}
+
 /* Floating Label Styles */
 .floating-label {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
