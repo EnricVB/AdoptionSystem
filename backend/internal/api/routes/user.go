@@ -44,6 +44,10 @@ func RegisterUserRoutes(e *echo.Echo) {
 	e.POST("/api/auth/login/google", handleLoginWithGoogle) // Use dedicated Google login handler
 	e.POST("/api/auth/verify-2fa", handle2FAAuth)
 	e.POST("/api/auth/refresh-token", handleRefresh2FAToken)
+
+	// Password recovery endpoints
+	e.POST("/api/auth/reset-password", handleResetPassword)
+	e.POST("/api/auth/forgot-password", handleForgotPassword)
 }
 
 // ========================================

@@ -139,6 +139,40 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 	return user, nil
 }
 
+// ResetPassword resets the password for a user with the given email address.
+// It generates a new password and updates it in the database.
+//
+// Parameters:
+//   - email: The email address of the user whose password should be reset
+//
+// Returns:
+//   - *string: A pointer to the new generated password if successful
+//   - error: An error if the password reset operation fails
+func ResetPassword(email string) (*string, error) {
+	user, _ := dao.GetUserByEmail(email)
+
+	if user.Provider != "local" {
+		return nil, fmt.Errorf("proveedor debe ser 'local' para restablecer contraseña")
+	}
+
+	password, err := dao.ResetPassword(email)
+	if err != nil {
+		return nil, fmt.Errorf("error al reiniciar la contraseña: %v", err)
+	}
+
+	return password, nil
+}
+
+func SendNewPassword(email string, password string) error {
+	// Send new password via email
+	mailerErr := mailer.SendPassword(email, password)
+	if mailerErr != nil {
+		return fmt.Errorf("error al enviar la nueva contraseña al email %s: %v", email, mailerErr)
+	}
+
+	return nil
+}
+
 // ========================================
 // USER MANAGEMENT SERVICES
 // ========================================

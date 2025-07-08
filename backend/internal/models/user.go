@@ -33,6 +33,8 @@ type FullUser struct {
 	Provider   string `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
 	ProviderID string `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`           // Provider-specific user ID
 
+	ChangePassword bool `json:"change_password" gorm:"default:false;column:Change_Password"` // Flag indicating if user must change password on next login
+
 	CrtDate time.Time `json:"crt_date" gorm:"autoCreateTime"` // Record creation timestamp
 	UptDate time.Time `json:"upt_date" gorm:"autoUpdateTime"` // Record last update timestamp
 }

@@ -133,6 +133,7 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 		Address:      user.Address,
 		FailedLogins: user.FailedLogins,
 		IsBlocked:    user.IsBlocked,
+		Provider:     user.Provider,
 	}
 
 	return nonValidatedUser, nil
@@ -466,7 +467,7 @@ func GetUserHashedPassword(email string) (string, error) {
 	gormDB := db.ORMOpen()
 
 	var password string
-	result := gormDB.Select("password").Where("email = ?", email).First(&password)
+	result := gormDB.Table("Users").Select("Password").Where("email = ?", email).Scan(&password)
 
 	if result.Error != nil {
 		return "", fmt.Errorf("error al obtener contraseña para usuario %s: %v", email, result.Error)
@@ -495,6 +496,55 @@ func GetUserHashedPassword(email string) (string, error) {
 //   - error: Database error or user not found error
 func ResetFailedLogins(email string) error {
 	return UpdateLoginData(email, 0, false)
+}
+
+// ResetPassword generates a new password for a user and updates it in the database.
+// Used for password recovery and administrative password reset operations.
+//
+// Database Operations:
+// - Generates a new 24-character secure password using security.GeneratePassword
+// - Hashes the password using bcrypt for secure storage
+// - Performs UPDATE users SET password, upt_date WHERE email = ?
+// - Updates modification timestamp for audit trail
+//
+// Security Features:
+// - Generates cryptographically secure random passwords
+// - Uses bcrypt hashing for password storage
+// - Maintains audit trail with timestamp updates
+// - Returns plain text password for secure delivery to user
+//
+// Parameters:
+//   - email: User's email address for password reset
+//
+// Returns:
+//   - *string: Pointer to the generated plain text password (for secure delivery)
+//   - error: Database error, user not found error, or password hashing error
+func ResetPassword(email string) (*string, error) {
+	gormDB := db.ORMOpen()
+
+	password := security.GeneratePassword(12)
+	hashedPassword, err := security.HashPassword(password)
+
+	if err != nil {
+		return nil, fmt.Errorf("error al encriptar la contraseña")
+	}
+
+	result := gormDB.Model(&m.User{}).
+		Where("email = ?", email).
+		Updates(map[string]any{
+			"password": hashedPassword,
+			"upt_date": time.Now(),
+		})
+
+	if result.Error != nil {
+		return nil, fmt.Errorf("error al resetear contraseña para usuario %s: %v", email, result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("usuario con email %s no encontrado", email)
+	}
+
+	return &password, nil
 }
 
 // BlockUser manually blocks a user account.
