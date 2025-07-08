@@ -5,6 +5,14 @@
 // - Calling appropriate service layer functions
 // - Converting service errors to HTTP responses
 // - Ensuring consistent API response formatting
+//
+// Error Handling:
+// All handlers return consistent HTTP error responses using the response.HTTPError
+// type, ensuring uniform error formatting across the API. Common error scenarios:
+//   - 400 Bad Request: Invalid input data or missing required fields
+//   - 401 Unauthorized: Authentication failures or invalid credentials
+//   - 404 Not Found: Requested user not found
+//   - 500 Internal Server Error: Service layer or database errors
 package handlers
 
 import (
@@ -89,19 +97,19 @@ func Handle2FAAuth(req r_models.TwoFactorRequest) (*models.NonValidatedUser, res
 // Returns:
 //   - string: Generated 2FA token
 //   - response.HTTPError: HTTP error or EmptyError on success
-func HandleRefresh2FAToken(req r_models.RefreshTokenRequest) (string, response.HTTPError) {
+func HandleRefresh2FAToken(req r_models.RefreshTokenRequest) (*string, response.HTTPError) {
 	// Input validation
 	if req.Email == "" {
-		return "", response.Error(http.StatusBadRequest, "email es obligatorio")
+		return nil, response.Error(http.StatusBadRequest, "email es obligatorio")
 	}
 
 	// Delegate token refresh to service layer
 	token, err := s.RefreshUser2FAToken(req)
 	if err != nil {
-		return "", response.Error(http.StatusUnauthorized, err.Error())
+		return nil, response.Error(http.StatusUnauthorized, err.Error())
 	}
 
-	return token, response.EmptyError
+	return &token, response.EmptyError
 }
 
 // HandleGoogleLogin processes Google OAuth authentication requests.
@@ -130,6 +138,67 @@ func HandleGoogleLogin(req r_models.GoogleLoginRequest) (*models.User, response.
 	}
 
 	return user, response.EmptyError
+}
+
+// HandleResetPassword processes password reset requests for local authentication users.
+// Generates a new temporary password and sends it to the user's email address.
+//
+// Validation:
+// - Ensures email is provided
+// - Validates that provider is "local" (password resets only for local accounts)
+// - Delegates password generation and email sending to service layer
+//
+// Parameters:
+//   - req: ResetPasswordRequest containing user email and provider type
+//
+// Returns:
+//   - *string: Generated temporary password
+//   - response.HTTPError: HTTP error or EmptyError on success
+func HandleResetPassword(req r_models.ResetPasswordRequest) (*string, response.HTTPError) {
+	// Input validation
+	if req.Email == "" {
+		return nil, response.Error(http.StatusBadRequest, "email es obligatorio")
+	}
+
+	// Delegate reset password to service layer
+	password, responseError := s.ResetPassword(req.Email)
+	if responseError != nil {
+		return nil, response.Error(http.StatusInternalServerError, responseError.Error())
+	}
+
+	return password, response.EmptyError
+}
+
+// handleForgotPassword processes requests to send the new generated password.
+//
+// Validation:
+// - Ensures email is provided
+// - Ensures user's provider is local
+//
+// Parameters:
+//   - req: ResetPasswordRequest containing user email and provider
+//
+// Returns:
+//   - string: Generated password
+//   - response.HTTPError: HTTP error or EmptyError on success
+func HandleForgotPassword(req r_models.ResetPasswordRequest) (*string, response.HTTPError) {
+	// Input validation
+	if req.Email == "" {
+		return nil, response.Error(http.StatusBadRequest, "email es obligatorio")
+	}
+
+	// Delegate reset password to service layer
+	password, responseError := s.ResetPassword(req.Email)
+	if responseError != nil {
+		return nil, response.Error(http.StatusInternalServerError, responseError.Error())
+	}
+
+	responseError = s.SendNewPassword(req.Email, *password)
+	if responseError != nil {
+		return nil, response.Error(http.StatusInternalServerError, responseError.Error())
+	}
+
+	return password, response.EmptyError
 }
 
 // ========================================
