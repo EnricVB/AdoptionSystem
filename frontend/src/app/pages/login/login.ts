@@ -26,6 +26,9 @@ export class Login {
   isEmailFocused = false;
   isPasswordFocused = false;
 
+  // Show password toggle
+  showPassword = false;
+
   // ======================================
   // CONSTRUCTOR
   // ======================================
