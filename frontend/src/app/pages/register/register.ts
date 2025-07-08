@@ -30,6 +30,9 @@ export class Register {
   isPasswordFocused = false;
   isConfirmPasswordFocused = false;
 
+  // Show password toggle
+  showPassword = false;
+
   // ======================================
   // CONSTRUCTOR
   // ======================================
