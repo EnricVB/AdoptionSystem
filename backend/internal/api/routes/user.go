@@ -35,7 +35,7 @@ func RegisterUserRoutes(e *echo.Echo) {
 	// User CRUD operations
 	e.GET("/api/users", handleListUsers)
 	e.GET("/api/users/:id", handleGetUserByID)
-	e.POST("/api/users", handleCreateUser)
+	e.POST("/api/register", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
 
@@ -172,11 +172,6 @@ func handleLoginWithGoogle(c echo.Context) error {
 	return response.MarshalResponse(c, user)
 }
 
-// handleListUsers retrieves all users in the system.
-// Calls the handler to get the list of users and returns it in the response.
-//
-// Validations:
-//   - No specific validations required for listing users
 func handleListUsers(c echo.Context) error {
 	users, httpErr := handlers.HandleListUsers()
 	if httpErr.Code != 0 {

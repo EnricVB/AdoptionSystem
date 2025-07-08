@@ -311,7 +311,7 @@ func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 //
 // Returns:
 //   - error: Database error or validation error, nil on success
-func CreateUser(user *m.FullUser) error {
+func CreateUser(user *m.User) error {
 	gormDB := db.ORMOpen()
 
 	now := time.Now()
