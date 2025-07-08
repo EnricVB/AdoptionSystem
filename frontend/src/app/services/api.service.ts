@@ -116,6 +116,34 @@ export class ApiService {
     );
   }
 
+  /**
+   * Recover user password by sending reset link to email
+   * 
+   * @param emailData - User's email address
+   * @returns Observable with recovery response
+   */
+  recoverPassword(emailData: { email: string }): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/auth/recover-password`, 
+      emailData, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Send email with password recovery instructions
+   * 
+   * @param emailData - User's email address
+   * @returns Observable with email sending response
+   */
+  sendRecoverPasswordMail(emailData: { email: string }): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/auth/send-recover-mail`, 
+      emailData, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
   // ========================================
   // USER MANAGEMENT ENDPOINTS
   // ========================================
