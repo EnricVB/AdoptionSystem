@@ -84,6 +84,11 @@ export class Login {
    * @returns An object containing the email and password from the login form.
    */
   private buildLoginPayload(): { email: string; password: string } {
+    this.loginForm.setValue({
+      email: this.loginForm.value.email.trimEnd(),
+      password: this.loginForm.value.password.trimEnd()
+    });
+
     return {
       email: this.loginForm.value.email,
       password: this.loginForm.value.password
