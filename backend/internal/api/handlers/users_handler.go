@@ -19,6 +19,7 @@ import (
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/models"
 	s "backend/internal/services/backend_calls"
+	"backend/internal/services/security"
 	response "backend/internal/utils/rest"
 	"net/http"
 	"time"
@@ -298,6 +299,18 @@ func HandleCreateUser(user *r_models.CreateUserRequest) response.HTTPError {
 // Returns:
 //   - response.HTTPError: HTTP error or EmptyError on success
 func HandleUpdateUser(user *models.User) response.HTTPError {
+	// Hash password if provided
+	if user.Password != "" {
+		hashedPassword, err := security.HashPassword(user.Password)
+		if err != nil {
+			return response.Error(http.StatusInternalServerError, "error al hashear la contraseña")
+		}
+		user.Password = hashedPassword
+	}
+
+	// Automatically set update timestamp
+	user.UptDate = time.Now()
+
 	// Delegate user update to service layer
 	err := s.UpdateUserProfile(user)
 	if err != nil {
