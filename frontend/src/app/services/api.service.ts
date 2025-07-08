@@ -144,6 +144,18 @@ export class ApiService {
     );
   }
 
+  /**
+   * Cambia la contraseña del usuario usando PUT /api/users/:id
+   * @param data - { userId, newPassword }
+   */
+  changePassword(data: { userId: number; newPassword: string }): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/users/${data.userId}`,
+      { password: data.newPassword },
+      { headers: this.defaultHeaders }
+    );
+  }
+
   // ========================================
   // USER MANAGEMENT ENDPOINTS
   // ========================================
