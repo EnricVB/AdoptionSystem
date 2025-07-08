@@ -693,3 +693,21 @@ func GenerateSessionID(email string) (string, error) {
 
 	return sessionID, nil
 }
+
+func SetChangePasswordFlag(email string, flag bool) error {
+	gormDB := db.ORMOpen()
+
+	result := gormDB.Model(&m.User{}).
+		Where("email = ?", email).
+		Update("change_password", flag)
+
+	if result.Error != nil {
+		return fmt.Errorf("error al establecer la bandera de cambio de contraseña para usuario %s: %v", email, result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("usuario con email %s no encontrado", email)
+	}
+
+	return nil
+}

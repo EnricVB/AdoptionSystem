@@ -164,6 +164,12 @@ func ResetPassword(email string) (*string, error) {
 }
 
 func SendNewPassword(email string, password string) error {
+	// Set ChangePassword flag to true
+	err := dao.SetChangePasswordFlag(email, true)
+	if err != nil {
+		return fmt.Errorf("error al establecer la bandera de cambio de contraseña: %v", err)
+	}
+
 	// Send new password via email
 	mailerErr := mailer.SendPassword(email, password)
 	if mailerErr != nil {
