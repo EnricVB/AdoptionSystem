@@ -117,14 +117,14 @@ export class ApiService {
   }
 
   /**
-   * Recover user password by sending reset link to email
+   * Reset user password with a random one
    * 
    * @param emailData - User's email address
    * @returns Observable with recovery response
    */
-  recoverPassword(emailData: { email: string }): Observable<any> {
+  resetPassword(emailData: { email: string }): Observable<any> {
     return this.http.post<any>(
-      `${this.baseUrl}/auth/recover-password`, 
+      `${this.baseUrl}/auth/reset-password`, 
       emailData, 
       { headers: this.defaultHeaders }
     );
@@ -138,7 +138,7 @@ export class ApiService {
    */
   sendRecoverPasswordMail(emailData: { email: string }): Observable<any> {
     return this.http.post<any>(
-      `${this.baseUrl}/auth/send-recover-mail`, 
+      `${this.baseUrl}/auth/forgot-password`, 
       emailData, 
       { headers: this.defaultHeaders }
     );
