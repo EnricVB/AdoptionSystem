@@ -54,12 +54,21 @@ export class Login {
   // FORM SUBMISSION
   // ======================================
 
+  /**
+   * Handles the form submission for the login.
+   * This method is called when the user submits the login form.
+   * 
+   * It sets the submitted flag to true, clears any previous error messages,
+   * builds the login payload from the form values, and calls the API service to perform the
+   * login operation.
+   * 
+   * @returns {void}
+   */
   onSubmit(): void {
     this.submitted = true;
     this.error = null;
 
     const payload = this.buildLoginPayload();
-    console.log(this.loginForm.value.email);
 
     this.apiService.login(payload).subscribe({
       next: (response) => this.onLoginSuccess(response),
@@ -67,6 +76,15 @@ export class Login {
     });
   }
 
+  /**
+   * Handles the sending of the 2FA email.
+   * This method is called when the user requests to send a 2FA email.
+   * 
+   * It takes an email address as a parameter and calls the API service to refresh the 2FA token.
+   * If the API call fails, it handles the error by calling onSendMailError.
+   * 
+   * @param email - The email address to which the 2FA token will be sent.
+   */
   sendMail(email: string): void {
     this.apiService.refresh2FAToken({ email }).subscribe({
       error: (err) => this.onSendMailError(err)
@@ -103,7 +121,14 @@ export class Login {
    */
   private onLoginSuccess(response: any): void {
     const sessionID = response.content.session_id;
-    
+    const changePass = response.content.change_pass;
+    const userId = response.content.user_id;
+
+    if (changePass) {
+      this.router.navigate(['/change-pass'], {state: {sessionID}, queryParams: { userId: userId, email: this.loginForm.value.email }});
+      return;
+    }
+
     this.sendMail(this.loginForm.value.email);
     this.router.navigate(['/twofa'], {state: {sessionID}});
   }
