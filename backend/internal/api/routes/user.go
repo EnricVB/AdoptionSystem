@@ -41,13 +41,14 @@ func RegisterUserRoutes(e *echo.Echo) {
 
 	// Authentication endpoints
 	e.POST("/api/auth/login", handleLoginUser)
-	e.POST("/api/auth/login/google", handleLoginWithGoogle) // Use dedicated Google login handler
+	e.POST("/api/auth/login/google", handleLoginWithGoogle)
 	e.POST("/api/auth/verify-2fa", handle2FAAuth)
 	e.POST("/api/auth/refresh-token", handleRefresh2FAToken)
 
 	// Password recovery endpoints
 	e.POST("/api/auth/reset-password", handleResetPassword)
 	e.POST("/api/auth/forgot-password", handleForgotPassword)
+	e.PUT("/api/users/change-password", handleUpdateUserPassword)
 }
 
 // ========================================
@@ -354,6 +355,21 @@ func handleUpdateUser(c echo.Context) error {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
 	return response.MarshalResponse(c, user)
+}
+
+func handleUpdateUserPassword(c echo.Context) error {
+	var req r_models.ChangePasswordRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "datos inválidos")
+	}
+
+	err := handlers.HandleUpdateUserPassword(req.Email, req.Password)
+	if err != response.EmptyError {
+		return response.ErrorResponse(c, http.StatusInternalServerError, "error al actualizar la contraseña")
+	}
+
+	return response.MarshalResponse(c, "OK")
 }
 
 // handleDeleteUser removes a user from the system.
