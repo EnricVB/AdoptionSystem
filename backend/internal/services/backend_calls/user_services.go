@@ -87,7 +87,7 @@ func AuthenticateUser2FA(userData r_models.TwoFactorRequest) (*m.NonValidatedUse
 	// Reset failed login attempts after successful 2FA authentication
 	dao.ResetFailedLogins(user.Email)
 
-	// Return updated user data
+	// Update user's data
 	validatedUser, _ := dao.GetUserBySessionID(userData.SessionID)
 
 	return validatedUser, nil

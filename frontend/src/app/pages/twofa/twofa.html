@@ -1,0 +1,48 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <form [formGroup]="codeForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Header -->
+            <div class="text-center input-2fa">
+                <h2 class="text-2xl font-bold pet-header mb-4">
+                    Enter 2FA Code
+                </h2>
+                <p class="text-sm text-gray-600">
+                    Please enter the verification code sent to your e-mail
+                </p>
+            </div>
+
+            <div class="space-y-2 input-2fa">
+                <label for="code" class="sr-only">Verification code</label>
+                <input 
+                    id="code"
+                    type="text" 
+                    formControlName="code" 
+                    maxlength="6" 
+                    placeholder="000000"
+                    class="w-full px-4 py-3 font-mono tracking-widest text-center 
+                           border-2 border-gray-200 rounded-lg bg-gray-50
+                           focus:outline-none focus:border-indigo-500 focus:bg-white
+                           transition-all duration-200"
+                    [class.border-red-300]="error"
+                    [class.focus:border-red-500]="error">
+            </div>
+
+            <div *ngIf="error" class="text-red-500 text-sm text-center error input-2fa">
+                {{ error }}
+            </div>
+
+            <button 
+                type="submit" 
+                [disabled]="codeForm.invalid" 
+                [ngClass]="{
+                    'bg-gray-300 text-gray-500 cursor-not-allowed': codeForm.invalid,
+                    'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5': codeForm.valid,
+                    'transition': submitted
+                }"
+                class="w-full py-3 px-4 rounded-lg pet-button button-2fa font-medium transition-all duration-200 
+                       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+                <span>Verify</span>
+            </button>
+        </form>
+    </div>
+</div>

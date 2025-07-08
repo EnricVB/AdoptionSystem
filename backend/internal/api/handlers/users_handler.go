@@ -34,11 +34,6 @@ import (
 //   - *models.User: Authenticated user data with session information
 //   - response.HTTPError: HTTP error or EmptyError on success
 func HandleManualLogin(req r_models.LoginRequest) (*models.User, response.HTTPError) {
-	// Input validation
-	if req.Email == "" || req.Password == "" {
-		return nil, response.Error(http.StatusBadRequest, "email y contraseña son obligatorios")
-	}
-
 	// Delegate authentication to service layer
 	user, err := s.AuthenticateUser(req)
 	if err != nil {

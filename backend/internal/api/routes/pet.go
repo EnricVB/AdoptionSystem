@@ -76,10 +76,14 @@ func handleListPets(c echo.Context) error {
 //   - Success: Complete pet data with all information
 //   - Error: HTTP error with appropriate status code
 func handleGetPetByID(c echo.Context) error {
-	// Extract and validate pet ID from path parameter
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return response.ErrorResponse(c, http.StatusBadRequest, "ID de mascota inválido")
+	}
+
+	pet, httpErr := handlers.HandleGetPetByID(uint(id))
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
 	}
 
 	// Delegate pet retrieval to handler layer
