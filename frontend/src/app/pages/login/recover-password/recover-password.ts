@@ -55,11 +55,6 @@ export class RecoverPassword {
 
     const payload = this.buildPayload();
 
-    this.apiService.recoverPassword(payload).subscribe({
-      next: (response) => this.onRecoverPasswordSuccess(response),
-      error: (err) => this.onRecoverPasswordError(err)
-    });
-
     this.apiService.sendRecoverPasswordMail(payload).subscribe({
       next: (response) => this.onRecoverPasswordSuccess(response),
       error: (err) => this.onSendMailError(err)
@@ -75,13 +70,7 @@ export class RecoverPassword {
       email: this.recoverPasswordForm.value.email
     };
   }
-
-  sendMail(email: string): void {
-    this.apiService.sendRecoverPasswordMail({ email }).subscribe({
-      error: (err) => this.onSendMailError(err)
-    });
-  }
-
+  
   // ======================================
   // RECOVER PASSWORD FLOW
   // ======================================
@@ -95,22 +84,7 @@ export class RecoverPassword {
   private onRecoverPasswordSuccess(response: any): void {
     const sessionID = response.content.session_id;
     
-    this.sendMail(this.recoverPasswordForm.value.email);
     this.router.navigate(['/login'], {state: {sessionID}});
-  }
-
-  /**
-   * Error handler for the recover password API call.
-   * This method is called when the recover password API returns an error response.
-   * 
-   * @param error Any error object returned from the recover password API.
-   */
-  private onRecoverPasswordError(error: any): void {
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
-
-    this.error = error.error?.message || 'Recover password failed. Please check your credentials.';
   }
 
   /**
