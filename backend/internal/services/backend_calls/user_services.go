@@ -250,6 +250,22 @@ func UpdateUserProfile(user *m.User) error {
 	return nil
 }
 
+func UpdateUserPassword(email string, password string) error {
+	// Check if the user exists
+	_, err := dao.GetUserByEmail(email)
+	if err != nil {
+		return fmt.Errorf("usuario no encontrado %s: %v", email, err)
+	}
+
+	// Update the user's password
+	err = dao.UpdatePassword(email, password)
+	if err != nil {
+		return fmt.Errorf("error al actualizar la contraseña del usuario %s: %v", email, err)
+	}
+
+	return nil
+}
+
 // DeactivateUser soft-deletes a user by marking them as inactive.
 // This preserves data integrity while removing user access.
 //
