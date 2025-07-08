@@ -71,7 +71,6 @@ export class Twofa {
     }
 
     const payload = this.build2FAPayload();
-    console.log('Verifying 2FA code:', payload.code);
 
     this.apiService.verify2FA(payload).subscribe({
       next: (response) => this.on2FASuccess(response),
@@ -91,8 +90,8 @@ export class Twofa {
    */
   private build2FAPayload(): { code: string; session_id: string } {
     return {
-      code: this.codeForm.value.code,
-      session_id: this.sessionID
+      session_id: this.sessionID,
+      code: this.codeForm.value.code
     };
   }
 

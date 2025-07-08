@@ -120,17 +120,17 @@ export class Login {
    * @param response Any response from the login API.
    */
   private onLoginSuccess(response: any): void {
-    const sessionID = response.content.session_id;
+    const userID = response.content.id;
     const changePass = response.content.change_pass;
-    const userId = response.content.user_id;
+    const sessionID = response.content.session_id;
 
     if (changePass) {
-      this.router.navigate(['/change-pass'], {state: {sessionID}, queryParams: { userId: userId, email: this.loginForm.value.email }});
+      this.router.navigate(['/change-pass'], { state: { email: this.loginForm.value.email, userID: userID }});
       return;
     }
 
     this.sendMail(this.loginForm.value.email);
-    this.router.navigate(['/twofa'], {state: {sessionID}});
+    this.router.navigate(['/twofa'], {state: {email: this.loginForm.value.email, sessionID: sessionID }});
   }
 
   /**
