@@ -83,7 +83,7 @@ func handleGetPetByID(c echo.Context) error {
 	}
 
 	// Delegate pet retrieval to handler layer
-	pet, httpErr := handlers.HandleGetPetByID(uint(id))
+	pet, httpErr = handlers.HandleGetPetByID(uint(id))
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
