@@ -325,6 +325,21 @@ func HandleUpdateUser(user *models.User) response.HTTPError {
 	return response.EmptyError
 }
 
+func HandleUpdateUserPassword(email string, password string) response.HTTPError {
+	// Input validation
+	if email == "" || password == "" {
+		return response.Error(http.StatusBadRequest, "email y contraseña son obligatorios")
+	}
+
+	// Delegate password update to service layer
+	err := s.UpdateUserPassword(email, password)
+	if err != nil {
+		return response.Error(http.StatusInternalServerError, err.Error())
+	}
+
+	return response.EmptyError
+}
+
 // HandleDeleteUser processes user deletion requests.
 // Performs soft deletion to preserve data integrity.
 //

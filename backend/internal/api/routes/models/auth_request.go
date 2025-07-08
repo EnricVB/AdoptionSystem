@@ -107,3 +107,25 @@ type CreateUserRequest struct {
 type ResetPasswordRequest struct {
 	Email string `json:"email"` // User's email address (required, must be unique)
 }
+
+// ChangePasswordRequest represents the request payload for changing a user's password.
+// Used when authenticated users want to update their current password.
+//
+// Validation Requirements:
+//   - Email: Must be a valid email format and exist in the system
+//   - Password: Must meet security requirements and be different from current password
+//
+// Business Rules:
+//   - User must be authenticated to perform this operation
+//   - Only works for users with 'local' authentication provider
+//   - Password will be hashed before storage
+//   - Previous sessions may be invalidated for security
+//
+// Security Notes:
+//   - New password is transmitted in plain text (ensure HTTPS is used)
+//   - Password change events are logged for security auditing
+//   - May trigger email notifications to the user about the password change
+type ChangePasswordRequest struct {
+	Email    string `json:"email"`    // User's email address (required for identification)
+	Password string `json:"password"` // New password (required, will be hashed for storage)
+}
