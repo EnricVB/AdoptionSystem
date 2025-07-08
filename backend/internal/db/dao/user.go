@@ -360,6 +360,33 @@ func UpdateUser(user *m.User) error {
 	return nil
 }
 
+func UpdatePassword(email string, newPassword string) error {
+	gormDB := db.ORMOpen()
+
+	hashedPassword, err := security.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("error al encriptar la contraseña: %v", err)
+	}
+
+	// Change the password in the database
+	result := gormDB.Model(&m.User{}).
+		Where("email = ?", email).
+		Update("password", hashedPassword)
+
+	// Change the change_password flag to false
+	SetChangePasswordFlag(email, false)
+
+	if result.Error != nil {
+		return fmt.Errorf("error al actualizar contraseña para usuario %s: %v", email, result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("usuario con email %s no encontrado", email)
+	}
+
+	return nil
+}
+
 // ========================================
 // USER SECURITY AND LOGIN MANAGEMENT
 // ========================================
@@ -697,16 +724,19 @@ func GenerateSessionID(email string) (string, error) {
 func SetChangePasswordFlag(email string, flag bool) error {
 	gormDB := db.ORMOpen()
 
+	// Verificar si el usuario existe
+	_, err := GetUserByEmail(email)
+	if err != nil {
+		return fmt.Errorf("usuario no encontrado %s: %v", email, err)
+	}
+
+	// Actualizar la bandera de cambio de contraseña
 	result := gormDB.Model(&m.User{}).
 		Where("email = ?", email).
 		Update("change_password", flag)
 
 	if result.Error != nil {
 		return fmt.Errorf("error al establecer la bandera de cambio de contraseña para usuario %s: %v", email, result.Error)
-	}
-
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("usuario con email %s no encontrado", email)
 	}
 
 	return nil
