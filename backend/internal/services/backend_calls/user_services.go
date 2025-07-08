@@ -139,6 +139,46 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 	return user, nil
 }
 
+// ResetPassword resets the password for a user with the given email address.
+// It generates a new password and updates it in the database.
+//
+// Parameters:
+//   - email: The email address of the user whose password should be reset
+//
+// Returns:
+//   - *string: A pointer to the new generated password if successful
+//   - error: An error if the password reset operation fails
+func ResetPassword(email string) (*string, error) {
+	user, _ := dao.GetUserByEmail(email)
+
+	if user.Provider != "local" {
+		return nil, fmt.Errorf("proveedor debe ser 'local' para restablecer contraseña")
+	}
+
+	password, err := dao.ResetPassword(email)
+	if err != nil {
+		return nil, fmt.Errorf("error al reiniciar la contraseña: %v", err)
+	}
+
+	return password, nil
+}
+
+func SendNewPassword(email string, password string) error {
+	// Set ChangePassword flag to true
+	err := dao.SetChangePasswordFlag(email, true)
+	if err != nil {
+		return fmt.Errorf("error al establecer la bandera de cambio de contraseña: %v", err)
+	}
+
+	// Send new password via email
+	mailerErr := mailer.SendPassword(email, password)
+	if mailerErr != nil {
+		return fmt.Errorf("error al enviar la nueva contraseña al email %s: %v", email, mailerErr)
+	}
+
+	return nil
+}
+
 // ========================================
 // USER MANAGEMENT SERVICES
 // ========================================
@@ -205,6 +245,22 @@ func UpdateUserProfile(user *m.User) error {
 	err := dao.UpdateUser(user)
 	if err != nil {
 		return fmt.Errorf("error al actualizar usuario: %v", err)
+	}
+
+	return nil
+}
+
+func UpdateUserPassword(email string, password string) error {
+	// Check if the user exists
+	_, err := dao.GetUserByEmail(email)
+	if err != nil {
+		return fmt.Errorf("usuario no encontrado %s: %v", email, err)
+	}
+
+	// Update the user's password
+	err = dao.UpdatePassword(email, password)
+	if err != nil {
+		return fmt.Errorf("error al actualizar la contraseña del usuario %s: %v", email, err)
 	}
 
 	return nil
