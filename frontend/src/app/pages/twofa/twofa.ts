@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { CookieService } from '@app/services/cookie.service';
 
 @Component({
   selector: 'app-twofa',
@@ -33,7 +34,8 @@ export class Twofa {
   constructor(
     private fb: FormBuilder, 
     private apiService: ApiService, 
-    private router: Router
+    private router: Router,
+    private cookieService: CookieService
   ) {
     this.initializeSessionAndForm();
   }
@@ -102,7 +104,7 @@ export class Twofa {
    * @param response Any response from the 2FA verification API.
    */
   private on2FASuccess(response: any): void {
-    console.log('2FA verified successfully', response);
+    this.cookieService.setCookie('sessionID', response.content.session_id, 1);
     this.router.navigate(['/dashboard']);
   }
 
