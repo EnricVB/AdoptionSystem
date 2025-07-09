@@ -52,6 +52,7 @@
                     </label>
                     <input 
                         id="password"
+                        autocomplete="current-password"
                         [type]="showPassword ? 'text' : 'password'"
                         formControlName="password"
                         (focus)="onPasswordFocus()"
