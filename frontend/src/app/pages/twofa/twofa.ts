@@ -23,9 +23,14 @@ export class Twofa {
   submitted = false;
   error: string | null = null;
   sessionID: string = '';
+  email: string = '';
 
   // Focus state tracking for floating labels
   isCodeFocused = false;
+
+  // Resend 2FA code cooldown
+  resendCooldown = 0;
+  resendInterval: any;
 
   // ======================================
   // CONSTRUCTOR
@@ -44,8 +49,9 @@ export class Twofa {
   // This method is called in the constructor to set up the session ID and form controls.
   private initializeSessionAndForm(): void {
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { sessionID?: string };
+    const state = navigation?.extras.state as { sessionID?: string, email?: string };
     this.sessionID = state?.sessionID || '';
+    this.email = state?.email || '';
 
     this.codeForm = this.fb.group({
       code: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{6}$/)]]
@@ -62,6 +68,26 @@ export class Twofa {
   // ======================================
   // FORM SUBMISSION
   // ======================================
+  onResend2FA(): void {
+    if (this.resendCooldown > 0) return;
+    const payload = this.build2FAEmailPayload();
+
+    this.startResendCooldown();
+    this.apiService.refresh2FAToken(payload).subscribe({
+      next: () => {},
+      error: (err) => {}
+    });
+  }
+
+  startResendCooldown(): void {
+    this.resendCooldown = 30;
+    this.resendInterval = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        clearInterval(this.resendInterval);
+      }
+    }, 1000);
+  }
 
   onSubmit(): void {
     this.submitted = true;
@@ -85,6 +111,18 @@ export class Twofa {
   // ======================================
 
   /**
+   * Builds the payload for the 2FA email request.
+   * This method extracts the email from the session and prepares it for the API call.
+   * 
+   * @returns An object containing the email for the 2FA request.
+   */
+  private build2FAEmailPayload(): { email: string; } {
+    return {
+      email: this.email
+    };
+  }
+
+  /**
    * Builds the payload for the 2FA verification request.
    * This method extracts the code from the form and combines it with the session ID.
    * 
@@ -104,6 +142,8 @@ export class Twofa {
    * @param response Any response from the 2FA verification API.
    */
   private on2FASuccess(response: any): void {
+    console.log('2FA verification successful:', response);
+
     this.cookieService.setCookie('sessionID', response.content.session_id, 1);
     this.router.navigate(['/dashboard']);
   }
