@@ -45,16 +45,19 @@ type FullUser struct {
 //
 // Database Table: Users
 type User struct {
-	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`                               // Unique identifier for the user
-	Name         string    `json:"name" gorm:"type:varchar(100);not null"`                           // User's first name
-	Surname      string    `json:"surname" gorm:"type:varchar(100);not null"`                        // User's last name
-	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`              // User's email address (unique)
-	SessionID    string    `json:"session_id" gorm:"type:varchar(50);uniqueIndex;column:Session_ID"` // Current session identifier
-	Address      string    `json:"address" gorm:"type:varchar(255)"`                                 // User's physical address
-	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`              // Count of failed login attempts
-	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`                // Whether the user account is blocked
-	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`                                   // Record creation timestamp
-	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`                                   // Record last update timestamp
+	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`                                // Unique identifier for the user
+	Name         string    `json:"name" gorm:"type:varchar(100);not null"`                            // User's first name
+	Surname      string    `json:"surname" gorm:"type:varchar(100);not null"`                         // User's last name
+	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`               // User's email address (unique)
+	SessionID    string    `json:"session_id" gorm:"type:varchar(50);uniqueIndex;column:Session_ID"`  // Current session identifier
+	Address      string    `json:"address" gorm:"type:varchar(255)"`                                  // User's physical address
+	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`               // Count of failed login attempts
+	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`                 // Whether the user account is blocked
+	Password     string    `json:"password,omitempty" gorm:"type:varchar(255);column:Password"`       // Hashed password (omitted from JSON)
+	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
+	ProviderID   string    `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`           // Provider-specific user ID
+	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`                                    // Record creation timestamp
+	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`                                    // Record last update timestamp
 }
 
 // NonValidatedUser represents a user entity without session validation.
@@ -63,15 +66,16 @@ type User struct {
 //
 // Database Table: Users
 type NonValidatedUser struct {
-	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`                  // Unique identifier for the user
-	Name         string    `json:"name" gorm:"type:varchar(100);not null"`              // User's first name
-	Surname      string    `json:"surname" gorm:"type:varchar(100);not null"`           // User's last name
-	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"` // User's email address (unique)
-	Address      string    `json:"address" gorm:"type:varchar(255)"`                    // User's physical address
-	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"` // Count of failed login attempts
-	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`   // Whether the user account is blocked
-	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`                      // Record creation timestamp
-	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`                      // Record last update timestamp
+	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`                                // Unique identifier for the user
+	Name         string    `json:"name" gorm:"type:varchar(100);not null"`                            // User's first name
+	Surname      string    `json:"surname" gorm:"type:varchar(100);not null"`                         // User's last name
+	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`               // User's email address (unique)
+	Address      string    `json:"address" gorm:"type:varchar(255)"`                                  // User's physical address
+	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`               // Count of failed login attempts
+	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`                 // Whether the user account is blocked
+	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
+	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`                                    // Record creation timestamp
+	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`                                    // Record last update timestamp
 }
 
 // SimplifiedUser represents a minimal user entity with only essential information.
