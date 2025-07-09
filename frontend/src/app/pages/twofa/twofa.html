@@ -11,7 +11,7 @@
                 </p>
             </div>
 
-            <div class="space-y-2 input-2fa">
+            <div class="space-y-2 input-2fa mb-2">
                 <label for="code" class="sr-only">Verification code</label>
                 <input 
                     id="code"
@@ -34,6 +34,18 @@
                 </div>
             }
 
+            <!-- Resend button -->
+            <button type="button"
+                    class="text-orange-500 hover:text-orange-600 font-thin text-sm w-full text-right px-2 cursor-pointer"
+                    (click)="onResend2FA()"
+                    [disabled]="submitted || resendCooldown > 0">
+                <ng-container *ngIf="resendCooldown === 0; else cooldownTpl">Reenviar código</ng-container>
+                <ng-template #cooldownTpl>
+                  Espera {{ resendCooldown }}s...
+                </ng-template>
+            </button>
+
+            <!-- Submit button -->
             <button 
                 type="submit" 
                 [disabled]="codeForm.invalid" 
