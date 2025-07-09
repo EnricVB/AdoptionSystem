@@ -145,7 +145,7 @@ func handleDeleteSpecies(c echo.Context) error {
 	}
 
 	// Delegate species deletion to handler layer
-	httpErr = handlers.HandleDeleteSpecies(uint(id))
+	httpErr := handlers.HandleDeleteSpecies(uint(id))
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
