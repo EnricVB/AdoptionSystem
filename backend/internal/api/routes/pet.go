@@ -81,13 +81,13 @@ func handleGetPetByID(c echo.Context) error {
 		return response.ErrorResponse(c, http.StatusBadRequest, "ID de mascota inválido")
 	}
 
-	pet, httpErr := handlers.HandleGetPetByID(uint(id))
+	_, httpErr := handlers.HandleGetPetByID(uint(id))
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
 
 	// Delegate pet retrieval to handler layer
-	pet, httpErr = handlers.HandleGetPetByID(uint(id))
+	pet, httpErr := handlers.HandleGetPetByID(uint(id))
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
