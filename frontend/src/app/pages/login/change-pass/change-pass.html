@@ -38,17 +38,17 @@
                     </button>
                 </div>
 
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="changePassForm.get('password')?.touched && 
-                            changePassForm.get('password')?.invalid">
-                    <span *ngIf="changePassForm.get('password')?.errors?.['required']">
-                        La contraseña es obligatoria.
-                    </span>
+                @if (changePassForm.get('password')?.touched && changePassForm.get('password')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (changePassForm.get('password')?.errors?.['required']) {
+                            <span>La contraseña es obligatoria.</span>
+                        }
 
-                    <span *ngIf="changePassForm.get('password')?.errors?.['minlength']">
-                        La contraseña debe tener al menos 8 caracteres.
-                    </span>
-                </div>
+                        @if (changePassForm.get('password')?.errors?.['minlength']) {
+                            <span>La contraseña debe tener al menos 8 caracteres.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Confirm Password Field with Floating Label -->
@@ -72,36 +72,47 @@
                             transition-all duration-200 relative z-0">
                 </div>
 
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="changePassForm.get('confirmPassword')?.touched && 
-                            changePassForm.get('confirmPassword')?.invalid">
-                    <span *ngIf="changePassForm.get('confirmPassword')?.errors?.['required']">
-                        La confirmación de contraseña es obligatoria.
-                    </span>
-                </div>
+                @if (changePassForm.get('confirmPassword')?.touched && changePassForm.get('confirmPassword')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (changePassForm.get('confirmPassword')?.errors?.['required']) {
+                            <span>La confirmación de contraseña es obligatoria.</span>
+                        }
 
-                <!-- Mensaje de error de contraseñas no coincidentes a nivel de formulario -->
-                <div class="text-red-500 text-xs mt-1"
-                     *ngIf="changePassForm.errors?.['passwordMismatch'] && changePassForm.get('confirmPassword')?.touched">
-                    Las contraseñas no coinciden.
-                </div>
+                        @if (changePassForm.get('confirmPassword')?.errors?.['minlength']) {
+                            <span>La confirmación de contraseña debe tener al menos 8 caracteres.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Submit Button -->
             <button 
                 type="submit" 
+                [ngClass]="{
+                    'bg-gray-300 text-gray-500 cursor-not-allowed': changePassForm.invalid,
+                    'cursor-wait': changePassForm.valid && submitted,
+                }"
                 class="w-full py-3 px-4 rounded-lg pet-button font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 [disabled]="changePassForm.invalid || submitted">
                 
-                <span *ngIf="!submitted">Cambiar contraseña 🐶</span>
-                <span *ngIf="submitted" class="loading-paw">Cambiando... 🐕</span>
+                @if (submitted) {
+                    <span>Cambiar contraseña <i class="fa fa-spinner fa-spin ml-2"></i></span>
+                } @else {
+                    <span>Cambiar contraseña 🐶</span>
+                }
             </button>
 
             <!-- Error Messages -->
-            <p *ngIf="error && !submitted" class="text-red-500 text-sm text-center error">
-                {{ error }}
-            </p>
+            @if (error && !submitted) {
+                <div class="text-red-500 text-sm text-center mt-4">
+                    {{ error }}
+                </div>
+            } @else if (success) {
+                <div class="text-green-500 text-sm text-center mt-4">
+                    {{ success }}
+                </div>
+            }
         </form>
     </div>
 </div>

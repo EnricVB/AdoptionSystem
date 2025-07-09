@@ -124,10 +124,7 @@ export class Login {
    * @param error Any error object returned from the login API.
    */
   private onLoginError(error: any): void {
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
-
+    this.submitted = false;
     this.error = error.error?.message || 'Login failed. Please check your credentials.';
   }
 
