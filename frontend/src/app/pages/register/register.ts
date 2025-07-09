@@ -73,7 +73,6 @@ export class Register {
     this.submitted = true;
     this.error = null;
     this.success = null;
-    console.log('Registering user');
 
     const payload = this.buildRegisterPayload();
 
