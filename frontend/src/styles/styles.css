@@ -46,12 +46,22 @@ hr {
   padding: 0;
 }
 
+p, span, label, h1, h2, h3, h4, h5, h6, img {
+  cursor: default;
+  user-select: none;
+}
+
 /* Form Card Styles */
 .form-card {
   padding-inline: 40px;
 }
 
+
 /* Button Styles */
+.fa-eye-slash, .fa-eye {
+  cursor: pointer;
+}
+
 .pet-button {
   border: none;
   color: white;
@@ -83,6 +93,7 @@ hr {
 .pet-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+  cursor: pointer;
 }
 
 .pet-button:active {
