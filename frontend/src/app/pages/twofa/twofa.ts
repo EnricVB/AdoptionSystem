@@ -113,10 +113,7 @@ export class Twofa {
    * @param error Any error object returned from the 2FA verification API.
    */
   private on2FAError(error: any): void {
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
-
+    this.submitted = false;
     this.error = error.error?.message || 'Invalid 2FA code. Please try again.';
   }
 

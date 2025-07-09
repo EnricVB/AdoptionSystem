@@ -21,6 +21,7 @@ export class ChangePass {
   changePassForm!: FormGroup;
   submitted = false;
   error: string | null = null;
+  success: string | null = null;
 
   // Show password toggle
   showPassword = false;
@@ -134,7 +135,11 @@ export class ChangePass {
    * @param response Any response from the change pass API.
    */
   private onChangePassSuccess(response: any): void {
-    this.router.navigate(['/dashboard'], { state: { email: this.email }});
+    this.success = 'Password changed successfully!';
+
+    setTimeout(() => {
+      this.router.navigate(['/dashboard'], { state: { email: this.email }});
+    });
   }
 
   /**
@@ -144,10 +149,7 @@ export class ChangePass {
    * @param error Any error object returned from the login API.
    */
   private onChangePassError(error: any): void {
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
-
+    this.submitted = false;
     this.error = error.error?.message || 'Change Password failed. Please check your password.';
   }
 
