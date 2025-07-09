@@ -28,17 +28,18 @@
                     [class.focus:border-red-500]="error">
             </div>
 
-            <div *ngIf="error" class="text-red-500 text-sm text-center error input-2fa">
-                {{ error }}
-            </div>
+            @if (error) {
+                <div class="text-red-500 text-sm text-center error input-2fa">
+                    {{ error }}
+                </div>
+            }
 
             <button 
                 type="submit" 
                 [disabled]="codeForm.invalid" 
                 [ngClass]="{
                     'bg-gray-300 text-gray-500 cursor-not-allowed': codeForm.invalid,
-                    'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5': codeForm.valid,
-                    'transition': submitted
+                    'cursor-wait': codeForm.valid && submitted,
                 }"
                 class="w-full py-3 px-4 rounded-lg pet-button button-2fa font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">

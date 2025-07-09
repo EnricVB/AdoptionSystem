@@ -21,6 +21,7 @@ export class RecoverPassword {
   recoverPasswordForm!: FormGroup;
   submitted = false;
   error: string | null = null;
+  success: string | null = null;
 
   // Focus state tracking for floating labels
   isEmailFocused = false;
@@ -83,8 +84,11 @@ export class RecoverPassword {
    */
   private onRecoverPasswordSuccess(response: any): void {
     const sessionID = response.content.session_id;
+    this.success = 'An email has been sent to your address with instructions to reset your password. Redirecting to login...';
     
-    this.router.navigate(['/login'], {state: {sessionID}});
+    setTimeout(() => {
+      this.router.navigate(['/login'], {state: {sessionID}});
+    }, 2000);
   }
 
   /**
@@ -94,12 +98,8 @@ export class RecoverPassword {
    * @param error Any error object returned from the mailer API.
    */
   private onSendMailError(error: any): void {
+    this.submitted = false;
     this.error = error.error?.message || 'Failed to send email. Please try again later.';
-
-    // Wait for 3 seconds before allowing another submission
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
   }
 
   // ======================================
