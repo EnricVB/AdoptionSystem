@@ -177,11 +177,65 @@ func handleLoginWithGoogle(c echo.Context) error {
 	return response.MarshalResponse(c, user)
 }
 
-// handleListUsers retrieves all users in the system.
-// Calls the handler to get the list of users and returns it in the response.
+// handleResetPassword handles the password reset endpoint.
+// It binds the incoming request to a ResetPasswordRequest model,
+// validates the request body, and delegates the password reset logic
+// to the handlers package. Returns an error response if validation fails
+// or the reset operation encounters an error, otherwise returns "OK".
 //
-// Validations:
-//   - No specific validations required for listing users
+// Route: POST /reset-password
+// Request body: ResetPasswordRequest JSON object
+// Response: "OK" string on success, error object on failure
+func handleResetPassword(c echo.Context) error {
+	var req r_models.ResetPasswordRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
+	}
+
+	_, responseError := handlers.HandleResetPassword(req)
+
+	if responseError != response.EmptyError {
+		return response.ConvertToErrorResponse(c, responseError)
+	}
+
+	return response.MarshalResponse(c, "OK")
+}
+
+func handleForgotPassword(c echo.Context) error {
+	var req r_models.ResetPasswordRequest
+
+	if err := c.Bind(&req); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest, "invalid request body")
+	}
+
+	_, responseError := handlers.HandleForgotPassword(req)
+
+	if responseError != response.EmptyError {
+		return response.ConvertToErrorResponse(c, responseError)
+	}
+
+	return response.MarshalResponse(c, "OK")
+}
+
+// handleListUsers retrieves a list of all users in the system.
+// This endpoint provides access to user data for administrative purposes.
+//
+// HTTP Method: GET
+// Endpoint: /api/users
+//
+// Business Rules:
+//   - Returns all user records in the system
+//   - May require administrative privileges (implement authorization middleware)
+//   - Should paginate results for large datasets (implement pagination middleware)
+//
+// Parameters:
+//   - c: Echo context containing the HTTP request and response
+//
+// Returns:
+//   - HTTP 200 with array of user objects on success
+//   - HTTP 500 on internal server error
+//   - Error response with appropriate status code on failure
 func handleListUsers(c echo.Context) error {
 	users, httpErr := handlers.HandleListUsers()
 	if httpErr.Code != 0 {
