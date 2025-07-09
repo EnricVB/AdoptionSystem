@@ -144,7 +144,7 @@ export class ChangePass {
     setTimeout(() => {
       this.cookieService.setCookie('sessionID', response.content.session_id, 1);
       this.router.navigate(['/dashboard'], { state: { email: this.email }});
-    });
+    }, 2000);
   }
 
   /**
