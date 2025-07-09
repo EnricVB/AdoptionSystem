@@ -106,7 +106,7 @@ export class Login {
    */
   private onLoginSuccess(response: any): void {
     const userID = response.content.id;
-    const changePass = response.content.change_pass;
+    const changePass = response.content.change_password;
     const sessionID = response.content.session_id;
 
     if (changePass) {
