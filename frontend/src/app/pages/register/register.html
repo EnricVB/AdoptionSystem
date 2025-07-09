@@ -36,17 +36,17 @@
                                 transition-all duration-200 relative z-0">
                     </div>
 
-                    <div *ngIf="registerForm.get('firstName')?.touched && 
-                                registerForm.get('firstName')?.invalid"
-                                class="text-red-500 text-xs mt-1">
-                        <span *ngIf="registerForm.get('firstName')?.errors?.['required']">
-                            El nombre es obligatorio.
-                        </span>
 
-                        <span *ngIf="registerForm.get('firstName')?.errors?.['minlength']">
-                            El nombre debe tener al menos 2 caracteres.
-                        </span>
-                    </div>
+                    @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.invalid) {
+                        <div class="text-red-500 text-xs mt-1">
+                            @if (registerForm.get('firstName')?.errors?.['required']) {
+                                <span>El nombre es obligatorio.</span>
+                            }
+                            @if (registerForm.get('firstName')?.errors?.['minlength']) {
+                                <span>El nombre debe tener al menos 2 caracteres.</span>
+                            }
+                        </div>
+                    }
                 </div>
 
                 <!-- Last Name Field with Floating Label -->
@@ -71,17 +71,16 @@
                                     transition-all duration-200 relative z-0">
                         </div>
 
-                        <div class="text-red-500 text-xs mt-1" 
-                             *ngIf="registerForm.get('lastName')?.touched && 
-                                    registerForm.get('lastName')?.invalid">
-                            <span *ngIf="registerForm.get('lastName')?.errors?.['required']">
-                                El apellido es obligatorio.
-                            </span>
-
-                            <span *ngIf="registerForm.get('lastName')?.errors?.['minlength']">
-                                El apellido debe tener al menos 2 caracteres.
-                            </span>
-                        </div>
+                        @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.invalid) {
+                            <div class="text-red-500 text-xs mt-1">
+                                @if (registerForm.get('lastName')?.errors?.['required']) {
+                                    <span>El apellido es obligatorio.</span>
+                                }
+                                @if (registerForm.get('lastName')?.errors?.['minlength']) {
+                                    <span>El apellido debe tener al menos 2 caracteres.</span>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -107,17 +106,16 @@
                             transition-all duration-200 relative z-0">
                 </div>
 
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="registerForm.get('email')?.touched && 
-                            registerForm.get('email')?.invalid">
-                    <span *ngIf="registerForm.get('email')?.errors?.['required']">
-                        El correo electrónico es obligatorio.
-                    </span>
-
-                    <span *ngIf="registerForm.get('email')?.errors?.['email']">
-                        El correo electrónico no es válido.
-                    </span>
-                </div>
+                @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (registerForm.get('email')?.errors?.['required']) {
+                            <span>El correo electrónico es obligatorio.</span>
+                        }
+                        @if (registerForm.get('email')?.errors?.['email']) {
+                            <span>El correo electrónico no es válido.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Password Field with Floating Label -->
@@ -148,17 +146,16 @@
                     </button>
                 </div>
 
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="registerForm.get('password')?.touched && 
-                            registerForm.get('password')?.invalid">
-                    <span *ngIf="registerForm.get('password')?.errors?.['required']">
-                        La contraseña es obligatoria.
-                    </span>
-
-                    <span *ngIf="registerForm.get('password')?.errors?.['minlength']">
-                        La contraseña debe tener al menos 8 caracteres.
-                    </span>
-                </div>
+                @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (registerForm.get('password')?.errors?.['required']) {
+                            <span>La contraseña es obligatoria.</span>
+                        }
+                        @if (registerForm.get('password')?.errors?.['minlength']) {
+                            <span>La contraseña debe tener al menos 8 caracteres.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Confirm Password Field with Floating Label -->
@@ -182,41 +179,52 @@
                             transition-all duration-200 relative z-0">
                 </div>
 
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="registerForm.get('confirmPassword')?.touched && 
-                            registerForm.get('confirmPassword')?.invalid">
-                    <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
-                        La confirmación de contraseña es obligatoria.
-                    </span>
-                </div>
+                @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (registerForm.get('confirmPassword')?.errors?.['required']) {
+                            <span>La confirmación de contraseña es obligatoria.</span>
+                        }
 
-                <!-- Mensaje de error de contraseñas no coincidentes a nivel de formulario -->
-                <div class="text-red-500 text-xs mt-1"
-                     *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched">
-                    Las contraseñas no coinciden.
-                </div>
+                        @if (registerForm.get('confirmPassword')?.errors?.['minlength']) {
+                            <span>La confirmación de contraseña debe tener al menos 8 caracteres.</span>
+                        }
+
+                        @if (registerForm.errors?.['passwordMismatch']) {
+                            <span>Las contraseñas no coinciden.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Submit Button -->
             <button 
                 type="submit" 
+                [ngClass]="{
+                    'bg-gray-300 text-gray-500 cursor-not-allowed': registerForm.invalid,
+                    'cursor-wait': registerForm.valid && submitted,
+                }"
                 class="w-full py-3 px-4 rounded-lg pet-button font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 [disabled]="registerForm.invalid || submitted">
                 
-                <span *ngIf="!submitted">¡Únete a la familia! 🐶</span>
-                <span *ngIf="submitted" class="loading-paw">Registrando... 🐕</span>
+
+                @if (submitted) {
+                    <span>¡Únete a la familia! <i class="fa fa-spinner fa-spin ml-2"></i></span>
+                } @else {
+                    <span>¡Únete a la familia! 🐶</span>
+                }
             </button>
 
-            <!-- Success Message -->
-            <p *ngIf="success" class="text-green-500 text-sm text-center font-medium">
-                {{ success }}
-            </p>
-
-            <!-- Error Messages -->
-            <p *ngIf="error && !submitted" class="text-red-500 text-sm text-center error">
-                {{ error }}
-            </p>
+            <!-- Success / Error Message -->
+            @if (success) {
+                <p class="text-green-500 text-sm text-center font-medium">
+                    {{ success }}
+                </p>
+            } @else if (error) {
+                <p class="text-red-500 text-sm text-center font-medium">
+                    {{ error }}
+                </p>
+            }
 
             <!-- Footer Message -->
             <div class="text-center mt-6">

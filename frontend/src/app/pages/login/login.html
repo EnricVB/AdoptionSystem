@@ -31,15 +31,18 @@
                            transition-all duration-200 relative z-0"
                     [class.border-red-300]="error"
                     [class.focus:border-red-500]="error">
-                <div class="text-red-500 text-xs mt-1" 
-                     *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-                    <span *ngIf="loginForm.get('email')?.errors?.['required']">
-                        El correo electrónico es obligatorio.
-                    </span>
-                    <span *ngIf="loginForm.get('email')?.errors?.['email']">
-                        El correo electrónico no es válido.
-                    </span>
-                </div>
+                
+                
+                @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (loginForm.get('email')?.errors?.['required']) {
+                            <span>El correo electrónico es obligatorio.</span>
+                        }
+                        @if (loginForm.get('email')?.errors?.['email']) {
+                            <span>El correo electrónico no es válido.</span>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Password Field with Floating Label -->
@@ -72,12 +75,17 @@
                     </button>
                 </div>
 
-                <div class="text-red-500 text-xs" 
-                     *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-                    <span *ngIf="loginForm.get('password')?.errors?.['required']">
-                        La contraseña es obligatoria.
-                    </span>
-                </div>
+
+                @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+                    <div class="text-red-500 text-xs mt-1">
+                        @if (loginForm.get('password')?.errors?.['required']) {
+                            <span>La contraseña es obligatoria.</span>
+                        }
+                        @if (loginForm.get('password')?.errors?.['minlength']) {
+                            <span>La contraseña debe tener al menos 8 caracteres.</span>
+                        }
+                    </div>
+                }
                 
                 <div class="text-right mt-2">
                     <p class="text-xs text-gray-600">
@@ -92,17 +100,28 @@
             <!-- Submit Button -->
             <button 
                 type="submit" 
+                [ngClass]="{
+                    'bg-gray-300 text-gray-500 cursor-not-allowed': loginForm.invalid,
+                    'cursor-wait': loginForm.valid && submitted,
+                }"
                 class="w-full py-3 px-4 rounded-lg pet-button font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 mt-3"
                 [disabled]="loginForm.invalid">
                 
-                <span *ngIf="!submitted">Encontrar mi Mascota 🐾</span>
-                <span *ngIf="submitted" class="loading-paw">Buscando... 🐕</span>
+
+                @if (submitted) {
+                    <span>Encontrar mi Mascota <i class="fa fa-spinner fa-spin ml-2"></i></span>
+                } @else {
+                    <span>Encontrar mi Mascota 🐾</span>
+                }
             </button>
 
-            <p *ngIf="!submitted" class="text-red-500 text-sm text-center error">
-                {{ error }}
-            </p>
+            <!-- Error Messages -->
+            @if (error && !submitted) {
+                <p class="text-red-500 text-sm text-center mt-4">
+                    {{ error }}
+                </p>
+            }
 
             <!-- Footer Message -->
             <div class="text-center">
