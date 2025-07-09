@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
+import { CookieService } from '@app/services/cookie.service';
 
 @Component({
   selector: 'app-change-pass',
@@ -41,7 +42,8 @@ export class ChangePass {
     private fb: FormBuilder,
     private apiService: ApiService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cookieService: CookieService
   ) {
     this.initializeForm();
   }
@@ -59,7 +61,9 @@ export class ChangePass {
   private passwordMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
+
     if (!password || !confirmPassword) return null;
+    
     return password !== confirmPassword ? { passwordMismatch: true } : null;
   }
 
@@ -138,6 +142,7 @@ export class ChangePass {
     this.success = 'Password changed successfully!';
 
     setTimeout(() => {
+      this.cookieService.setCookie('sessionID', response.content.session_id, 1);
       this.router.navigate(['/dashboard'], { state: { email: this.email }});
     });
   }
