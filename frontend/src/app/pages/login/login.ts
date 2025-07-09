@@ -114,7 +114,17 @@ export class Login {
       return;
     }
 
-    this.router.navigate(['/twofa'], {state: {email: this.loginForm.value.email, sessionID: sessionID }});
+    this.send2FAEmail(this.loginForm.value.email);
+    this.router.navigate(['/twofa'], {state: { email: this.loginForm.value.email, sessionID: sessionID }});
+  }
+
+  private send2FAEmail(email: string): void {
+    const EmailPayload = { email: email };
+
+    this.apiService.refresh2FAToken(EmailPayload).subscribe({
+      next: (response) => {},
+      error: (err) => {}
+    });
   }
 
   /**
