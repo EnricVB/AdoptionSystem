@@ -76,21 +76,6 @@ export class Login {
     });
   }
 
-  /**
-   * Handles the sending of the 2FA email.
-   * This method is called when the user requests to send a 2FA email.
-   * 
-   * It takes an email address as a parameter and calls the API service to refresh the 2FA token.
-   * If the API call fails, it handles the error by calling onSendMailError.
-   * 
-   * @param email - The email address to which the 2FA token will be sent.
-   */
-  sendMail(email: string): void {
-    this.apiService.refresh2FAToken({ email }).subscribe({
-      error: (err) => this.onSendMailError(err)
-    });
-  }
-
   // ======================================
   // AUTH FLOW
   // ======================================
@@ -129,7 +114,6 @@ export class Login {
       return;
     }
 
-    this.sendMail(this.loginForm.value.email);
     this.router.navigate(['/twofa'], {state: {email: this.loginForm.value.email, sessionID: sessionID }});
   }
 
@@ -145,21 +129,6 @@ export class Login {
     }, 2000);
 
     this.error = error.error?.message || 'Login failed. Please check your credentials.';
-  }
-
-  /**
-   * Error handler for the sendMail API call
-   * This method is called when the sendMail API returns an error response.
-   * 
-   * @param error Any error object returned from the mailer API.
-   */
-  private onSendMailError(error: any): void {
-    this.error = error.error?.message || 'Failed to send email. Please try again later.';
-
-    // Wait for 3 seconds before allowing another submission
-    setTimeout(() => {
-      this.submitted = false;
-    }, 2000);
   }
 
   // ======================================
