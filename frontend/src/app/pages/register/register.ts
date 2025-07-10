@@ -28,7 +28,6 @@ export class Register {
   isLastNameFocused = false;
   isEmailFocused = false;
   isPasswordFocused = false;
-  isConfirmPasswordFocused = false;
 
   // Show password toggle
   showPassword = false;
@@ -53,16 +52,7 @@ export class Register {
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  // Custom validator to check if passwords match
-  private passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-    if (!password || !confirmPassword) return null;
-    return password !== confirmPassword ? { passwordMismatch: true } : null;
+    });
   }
 
   // ======================================
@@ -193,22 +183,6 @@ export class Register {
    */
   onPasswordBlur(): void {
     this.isPasswordFocused = false;
-  }
-
-  /**
-   * Handle confirm password input focus event
-   * Used for floating label animation
-   */
-  onConfirmPasswordFocus(): void {
-    this.isConfirmPasswordFocused = true;
-  }
-
-  /**
-   * Handle confirm password input blur event
-   * Used for floating label animation
-   */
-  onConfirmPasswordBlur(): void {
-    this.isConfirmPasswordFocused = false;
   }
 
   // ======================================

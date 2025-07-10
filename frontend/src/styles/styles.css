@@ -10,6 +10,24 @@
   position: relative;
 }
 
+/* Decoration Styles */
+hr {
+  display: block;
+  height: 1px;
+  width: 15%;
+
+  border: 0;
+  border-top: 1px solid rgba(255, 107, 107, 0.2);
+
+  margin: 1.5em auto;
+  padding: 0;
+}
+
+/* Form Card Styles */
+.form-card {
+  padding-inline: 40px;
+}
+
 /* Button Styles */
 .pet-button {
   border: none;

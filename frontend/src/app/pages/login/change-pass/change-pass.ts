@@ -29,7 +29,6 @@ export class ChangePass {
 
   // Focus state tracking for floating labels
   isPasswordFocused = false;
-  isConfirmPasswordFocused = false;
 
   // User information from query parameters
   email!: string;
@@ -52,19 +51,8 @@ export class ChangePass {
   // This method is called in the constructor to set up the form controls.
   private initializeForm(): void {
     this.changePassForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  // Custom validator to check if passwords match
-  private passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-
-    if (!password || !confirmPassword) return null;
-    
-    return password !== confirmPassword ? { passwordMismatch: true } : null;
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    });
   }
 
   /**
@@ -177,21 +165,5 @@ export class ChangePass {
    */
   onPasswordBlur(): void {
     this.isPasswordFocused = false;
-  }
-
-  /**
-   * Handle confirm password input focus event
-   * Used for floating label animation
-   */
-  onConfirmPasswordFocus(): void {
-    this.isConfirmPasswordFocused = true;
-  }
-
-  /**
-   * Handle confirm password input blur event
-   * Used for floating label animation
-   */
-  onConfirmPasswordBlur(): void {
-    this.isConfirmPasswordFocused = false;
   }
 }
