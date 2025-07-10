@@ -75,7 +75,6 @@
                     </button>
                 </div>
 
-
                 @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
                     <div class="text-red-500 text-xs mt-1">
                         @if (loginForm.get('password')?.errors?.['required']) {
@@ -86,15 +85,6 @@
                         }
                     </div>
                 }
-                
-                <div class="text-right mt-2">
-                    <p class="text-xs text-gray-600">
-                        ¿Has olvidado tu contraseña? 
-                        <a routerLink="/recover-password" class="text-orange-500 hover:text-orange-600 font-medium">
-                            ¡Recuperala aquí!
-                        </a>
-                    </p>
-                </div>
             </div>
 
             <!-- Submit Button -->
@@ -125,12 +115,25 @@
 
             <!-- Footer Message -->
             <div class="text-center">
-                <p class="text-xs text-gray-600">
-                    ¿No tienes una cuenta? 
-                    <a routerLink="/register" class="text-orange-500 hover:text-orange-600 font-medium">
-                        ¡Únete! 🏠
-                    </a>
-                </p>
+                <div>
+                    <p class="text-xs text-gray-600">
+                        ¿Has olvidado tu contraseña? 
+                        <a routerLink="/recover-password" class="text-orange-500 hover:text-orange-600 font-medium">
+                            ¡Recuperala aquí!
+                        </a>
+                    </p>
+                </div>
+
+                <hr/>
+
+                <div>
+                    <p class="text-xs text-gray-600">
+                        ¿No tienes una cuenta? 
+                        <a routerLink="/register" class="text-orange-500 hover:text-orange-600 font-medium">
+                            ¡Únete! 🏠
+                        </a>
+                    </p>
+                </div>
             </div>
         </form>
     </div>
