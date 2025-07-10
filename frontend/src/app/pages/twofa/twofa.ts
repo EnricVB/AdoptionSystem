@@ -145,7 +145,7 @@ export class Twofa {
     console.log('2FA verification successful:', response);
 
     this.cookieService.setCookie('sessionID', response.content.session_id, 1);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/']);
   }
 
   /**
