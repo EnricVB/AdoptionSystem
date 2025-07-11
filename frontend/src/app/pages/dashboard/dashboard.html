@@ -1,63 +1,42 @@
 <div class="min-h-screen flex flex-col items-center justify-center bg-[#f4f8e6]">
 
     <!-- Header -->
-    <header class="sticky top-0 w-full bg-[#f4f8e6b7] backdrop-blur-md z-20 shadow-sm">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 sm:py-4">
-
-            <!-- Left: Logo + Nav -->
-            <div class="flex items-center gap-12">
-
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <img
-                    src="/logo_shiba-inu.svg"
-                    alt="Logo"
-                    width="60"
-                    height="60"
-                    class="object-contain"
-                    />
-
-                    <span class="text-xl sm:text-2xl font-bold text-[#2c1810]">PetFinder</span>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="hidden sm:flex gap-8 ml-20 text-[#2c1810] font-medium text-sm sm:text-base">
-                    <a href="#banner" class="hover:text-orange-700 transition">Adopt</a>
-                    <a href="#statistics" class="hover:text-orange-700 transition">About</a>
-                    <a href="#volunteer" class="hover:text-orange-700 transition">Volunteer</a>
-                    <a href="#donate" class="hover:text-orange-700 transition">Donate</a>
-                </nav>
-            </div>
-
-            <!-- Right: CTA -->
-            <div class="hidden sm:block">
-                <a href="#join" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-full text-sm sm:text-base font-semibold shadow-md transition-all">
-                    Join Us
-                </a>
-            </div>
-        </div>
-    </header>
+    <PetHeader class="w-full sticky top-0 z-20"/>
 
     <!-- Banner -->
     <section id="banner" class="relative w-full h-[50vh] sm:h-[60vh] lg:h-[85vh] bg-[#f4f8e6]">
         <!-- Image -->
         <img src="shiba_inu_banner.png" alt="banner" 
-            class="absolute inset-0 w-full h-full object-cover object-[center_35%]">
-        
+            class=" absolute inset-0 
+                    w-full h-full
+                    object-cover object-[center_35%]">
+    
         <!-- Text Content -->
-        <div class="absolute z-10 left-4 top-2/3 xl:top-1/2 transform -translate-y-1/2 sm:left-8 md:left-12 lg:left-30 bg-gradient-to-r from-orange-800/50 to-transparent p-4 sm:p-6 rounded-lg max-w-[90%] sm:max-w-[80%] md:max-w-[70%] lg:max-w-none">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">
+        <div class="absolute z-10 left-4 top-2/3 
+                    xl:top-1/2 transform -translate-y-1/2 
+                    sm:left-8 md:left-12 lg:left-30 
+                    bg-gradient-to-r from-orange-800/50 to-transparent 
+                    p-4 sm:p-6 
+                    rounded-lg 
+                    max-w-[90%] sm:max-w-[80%] md:max-w-[70%]
+                     lg:max-w-none">
+
+            <h1 class=" text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 
+                        font-bold text-white 
+                        drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] 
+                        leading-tight">
                 PetFinder
             </h1>
 
-            <p class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold text-white mt-2 sm:mt-4 drop-shadow-sm">
+            <p class="  text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 
+                        font-semibold text-white mt-2 sm:mt-4 drop-shadow-sm">
                 Connecting hearts with paws that need a home
             </p>
         </div>
 
         <!-- Call to actions -->
-        <div class="absolute z-10 -bottom-10
-                    gap-4 xl:gap-96
+        <div class="absolute z-10 -bottom-16 md:-bottom-20 lg:-bottom-10
+                    gap-10 xl:gap-96
                     left-1/2 transform -translate-x-1/2
                     w-full max-w-6xl px-4 justify-items-center 
                     grid grid-cols-3">
@@ -87,7 +66,7 @@
         
         <!-- Footer -->
         <div class="mt-8 sm:mt-12 md:mt-16 text-center">
-            <div class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#f5f1e5] rounded-full shadow-sm">
+            <div class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#fdfcf9] rounded-full shadow-sm">
                 <i class="fas fa-heart text-[#8b7355]"></i>
                 <span class="text-xs sm:text-sm font-medium text-[#2c1810]">Making a difference, one pet at time</span>
             </div>
@@ -95,5 +74,4 @@
     </section>
 
     <Footer class="w-full"></Footer>
-
 </div>

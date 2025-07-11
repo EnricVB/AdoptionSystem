@@ -142,10 +142,9 @@ export class Twofa {
    * @param response Any response from the 2FA verification API.
    */
   private on2FASuccess(response: any): void {
-    console.log('2FA verification successful:', response);
-
-    this.cookieService.setCookie('sessionID', response.content.session_id, 1);
-    this.router.navigate(['/']);
+    this.cookieService.setCookie('sessionID', this.sessionID, 7);
+    
+    this.router.navigate(['/dashboard']);
   }
 
   /**
