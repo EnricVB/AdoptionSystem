@@ -47,12 +47,6 @@ libpeerconnection.log
 testem.log
 typings
 
-# Backend compiled binaries
-backend/main
-backend/backend
-*.exe
-*.out
-
 # Optional: If using Git LFS, ignore large assets not tracked
 # /src/assets/**/*.psd
 
