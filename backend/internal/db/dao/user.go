@@ -251,6 +251,16 @@ func GetValidatedUser(email string, password string) (*m.User, error) {
 		return nil, fmt.Errorf("usuario bloqueado")
 	}
 
+	// Skip password validation for Google users
+	if user.Provider == "google" {
+		return &user, nil
+	}
+
+	// Validate password for local users
+	if password == "" {
+		return nil, fmt.Errorf("contraseña requerida para usuarios locales")
+	}
+
 	hashedPassword, err := GetUserHashedPassword(email)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener contraseña para usuario %s: %v", email, err)
