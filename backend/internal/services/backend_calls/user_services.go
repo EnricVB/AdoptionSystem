@@ -387,8 +387,14 @@ func DeactivateUser(id uint) (*m.SimplifiedUser, error) {
 //   - map[string]interface{}: The verified token payload containing user info
 //   - error: Verification error or nil on success
 func verifyGoogleToken(idToken string) (map[string]interface{}, error) {
-	// Google Client ID - replace with your actual client ID
+	// Google Client ID - in production, this should be set via environment variables
+	// You can get this from Google Cloud Console > APIs & Services > Credentials
 	clientID := "1017473621019-9hbmho8kqgq7pjhvjl4nqsjq6kc6q5qv.apps.googleusercontent.com"
+	
+	// You can override this with environment variable in production
+	// if envClientID := os.Getenv("GOOGLE_CLIENT_ID"); envClientID != "" {
+	//     clientID = envClientID
+	// }
 	
 	// Verify the token using Google's idtoken package
 	payload, err := idtoken.Validate(context.Background(), idToken, clientID)
