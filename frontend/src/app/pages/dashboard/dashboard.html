@@ -1,10 +1,10 @@
-<div class="min-h-screen flex flex-col items-center justify-center bg-[#f4f8e6]">
+<div class="min-h-screen flex flex-col items-center justify-center bg-[#f4f8e6] overflow-x-hidden">
 
     <!-- Header -->
-    <PetHeader class="w-full sticky top-0 z-20"/>
+    <PetHeader class="w-full fixed top-0 z-20"/>
 
     <!-- Banner -->
-    <section id="banner" class="relative w-full h-[50vh] sm:h-[60vh] lg:h-[85vh] bg-[#f4f8e6]">
+    <section id="banner" class="mt-20 relative w-full h-[50vh] sm:h-[60vh] lg:h-[85vh] bg-[#f4f8e6]">
         <!-- Image -->
         <img src="shiba_inu_banner.png" alt="banner" 
             class=" absolute inset-0 
@@ -36,7 +36,7 @@
 
         <!-- Call to actions -->
         <div class="absolute z-10 -bottom-16 md:-bottom-20 lg:-bottom-10
-                    gap-10 xl:gap-96
+                    gap-8 xl:gap-96
                     left-1/2 transform -translate-x-1/2
                     w-full max-w-6xl px-4 justify-items-center 
                     grid grid-cols-3">
@@ -50,6 +50,7 @@
         <wave class="absolute bottom-0 left-0 w-full" color="#f4f8e6" />
     </section>
 
+    <!-- Statistics Section -->
     <section id="statistics" class="flex flex-col items-center justify-center py-8 sm:py-10 px-4 mt-24">
         <!-- Header -->
         <h1 class="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold mb-8 sm:mb-12 md:mb-16 text-center">
@@ -74,4 +75,8 @@
     </section>
 
     <Footer class="w-full"></Footer>
+    
+    @if (isMobile) {
+        <MobileFooter class="w-full fixed bottom-0 left-0 z-20"></MobileFooter>
+    }
 </div>
