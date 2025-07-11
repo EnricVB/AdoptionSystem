@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import googleAuthConfig from '../../config/google-auth.config';
+import { CookieService } from '@app/services/cookie.service';
 
 declare const google: any;
 
@@ -44,7 +45,8 @@ export class Login implements OnInit {
     private fb: FormBuilder, 
     private apiService: ApiService,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private cookieService: CookieService
   ) {
     this.initializeForm();
   }
@@ -265,6 +267,7 @@ export class Login implements OnInit {
     this.ngZone.run(() => {
       // Google authentication successful, redirect to dashboard
       // Skip 2FA for Google users as specified in requirements
+      this.cookieService.setCookie('sessionID', response.content.session_id, 7);
       this.router.navigate(['/dashboard']);
     });
   }

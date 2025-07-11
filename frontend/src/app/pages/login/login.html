@@ -74,6 +74,15 @@
                         <i class="fa" [ngClass]="!showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                     </button>
                 </div>
+                
+                <div>
+                    <p class="text-xs text-gray-600 text-left mt-1">
+                        ¿Has olvidado tu contraseña? 
+                        <a routerLink="/recover-password" class="text-orange-500 hover:text-orange-600 font-medium">
+                            ¡Recuperala aquí!
+                        </a>
+                    </p>
+                </div>
 
                 @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
                     <div class="text-red-500 text-xs mt-1">
@@ -132,9 +141,9 @@
                 
 
                 @if (submitted) {
-                    <span>Encontrar mi Mascota <i class="fa fa-spinner fa-spin ml-2"></i></span>
+                    <span>Iniciar sesión <i class="fa fa-spinner fa-spin ml-2"></i></span>
                 } @else {
-                    <span>Encontrar mi Mascota 🐾</span>
+                    <span>Iniciar sesión 🐾</span>
                 }
             </button>
 
@@ -147,25 +156,12 @@
 
             <!-- Footer Message -->
             <div class="text-center">
-                <div>
-                    <p class="text-xs text-gray-600">
-                        ¿Has olvidado tu contraseña? 
-                        <a routerLink="/recover-password" class="text-orange-500 hover:text-orange-600 font-medium">
-                            ¡Recuperala aquí!
-                        </a>
-                    </p>
-                </div>
-
-                <hr/>
-
-                <div>
-                    <p class="text-xs text-gray-600">
-                        ¿No tienes una cuenta? 
-                        <a routerLink="/register" class="text-orange-500 hover:text-orange-600 font-medium">
-                            ¡Únete! 🏠
-                        </a>
-                    </p>
-                </div>
+                <p class="text-xs text-gray-600">
+                    ¿No tienes una cuenta? 
+                    <a routerLink="/register" class="text-orange-500 hover:text-orange-600 font-medium">
+                        ¡Únete! 🏠
+                    </a>
+                </p>
             </div>
         </form>
     </div>

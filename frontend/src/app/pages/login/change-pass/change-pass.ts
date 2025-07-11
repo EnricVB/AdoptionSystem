@@ -130,8 +130,8 @@ export class ChangePass {
     this.success = 'Password changed successfully!';
 
     setTimeout(() => {
-      this.cookieService.setCookie('sessionID', response.content.session_id, 1);
-      this.router.navigate(['/dashboard'], { state: { email: this.email }});
+      this.cookieService.setCookie('sessionID', response.content.session_id, 7);
+      this.router.navigate(['/dashboard']);
     }, 2000);
   }
 

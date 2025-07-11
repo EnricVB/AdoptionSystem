@@ -1,13 +1,13 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+<div class="min-h-screen flex items-center justify-center bg-[#f4f8e6] px-4">
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md form-card">
         <form [formGroup]="codeForm" (ngSubmit)="onSubmit()" class="space-y-6">
             <!-- Header -->
             <div class="text-center input-2fa">
                 <h2 class="text-2xl font-bold pet-header mb-4">
-                    Enter 2FA Code
+                    Introducir código 2FA
                 </h2>
                 <p class="text-sm text-gray-600">
-                    Please enter the verification code sent to your e-mail
+                    Por favor, introduce el código de verificación enviado a tu correo electrónico.
                 </p>
             </div>
 
@@ -55,7 +55,7 @@
                 }"
                 class="w-full py-3 px-4 rounded-lg pet-button button-2fa font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-                <span>Verify</span>
+                <span>Verificar</span>
             </button>
         </form>
     </div>

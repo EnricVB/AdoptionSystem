@@ -1,0 +1,48 @@
+<header class="bg-[#f4f8e6b7] backdrop-blur-md shadow-sm">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 sm:py-4">
+
+        <!-- Left: Logo + Nav -->
+        <div class="flex items-center gap-12">
+
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-default">
+                <img
+                src="/logo_shiba-inu.svg"
+                alt="Logo"
+                width="60"
+                height="60"
+                class="object-contain"
+                />
+
+                <span class="text-xl sm:text-2xl font-bold text-[#2c1810]">PetFinder</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="hidden sm:flex gap-8 ml-20 text-[#2c1810] font-medium text-sm sm:text-base">
+                <a href="#banner" class="hover:text-orange-700 transition">Adopt</a>
+                <a href="#statistics" class="hover:text-orange-700 transition">About</a>
+                <a href="#volunteer" class="hover:text-orange-700 transition">Volunteer</a>
+                <a href="#donate" class="hover:text-orange-700 transition">Donate</a>
+            </nav>
+        </div>
+
+        <!-- Right: CTA -->
+        @if (!isAlreadyLoggedIn()) {
+            <div class="hidden sm:flex gap-5 ">
+                <a href="/login" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                    Inicia sesión
+                </a>
+
+                <a href="/register" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                    Unete
+                </a>
+            </div>
+        } @else {
+            <div class="sm:flex gap-5">
+                <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                    Logout
+                </a>
+            </div>
+        }
+    </div>
+</header>
