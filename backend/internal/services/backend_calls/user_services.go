@@ -4,11 +4,13 @@
 package services
 
 import (
+	"context"
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
 	mailer "backend/internal/services/mail"
 	"fmt"
+	"google.golang.org/api/idtoken"
 )
 
 // ========================================
@@ -125,7 +127,14 @@ func RefreshUser2FAToken(userData r_models.RefreshTokenRequest) (string, error) 
 }
 
 // AuthenticateGoogleUser handles Google OAuth authentication.
-// TODO: Implement Google OAuth authentication logic
+// It verifies the Google ID token and creates/updates the user account.
+//
+// Process:
+// 1. Verifies Google ID token using Google's public keys
+// 2. Extracts user information from the verified token
+// 3. Creates new user account if doesn't exist, or updates existing one
+// 4. Generates session ID for the user
+// 5. Returns user data without requiring 2FA (per requirements)
 //
 // Parameters:
 //   - userData: GoogleLoginRequest containing Google auth data
@@ -134,8 +143,88 @@ func RefreshUser2FAToken(userData r_models.RefreshTokenRequest) (string, error) 
 //   - *m.User: Authenticated user data
 //   - error: Authentication error or nil on success
 func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, error) {
-	// TODO: Implement Google OAuth authentication
-	var user *m.User
+	// Verify Google ID token
+	payload, err := verifyGoogleToken(userData.IDToken)
+	if err != nil {
+		return nil, fmt.Errorf("token de Google inválido: %v", err)
+	}
+
+	// Extract user information from verified token
+	email, ok := payload["email"].(string)
+	if !ok || email == "" {
+		return nil, fmt.Errorf("no se pudo obtener el email del token de Google")
+	}
+
+	name, _ := payload["given_name"].(string)
+	surname, _ := payload["family_name"].(string)
+	googleID, _ := payload["sub"].(string)
+
+	// Check if user exists
+	existingUser, err := dao.GetUserByEmail(email)
+	if err != nil {
+		// User doesn't exist, create new account
+		fullUser := &m.FullUser{
+			Name:       name,
+			Surname:    surname,
+			Email:      email,
+			Provider:   "google",
+			ProviderID: googleID,
+			Password:   "", // No password for Google users
+		}
+
+		err = dao.CreateUser(fullUser)
+		if err != nil {
+			return nil, fmt.Errorf("error al crear usuario con Google: %v", err)
+		}
+	} else {
+		// User exists, update provider information if needed
+		if existingUser.Provider != "google" {
+			// Update existing user to Google provider
+			err = dao.UpdateUser(&m.User{
+				ID:         existingUser.ID,
+				Name:       existingUser.Name,
+				Surname:    existingUser.Surname,
+				Email:      existingUser.Email,
+				Address:    existingUser.Address,
+				Provider:   "google",
+				ProviderID: googleID,
+			})
+			if err != nil {
+				return nil, fmt.Errorf("error al actualizar usuario con Google: %v", err)
+			}
+		}
+	}
+
+	// Generate session ID for the user
+	sessionID, err := dao.GenerateSessionID(email)
+	if err != nil {
+		return nil, fmt.Errorf("error al generar sessionID: %v", err)
+	}
+
+	// Get complete user data with session
+	user, err := dao.GetValidatedUser(email, "")
+	if err != nil {
+		// For Google users, we need to get user data differently since there's no password
+		nonValidatedUser, getUserErr := dao.GetUserByEmail(email)
+		if getUserErr != nil {
+			return nil, fmt.Errorf("error al obtener usuario: %v", getUserErr)
+		}
+		
+		// Convert NonValidatedUser to User for response
+		user = &m.User{
+			ID:           nonValidatedUser.ID,
+			Name:         nonValidatedUser.Name,
+			Surname:      nonValidatedUser.Surname,
+			Email:        nonValidatedUser.Email,
+			Address:      nonValidatedUser.Address,
+			Provider:     "google",
+			ProviderID:   googleID,
+			SessionID:    sessionID,
+			FailedLogins: nonValidatedUser.FailedLogins,
+			IsBlocked:    nonValidatedUser.IsBlocked,
+		}
+	}
+
 	return user, nil
 }
 
@@ -282,4 +371,41 @@ func DeactivateUser(id uint) (*m.SimplifiedUser, error) {
 	}
 
 	return deleted, nil
+}
+
+// ========================================
+// GOOGLE AUTHENTICATION HELPERS
+// ========================================
+
+// verifyGoogleToken verifies a Google ID token and returns the payload
+// Uses Google's public keys to verify the token signature and validity
+//
+// Parameters:
+//   - idToken: The Google ID token to verify
+//
+// Returns:
+//   - map[string]interface{}: The verified token payload containing user info
+//   - error: Verification error or nil on success
+func verifyGoogleToken(idToken string) (map[string]interface{}, error) {
+	// Google Client ID - replace with your actual client ID
+	clientID := "1017473621019-9hbmho8kqgq7pjhvjl4nqsjq6kc6q5qv.apps.googleusercontent.com"
+	
+	// Verify the token using Google's idtoken package
+	payload, err := idtoken.Validate(context.Background(), idToken, clientID)
+	if err != nil {
+		return nil, fmt.Errorf("error al verificar el token de Google: %v", err)
+	}
+
+	// Convert the payload to a map for easier access
+	claims := make(map[string]interface{})
+	
+	// Extract common claims
+	claims["sub"] = payload.Subject
+	claims["email"] = payload.Claims["email"]
+	claims["given_name"] = payload.Claims["given_name"]
+	claims["family_name"] = payload.Claims["family_name"]
+	claims["name"] = payload.Claims["name"]
+	claims["picture"] = payload.Claims["picture"]
+	
+	return claims, nil
 }
