@@ -3,6 +3,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import googleAuthConfig from '../../config/google-auth.config';
 
 declare const google: any;
 
@@ -30,6 +31,9 @@ export class Login implements OnInit {
 
   // Show password toggle
   showPassword = false;
+
+  // Google Auth configuration
+  googleAuthEnabled = googleAuthConfig.enabled;
 
   // ======================================
   // CONSTRUCTOR
@@ -189,13 +193,20 @@ export class Login implements OnInit {
    * Initialize Google Sign-In
    */
   private initializeGoogleSignIn(): void {
+    if (!googleAuthConfig.enabled) {
+      console.warn('Google Sign-In is disabled in configuration');
+      return;
+    }
+
     if (typeof google !== 'undefined') {
       google.accounts.id.initialize({
-        client_id: '1017473621019-9hbmho8kqgq7pjhvjl4nqsjq6kc6q5qv.apps.googleusercontent.com', // You'll need to replace this with your actual Google Client ID
+        client_id: googleAuthConfig.clientId,
         callback: (response: any) => this.handleGoogleSignInResponse(response),
         auto_select: false,
         cancel_on_tap_outside: true
       });
+    } else {
+      console.error('Google Sign-In SDK not loaded');
     }
   }
 
@@ -203,6 +214,11 @@ export class Login implements OnInit {
    * Handle Google Sign-In button click
    */
   signInWithGoogle(): void {
+    if (!googleAuthConfig.enabled) {
+      this.error = 'Google Sign-In está deshabilitado en la configuración';
+      return;
+    }
+
     this.submitted = true;
     this.error = null;
     
