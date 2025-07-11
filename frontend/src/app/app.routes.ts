@@ -9,8 +9,8 @@ import { Twofa } from './pages/twofa/twofa';
 export const routes: Routes = [
     { 
         path: '', 
-        component: Login,
-        data: { animation: 'login' }
+        component: Dashboard,
+        data: { animation: 'dashboard' }
     },
     { 
         path: 'login', 
@@ -36,10 +36,5 @@ export const routes: Routes = [
         path: 'twofa', 
         component: Twofa,
         data: { animation: 'twofa' }
-    },
-    { 
-        path: 'dashboard', 
-        component: Dashboard,
-        data: { animation: 'dashboard' }
     },
 ];
