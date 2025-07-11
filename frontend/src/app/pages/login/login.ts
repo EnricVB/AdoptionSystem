@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import googleAuthConfig from '../../config/google-auth.config';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -13,13 +16,14 @@ import { ApiService } from '../../services/api.service';
     'style': 'view-transition-name: auth-form'
   }
 })
-export class Login {
+export class Login implements OnInit {
 
   // ======================================
   // COMPONENT PROPERTIES
   // ======================================
   loginForm!: FormGroup;
   submitted = false;
+  googleSubmitted = false;
   error: string | null = null;
 
   // Focus state tracking for floating labels
@@ -29,6 +33,9 @@ export class Login {
   // Show password toggle
   showPassword = false;
 
+  // Google Auth configuration
+  googleAuthEnabled = googleAuthConfig.enabled;
+
   // ======================================
   // CONSTRUCTOR
   // ======================================
@@ -36,9 +43,14 @@ export class Login {
   constructor(
     private fb: FormBuilder, 
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {
     this.initializeForm();
+  }
+
+  ngOnInit(): void {
+    this.initializeGoogleSignIn();
   }
 
   // Initializes the login form with validation rules.
@@ -172,5 +184,115 @@ export class Login {
    */
   onPasswordBlur(): void {
     this.isPasswordFocused = false;
+  }
+
+  // ======================================
+  // GOOGLE SIGN-IN METHODS
+  // ======================================
+
+  /**
+   * Initialize Google Sign-In
+   */
+  private initializeGoogleSignIn(): void {
+    if (!googleAuthConfig.enabled) {
+      console.warn('Google Sign-In is disabled in configuration');
+      return;
+    }
+
+    if (typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: googleAuthConfig.clientId,
+        callback: (response: any) => this.handleGoogleSignInResponse(response),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+    } else {
+      console.error('Google Sign-In SDK not loaded');
+    }
+  }
+
+  /**
+   * Handle Google Sign-In button click
+   */
+  signInWithGoogle(): void {
+    if (!googleAuthConfig.enabled) {
+      this.error = 'Google Sign-In está deshabilitado en la configuración';
+      return;
+    }
+
+    this.googleSubmitted = true;
+    this.error = null;
+    
+    if (typeof google !== 'undefined') {
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          google.accounts.id.prompt();
+        }
+      });
+    } else {
+      this.error = 'Google Sign-In no está disponible. Por favor, recarga la página.';
+      this.googleSubmitted = false;
+    }
+  }
+
+  /**
+   * Handle Google Sign-In response
+   */
+  private handleGoogleSignInResponse(response: any): void {
+    if (response.credential) {
+      // Decode the JWT token to get user info
+      const payload = this.decodeJwt(response.credential);
+      
+      const googleLoginData = {
+        email: payload.email,
+        id_token: response.credential
+      };
+
+      this.apiService.loginWithGoogle(googleLoginData).subscribe({
+        next: (apiResponse) => this.onGoogleLoginSuccess(apiResponse),
+        error: (err) => this.onGoogleLoginError(err)
+      });
+    } else {
+      this.error = 'Error en la autenticación con Google';
+      this.submitted = false;
+    }
+  }
+
+  /**
+   * Success handler for Google login
+   */
+  private onGoogleLoginSuccess(response: any): void {
+    this.ngZone.run(() => {
+      // Google authentication successful, redirect to dashboard
+      // Skip 2FA for Google users as specified in requirements
+      this.router.navigate(['/dashboard']);
+    });
+  }
+
+  /**
+   * Error handler for Google login
+   */
+  private onGoogleLoginError(error: any): void {
+    this.ngZone.run(() => {
+      this.submitted = false;
+      this.error = error.error?.message || 'Error en la autenticación con Google. Por favor, inténtalo de nuevo.';
+    });
+  }
+
+  /**
+   * Decode JWT token to extract user information
+   */
+  private decodeJwt(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error('Error decoding JWT:', error);
+      return {};
+    }
   }
 }
