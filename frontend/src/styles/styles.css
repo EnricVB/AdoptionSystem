@@ -1,6 +1,29 @@
 @import "tailwindcss";
 @import "./transitions/2fa-transition.css";
 
+/* Scrollbar base */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #eef1e1;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #cabda2;
+  border-radius: 10px;
+}
+
+/* Hover del handle */
+::-webkit-scrollbar-thumb:hover {
+  background: #918874;
+}
+
+
 /* Header Styles */
 .pet-header {
   background: linear-gradient(135deg, #ff6b6b, #ffa500);
@@ -8,6 +31,24 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
+}
+
+/* Decoration Styles */
+hr {
+  display: block;
+  height: 1px;
+  width: 15%;
+
+  border: 0;
+  border-top: 1px solid rgba(255, 107, 107, 0.2);
+
+  margin: 1.5em auto;
+  padding: 0;
+}
+
+/* Form Card Styles */
+.form-card {
+  padding-inline: 40px;
 }
 
 /* Button Styles */

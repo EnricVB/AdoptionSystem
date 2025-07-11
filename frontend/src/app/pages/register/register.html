@@ -1,6 +1,6 @@
 <div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
     <img src="pets_header.png" alt="PetFinder Header" class="w-72 mx-auto">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md form-card">
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-8">
 
             <!-- Header -->
@@ -20,7 +20,7 @@
                     <div class="relative">
                         <label 
                             for="firstName" 
-                            class="floating-label absolute left-3 top-1/2 transform -translate-y-1/2 text-sm pointer-events-none transition-all duration-200 z-10"
+                            class="floating-label absolute left-3 top-1/2 transform -translate-y-1/2 text-base pointer-events-none transition-all duration-200 z-10"
                             [class.active]="registerForm.get('firstName')?.value || isFirstNameFocused">
                             Nombre
                         </label>
@@ -55,7 +55,7 @@
                         <div class="relative">
                             <label 
                                 for="lastName" 
-                                class="floating-label absolute left-3 top-1/2 transform -translate-y-1/2 text-sm pointer-events-none transition-all duration-200 z-10"
+                                class="floating-label absolute left-3 top-1/2 transform -translate-y-1/2 text-base pointer-events-none transition-all duration-200 z-10"
                                 [class.active]="registerForm.get('lastName')?.value || isLastNameFocused">
                                 Apellido
                             </label>
@@ -158,44 +158,6 @@
                 }
             </div>
 
-            <!-- Confirm Password Field with Floating Label -->
-            <div>
-                <div class="relative">
-                    <label 
-                        for="confirmPassword" 
-                        class="floating-label absolute left-3 top-1/2 transform -translate-y-1/2 text-base pointer-events-none transition-all duration-200 z-10"
-                        [class.active]="registerForm.get('confirmPassword')?.value || isConfirmPasswordFocused">
-                        Confirmar contraseña
-                    </label>
-                    <input 
-                        id="confirmPassword"
-                        [type]="showPassword ? 'text' : 'password'" 
-                        formControlName="confirmPassword"
-                        autocomplete="new-password"
-                        (focus)="onConfirmPasswordFocus()"
-                        (blur)="onConfirmPasswordBlur()"
-                        class="w-full px-4 py-3 text-sm border-2 border-gray-200 rounded-lg bg-gray-50
-                            focus:outline-none focus:bg-white
-                            transition-all duration-200 relative z-0">
-                </div>
-
-                @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid) {
-                    <div class="text-red-500 text-xs mt-1">
-                        @if (registerForm.get('confirmPassword')?.errors?.['required']) {
-                            <span>La confirmación de contraseña es obligatoria.</span>
-                        }
-
-                        @if (registerForm.get('confirmPassword')?.errors?.['minlength']) {
-                            <span>La confirmación de contraseña debe tener al menos 8 caracteres.</span>
-                        }
-
-                        @if (registerForm.errors?.['passwordMismatch']) {
-                            <span>Las contraseñas no coinciden.</span>
-                        }
-                    </div>
-                }
-            </div>
-
             <!-- Submit Button -->
             <button 
                 type="submit" 
@@ -203,7 +165,7 @@
                     'bg-gray-300 text-gray-500 cursor-not-allowed': registerForm.invalid,
                     'cursor-wait': registerForm.valid && submitted,
                 }"
-                class="w-full py-3 px-4 rounded-lg pet-button font-medium transition-all duration-200 
+                class="w-full mt-3 mb-2 py-3 px-4 rounded-lg pet-button font-medium transition-all duration-200 
                        focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 [disabled]="registerForm.invalid || submitted">
                 
@@ -227,7 +189,7 @@
             }
 
             <!-- Footer Message -->
-            <div class="text-center mt-6">
+            <div class="text-center mb-2 mt-4">
                 <p class="text-xs text-gray-600">
                     ¿Ya tienes una cuenta? 
                     <button 
