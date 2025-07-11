@@ -9,9 +9,7 @@ export interface GoogleAuthConfig {
 // Google OAuth Client ID configuration
 // In production, this should be set via environment variables
 const googleAuthConfig: GoogleAuthConfig = {
-  // Replace with your actual Google Client ID
-  // You can get this from Google Cloud Console > APIs & Services > Credentials
-  clientId: '1017473621019-9hbmho8kqgq7pjhvjl4nqsjq6kc6q5qv.apps.googleusercontent.com',
+  clientId: '800054744191-9a91feuu075kn7f4rigapeqvgvp2nl00.apps.googleusercontent.com',
   enabled: true
 };
 

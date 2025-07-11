@@ -23,6 +23,7 @@ export class Login implements OnInit {
   // ======================================
   loginForm!: FormGroup;
   submitted = false;
+  googleSubmitted = false;
   error: string | null = null;
 
   // Focus state tracking for floating labels
@@ -219,19 +220,18 @@ export class Login implements OnInit {
       return;
     }
 
-    this.submitted = true;
+    this.googleSubmitted = true;
     this.error = null;
     
     if (typeof google !== 'undefined') {
       google.accounts.id.prompt((notification: any) => {
         if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // Fallback to popup if prompt is not shown
           google.accounts.id.prompt();
         }
       });
     } else {
       this.error = 'Google Sign-In no está disponible. Por favor, recarga la página.';
-      this.submitted = false;
+      this.googleSubmitted = false;
     }
   }
 

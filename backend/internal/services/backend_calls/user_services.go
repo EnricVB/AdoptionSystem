@@ -4,12 +4,13 @@
 package services
 
 import (
-	"context"
 	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	m "backend/internal/models"
 	mailer "backend/internal/services/mail"
+	"context"
 	"fmt"
+
 	"google.golang.org/api/idtoken"
 )
 
@@ -209,7 +210,7 @@ func AuthenticateGoogleUser(userData r_models.GoogleLoginRequest) (*m.User, erro
 		if getUserErr != nil {
 			return nil, fmt.Errorf("error al obtener usuario: %v", getUserErr)
 		}
-		
+
 		// Convert NonValidatedUser to User for response
 		user = &m.User{
 			ID:           nonValidatedUser.ID,
@@ -384,18 +385,11 @@ func DeactivateUser(id uint) (*m.SimplifiedUser, error) {
 //   - idToken: The Google ID token to verify
 //
 // Returns:
-//   - map[string]interface{}: The verified token payload containing user info
+//   - map[string]any: The verified token payload containing user info
 //   - error: Verification error or nil on success
-func verifyGoogleToken(idToken string) (map[string]interface{}, error) {
-	// Google Client ID - in production, this should be set via environment variables
-	// You can get this from Google Cloud Console > APIs & Services > Credentials
-	clientID := "1017473621019-9hbmho8kqgq7pjhvjl4nqsjq6kc6q5qv.apps.googleusercontent.com"
-	
-	// You can override this with environment variable in production
-	// if envClientID := os.Getenv("GOOGLE_CLIENT_ID"); envClientID != "" {
-	//     clientID = envClientID
-	// }
-	
+func verifyGoogleToken(idToken string) (map[string]any, error) {
+	clientID := "800054744191-9a91feuu075kn7f4rigapeqvgvp2nl00.apps.googleusercontent.com"
+
 	// Verify the token using Google's idtoken package
 	payload, err := idtoken.Validate(context.Background(), idToken, clientID)
 	if err != nil {
@@ -403,8 +397,8 @@ func verifyGoogleToken(idToken string) (map[string]interface{}, error) {
 	}
 
 	// Convert the payload to a map for easier access
-	claims := make(map[string]interface{})
-	
+	claims := make(map[string]any)
+
 	// Extract common claims
 	claims["sub"] = payload.Subject
 	claims["email"] = payload.Claims["email"]
@@ -412,6 +406,6 @@ func verifyGoogleToken(idToken string) (map[string]interface{}, error) {
 	claims["family_name"] = payload.Claims["family_name"]
 	claims["name"] = payload.Claims["name"]
 	claims["picture"] = payload.Claims["picture"]
-	
+
 	return claims, nil
 }
