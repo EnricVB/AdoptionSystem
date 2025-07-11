@@ -1,0 +1,32 @@
+<div class="mt-8 relative">
+    <nav class="flex items-end justify-between px-3 sm:px-5 md:px-12 h-[70px] sm:h-[60px] md:h-[110px] bg-white shadow-2xl drop-shadow-2xl relative">
+        <!-- Bola flotante -->
+        <button 
+            class="absolute z-10 transition-all duration-300 p-6 md:p-8 bg-amber-500 rounded-full border-8 border-white flex items-center justify-center"
+            [style.height]="'56px'"
+            [style.width]="'56px'"
+            [style.left]="'calc((100% / 4) * ' + activeIndex + ' + (100% / 8) - 28px)'"
+            [ngClass]="{'md:h-[80px] md:w-[80px]': true}"
+            style="top:0;"
+        >
+            <i class="fas" [ngClass]="buttons[activeIndex].icon + ' text-white text-2xl sm:text-3xl md:text-5xl'" style="-webkit-text-stroke: 1.5px #fe9a00;"></i>
+        </button>
+        <!-- Botones -->
+        <ng-container *ngFor="let btn of buttons; let i = index">
+            <button 
+            class="group relative p-3 sm:p-3 md:p-6 h-[8ch] sm:h-20 md:h-24 flex items-center justify-center bg-transparent z-0 transition-all duration-300"
+            (click)="setActive(i)"
+            [ngClass]="{
+                'opacity-0 pointer-events-none': activeIndex === i,
+                'opacity-100': activeIndex !== i,
+                'md:h-[80px] md:w-[80px]': true
+            }">
+            <i 
+                class="fas" 
+                [ngClass]="btn.icon + ' text-white text-3xl sm:text-4xl md:text-5xl'"
+                [ngStyle]="{'-webkit-text-stroke': activeIndex === i ? '1px #fff' : '1px #fe9a00'}"
+            ></i>
+            </button>
+        </ng-container>
+    </nav>
+</div>
