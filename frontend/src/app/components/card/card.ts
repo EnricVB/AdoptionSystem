@@ -11,7 +11,7 @@ export class Card {
   @Input() title!: string;
   @Input() species!: string;
   @Input() image!: string;
-  @Input() status: string = "Available";
+  @Input() status!: string;
   @Input() description!: string; 
   @Input() age!: string;
   @Input() vaccinated!: string;
