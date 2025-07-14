@@ -10,7 +10,7 @@ interface Pet {
   breed?: string;
   isAdopted: boolean;
   description?: string;
-  image?: string;
+  imageURL?: string;
 }
 
 @Component({
