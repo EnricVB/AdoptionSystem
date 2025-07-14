@@ -49,16 +49,17 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 
 	for i, pet := range pets {
 		simplifiedPets[i] = m.SimplifiedPet{
-			ID:          pet.ID,
-			Name:        pet.Name,
-			SpeciesID:   pet.SpeciesID,
-			Species:     pet.Species,
-			Breed:       pet.Breed,
-			IsAdopted:   pet.IsAdopted,
-			AdoptUser:   pet.AdoptUser,
-			ImageURL:    pet.ImageURL,
-			Description: pet.Description,
-			BirthDate:   pet.BirthDate,
+			ID:           pet.ID,
+			Name:         pet.Name,
+			SpeciesID:    pet.SpeciesID,
+			Species:      pet.Species,
+			Breed:        pet.Breed,
+			Status:       pet.Status,
+			IsVaccinated: pet.IsVaccinated,
+			AdoptUser:    pet.AdoptUser,
+			ImageURL:     pet.ImageURL,
+			Description:  pet.Description,
+			BirthDate:    pet.BirthDate,
 		}
 	}
 	return simplifiedPets, nil
@@ -137,16 +138,17 @@ func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedP
 	var result []m.SimplifiedPet
 	for _, pet := range pets {
 		result = append(result, m.SimplifiedPet{
-			ID:          pet.ID,
-			Name:        pet.Name,
-			Description: pet.Description,
-			SpeciesID:   pet.SpeciesID,
-			Species:     pet.Species,
-			Breed:       pet.Breed,
-			IsAdopted:   pet.IsAdopted,
-			AdoptUserID: pet.AdoptUserID,
-			AdoptUser:   pet.AdoptUser,
-			ImageURL:    pet.ImageURL,
+			ID:           pet.ID,
+			Name:         pet.Name,
+			Description:  pet.Description,
+			SpeciesID:    pet.SpeciesID,
+			Species:      pet.Species,
+			Breed:        pet.Breed,
+			Status:       pet.Status,
+			IsVaccinated: pet.IsVaccinated,
+			AdoptUserID:  pet.AdoptUserID,
+			AdoptUser:    pet.AdoptUser,
+			ImageURL:     pet.ImageURL,
 		})
 	}
 

@@ -10,6 +10,15 @@ func (Pet) TableName() string {
 	return "Pets"
 }
 
+// PetStatus represents the status of a pet in the adoption system
+type PetStatus string
+
+const (
+	PetStatusAvailable  PetStatus = "Available"
+	PetStatusFosterHome PetStatus = "FosterHome"
+	PetStatusAdopted    PetStatus = "Adopted"
+)
+
 // Pet represents the complete pet entity in the adoption system.
 // This model contains all pet information including adoption status,
 // associated user data, and temporal information.
@@ -18,20 +27,21 @@ func (Pet) TableName() string {
 // Relationships:
 //   - AdoptUser: Many-to-One relationship with User (foreign key: AdoptUserID)
 type Pet struct {
-	ID          uint      `json:"id" gorm:"primaryKey;autoIncrement"`       // Unique identifier for the pet
-	Name        string    `json:"name" gorm:"type:varchar(100);not null"`   // Pet's name
-	SpeciesID   uint      `json:"species_id" gorm:"column:Species_ID"`      // Foreign key to Species
-	Species     Species   `json:"species" gorm:"foreignKey:SpeciesID"`      // Relationship to Species
-	Breed       string    `json:"breed" gorm:"type:varchar(100)"`           // Pet's breed (optional)
-	IsAdopted   bool      `json:"is_adopted" gorm:"column:Is_Adopted"`      // Whether the pet has been adopted
-	BirthDate   time.Time `json:"birthdate" gorm:"column:Birthdate"`        // Pet's date of birth
-	AdoptDate   time.Time `json:"adopt_date" gorm:"column:Adoptdate"`       // Date when the pet was adopted
-	Description string    `json:"description" gorm:"column:Description"`    // Detailed description of the pet
-	AdoptUserID uint      `json:"adopt_user_id" gorm:"column:Adopt_User"`   // ID of the user who adopted the pet
-	AdoptUser   User      `json:"adopt_user" gorm:"foreignKey:AdoptUserID"` // Relationship to User
-	ImageURL    string    `json:"image_url" gorm:"column:ImageURL"`         // Image URL
-	CrtDate     time.Time `json:"crt_date" gorm:"autoCreateTime"`           // Record creation timestamp
-	UptDate     time.Time `json:"upt_date" gorm:"autoUpdateTime"`           // Record last update timestamp
+	ID           uint      `json:"id" gorm:"primaryKey;autoIncrement"`                                        // Unique identifier for the pet
+	Name         string    `json:"name" gorm:"type:varchar(100);not null"`                                    // Pet's name
+	SpeciesID    uint      `json:"species_id" gorm:"column:Species_ID"`                                       // Foreign key to Species
+	Species      Species   `json:"species" gorm:"foreignKey:SpeciesID"`                                       // Relationship to Species
+	Breed        string    `json:"breed" gorm:"type:varchar(100)"`                                            // Pet's breed (optional)
+	Status       PetStatus `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
+	BirthDate    time.Time `json:"birthdate" gorm:"column:Birthdate"`                                         // Pet's date of birth
+	AdoptDate    time.Time `json:"adopt_date" gorm:"column:Adoptdate"`                                        // Date when the pet was adopted
+	Description  string    `json:"description" gorm:"column:Description"`                                     // Detailed description of the pet
+	AdoptUserID  uint      `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet
+	AdoptUser    User      `json:"adopt_user" gorm:"foreignKey:AdoptUserID"`                                  // Relationship to User
+	ImageURL     string    `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
+	IsVaccinated bool      `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status
+	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`                                            // Record creation timestamp
+	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`                                            // Record last update timestamp
 }
 
 // SimplifiedPet represents a minimal pet entity with essential information.
@@ -43,15 +53,16 @@ type Pet struct {
 //   - Includes adoption status and user information for quick reference
 //   - Excludes detailed fields like description and dates for performance
 type SimplifiedPet struct {
-	ID          uint      `json:"id"`                                     // Unique identifier for the pet
-	Name        string    `json:"name"`                                   // Pet's name
-	Description string    `json:"description" gorm:"column:Description"`  // Detailed description of the pet
-	SpeciesID   uint      `json:"species_id" gorm:"column:Species_ID"`    // Foreign key to Species
-	Species     Species   `json:"species"`                                // Relationship to Species
-	Breed       string    `json:"breed"`                                  // Pet's breed (optional)
-	IsAdopted   bool      `json:"is_adopted" gorm:"column:Is_Adopted"`    // Whether the pet has been adopted
-	AdoptUserID uint      `json:"adopt_user_id" gorm:"column:Adopt_User"` // ID of the user who adopted the pet
-	AdoptUser   User      `json:"adopt_user"`                             // Relationship to User
-	BirthDate   time.Time `json:"birthdate" gorm:"column:Birthdate"`      // Pet's date of birth
-	ImageURL    string    `json:"image_url" gorm:"column:ImageURL"`       // Image URL
+	ID           uint      `json:"id"`                                                                        // Unique identifier for the pet
+	Name         string    `json:"name"`                                                                      // Pet's name
+	Description  string    `json:"description" gorm:"column:Description"`                                     // Detailed description of the pet
+	SpeciesID    uint      `json:"species_id" gorm:"column:Species_ID"`                                       // Foreign key to Species
+	Species      Species   `json:"species"`                                                                   // Relationship to Species
+	Breed        string    `json:"breed"`                                                                     // Pet's breed (optional)
+	Status       PetStatus `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
+	AdoptUserID  uint      `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet
+	AdoptUser    User      `json:"adopt_user"`                                                                // Relationship to User
+	BirthDate    time.Time `json:"birthdate" gorm:"column:Birthdate"`                                         // Pet's date of birth
+	ImageURL     string    `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
+	IsVaccinated bool      `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status
 }

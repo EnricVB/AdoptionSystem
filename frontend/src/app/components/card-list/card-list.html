@@ -15,7 +15,7 @@
                 type="text" 
                 placeholder="Buscar mascotas..."
                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <i class="fa-solid fa-search absolute left-4 top-4.5 text-gray-400"></i>
+              <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
             </div>
             
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -24,7 +24,7 @@
             </select>
             
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="">Estado</option>
+              <option value="" disabled>Estado</option>
               <option value="Available">Disponible</option>
               <option value="Adopted">Adoptado</option>
               <option value="FosterHome">En acogida</option>
@@ -48,7 +48,8 @@
       [image]="animal.image_url || ''"
       [description]="animal.description || 'Sin descripción disponible'"
       [age]="(animal.birthdate || 'Sin datos')"
-      [vaccinated]="animal.vaccinated ? 'Vecunado' : 'No Vacunado'"
+      [vaccinated]="animal.is_vaccinated ? 'Vacunado' : 'No Vacunado'"
+      [status]="animal.status || 'Available'"
     ></app-card>
   </div>
 

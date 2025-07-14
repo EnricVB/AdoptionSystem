@@ -11,7 +11,8 @@ interface Pet {
   description?: string;
   image_url?: string;
   birthdate?: string;
-  vaccinated?: boolean;
+  status?: string;
+  is_vaccinated?: boolean;
 }
 
 @Component({
