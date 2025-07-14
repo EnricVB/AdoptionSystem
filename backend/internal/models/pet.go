@@ -43,12 +43,14 @@ type Pet struct {
 //   - Includes adoption status and user information for quick reference
 //   - Excludes detailed fields like description and dates for performance
 type SimplifiedPet struct {
-	ID        uint    `json:"id"`                                  // Unique identifier for the pet
-	Name      string  `json:"name"`                                // Pet's name
-	SpeciesID uint    `json:"species_id" gorm:"column:Species_ID"` // Foreign key to Species
-	Species   Species `json:"species"`                             // Relationship to Species
-	Breed     string  `json:"breed"`                               // Pet's breed (optional)
-	IsAdopted bool    `json:"is_adopted" gorm:"column:Is_Adopted"` // Whether the pet has been adopted
-	AdoptUser User    `json:"adopt_user"`                          // Relationship to User
-	ImageURL  string  `json:"image_url" gorm:"column:ImageURL"`    // Image URL
+	ID          uint    `json:"id"`                                     // Unique identifier for the pet
+	Name        string  `json:"name"`                                   // Pet's name
+	Description string  `json:"description" gorm:"type:text"`           // Detailed description of the pet
+	SpeciesID   uint    `json:"species_id" gorm:"column:Species_ID"`    // Foreign key to Species
+	Species     Species `json:"species"`                                // Relationship to Species
+	Breed       string  `json:"breed"`                                  // Pet's breed (optional)
+	IsAdopted   bool    `json:"is_adopted" gorm:"column:Is_Adopted"`    // Whether the pet has been adopted
+	AdoptUserID uint    `json:"adopt_user_id" gorm:"column:adopt_user"` // ID of the user who adopted the pet
+	AdoptUser   User    `json:"adopt_user"`                             // Relationship to User
+	ImageURL    string  `json:"image_url" gorm:"column:ImageURL"`       // Image URL
 }
