@@ -98,6 +98,61 @@ func GetPetByID(id uint) (*m.Pet, error) {
 	return &pet, nil
 }
 
+func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedPet, error) {
+	db := db.ORMOpen()
+
+	var pets []m.Pet
+
+	// Comenzamos la query base con preload de relaciones
+	query := db.Preload("Species")
+
+	// Filtro por nombre (LIKE %name%)
+	if name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	// Filtro por estado (ENUM)
+	if status != "" {
+		validStatuses := map[string]bool{
+			"Available":  true,
+			"Adopted":    true,
+			"FosterHome": true,
+		}
+		if validStatuses[status] {
+			query = query.Where("status = ?", status)
+		}
+	}
+
+	// Filtro por especie
+	if speciesID > 0 {
+		query = query.Where("species_id = ?", speciesID)
+	}
+
+	// Ejecutar la query
+	if err := query.Find(&pets).Error; err != nil {
+		return nil, fmt.Errorf("error al obtener mascotas filtradas: %v", err)
+	}
+
+	// Mapear los resultados a SimplifiedPet
+	var result []m.SimplifiedPet
+	for _, pet := range pets {
+		result = append(result, m.SimplifiedPet{
+			ID:          pet.ID,
+			Name:        pet.Name,
+			Description: pet.Description,
+			SpeciesID:   pet.SpeciesID,
+			Species:     pet.Species,
+			Breed:       pet.Breed,
+			IsAdopted:   pet.IsAdopted,
+			AdoptUserID: pet.AdoptUserID,
+			AdoptUser:   pet.AdoptUser,
+			ImageURL:    pet.ImageURL,
+		})
+	}
+
+	return result, nil
+}
+
 // ========================================
 // PET CRUD OPERATIONS
 // ========================================

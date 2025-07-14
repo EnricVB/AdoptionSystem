@@ -28,6 +28,7 @@ export class CardList implements OnInit {
   // COMPONENT PROPERTIES
   // ======================================
   animals: ReadonlyArray<Pet> = [];
+  species: ReadonlyArray<any> = [];
   error: string | null = null;
   currentPage = 1;
 
@@ -46,6 +47,7 @@ export class CardList implements OnInit {
   // ======================================
   ngOnInit(): void {
     this.fetchPets();
+    this.fetchSpecies();
   }
 
   // ======================================
@@ -56,6 +58,13 @@ export class CardList implements OnInit {
     this.apiService.getPets().subscribe({
       next: (data) => this.handlePetsSuccess(data),
       error: (err) => this.handlePetsError(err)
+    });
+  }
+
+  fetchSpecies(): void { 
+    this.apiService.getSpecies().subscribe({
+      next: (data) => this.handleSpeciesSuccess(data),
+      error: (err) => this.handleSpeciesError(err)
     });
   }
 
@@ -79,6 +88,16 @@ export class CardList implements OnInit {
 
   private handlePetsError(error: any): void {
     this.error = 'Error fetching pets.';
+  }
+
+  private handleSpeciesSuccess(data: any): void {
+    console.log('Fetched species:', data);
+    this.species = data.content;
+  }
+
+  private handleSpeciesError(error: any): void {
+    this.error = 'Error fetching pets.';
+    console.error('Error fetching pets: ', error);
   }
 
   // ======================================
