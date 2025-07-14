@@ -29,10 +29,10 @@ export class CardList implements OnInit {
   animals: ReadonlyArray<Pet> = [];
   error: string | null = null;
   currentPage = 1;
-  itemsPerPage = 8;
 
   @Input() showPagination = true;
   @Input() showFilter = true;
+  @Input() itemsPerPage: number = 8; 
 
   // ======================================
   // CONSTRUCTOR
