@@ -27,7 +27,7 @@ type Pet struct {
 	BirthDate   time.Time `json:"birthdate" gorm:"column:Birthdate"`        // Pet's date of birth
 	AdoptDate   time.Time `json:"adopt_date" gorm:"column:Adoptdate"`       // Date when the pet was adopted
 	Description string    `json:"description" gorm:"type:text"`             // Detailed description of the pet
-	AdoptUserID uint      `json:"adopt_user_id" gorm:"column:adopt_user"`   // ID of the user who adopted the pet
+	AdoptUserID uint      `json:"adopt_user_id" gorm:"column:Adopt_User"`   // ID of the user who adopted the pet
 	AdoptUser   User      `json:"adopt_user" gorm:"foreignKey:AdoptUserID"` // Relationship to User
 	ImageURL    string    `json:"image_url" gorm:"column:ImageURL"`         // Image URL
 	CrtDate     time.Time `json:"crt_date" gorm:"autoCreateTime"`           // Record creation timestamp
@@ -50,7 +50,7 @@ type SimplifiedPet struct {
 	Species     Species `json:"species"`                                // Relationship to Species
 	Breed       string  `json:"breed"`                                  // Pet's breed (optional)
 	IsAdopted   bool    `json:"is_adopted" gorm:"column:Is_Adopted"`    // Whether the pet has been adopted
-	AdoptUserID uint    `json:"adopt_user_id" gorm:"column:adopt_user"` // ID of the user who adopted the pet
+	AdoptUserID uint    `json:"adopt_user_id" gorm:"column:Adopt_User"` // ID of the user who adopted the pet
 	AdoptUser   User    `json:"adopt_user"`                             // Relationship to User
 	ImageURL    string  `json:"image_url" gorm:"column:ImageURL"`       // Image URL
 }

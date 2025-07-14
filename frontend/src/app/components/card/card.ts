@@ -7,7 +7,6 @@ import { NgIf } from '@angular/common';
   selector: 'app-card',
   imports: [CommonModule, Wave],
   templateUrl: './card.html',
-  styleUrl: './card.css'
 })
 export class Card {
   @Input() title: string = 'Nombre';
