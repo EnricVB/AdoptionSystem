@@ -84,7 +84,7 @@ export class RecoverPassword {
    */
   private onRecoverPasswordSuccess(response: any): void {
     const sessionID = response.content.session_id;
-    this.success = 'An email has been sent to your address with instructions to reset your password. Redirecting to login...';
+    this.success = 'Un e-mail con las instrucciones para recuperar tu contraseña ha sido enviado a tu correo electrónico.';
     
     setTimeout(() => {
       this.router.navigate(['/login'], {state: {sessionID}});
@@ -99,7 +99,7 @@ export class RecoverPassword {
    */
   private onSendMailError(error: any): void {
     this.submitted = false;
-    this.error = error.error?.message || 'Failed to send email. Please try again later.';
+    this.error = error.error?.message || 'Fallo al enviar el e-mail, revisa que la dirección sea correcta.';
   }
 
   // ======================================
