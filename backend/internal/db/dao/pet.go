@@ -58,6 +58,7 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 			AdoptUser:   pet.AdoptUser,
 			ImageURL:    pet.ImageURL,
 			Description: pet.Description,
+			BirthDate:   pet.BirthDate,
 		}
 	}
 	return simplifiedPets, nil
