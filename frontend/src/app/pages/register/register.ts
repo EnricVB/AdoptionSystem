@@ -32,9 +32,6 @@ export class Register {
   // Show password toggle
   showPassword = false;
 
-  // Show password toggle
-  showPassword = false;
-
   // ======================================
   // CONSTRUCTOR
   // ======================================
