@@ -16,12 +16,4 @@ export class Card {
 
   constructor() {
   } 
-
-  ngOnInit(): void {
-    console.log('title:', this.title);
-    console.log('species:', this.species);
-    console.log('image:', this.image);
-    console.log('isAdopted:', this.isAdopted);
-    console.log('description:', this.description);
-  }
 }
