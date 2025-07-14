@@ -2,10 +2,10 @@
   <app-card
     *ngFor="let animal of paginatedAnimals"
     [title]="animal.name"
-    [species]="animal.species"
-    [image]="animal.imageURL || ''"
-    [isAdopted]="animal.isAdopted"
-    [description]="animal.description || ''"
+    [species]="animal.species.name"
+    [image]="animal.image_url || ''"
+    [isAdopted]="animal.is_adopted"
+    [description]="animal.description || 'Sin descripción disponible'"
   ></app-card>
 </div>
 
