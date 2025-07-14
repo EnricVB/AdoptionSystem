@@ -49,14 +49,15 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 
 	for i, pet := range pets {
 		simplifiedPets[i] = m.SimplifiedPet{
-			ID:        pet.ID,
-			Name:      pet.Name,
-			SpeciesID: pet.SpeciesID,
-			Species:   pet.Species,
-			Breed:     pet.Breed,
-			IsAdopted: pet.IsAdopted,
-			AdoptUser: pet.AdoptUser,
-			ImageURL:  pet.ImageURL,
+			ID:          pet.ID,
+			Name:        pet.Name,
+			SpeciesID:   pet.SpeciesID,
+			Species:     pet.Species,
+			Breed:       pet.Breed,
+			IsAdopted:   pet.IsAdopted,
+			AdoptUser:   pet.AdoptUser,
+			ImageURL:    pet.ImageURL,
+			Description: pet.Description,
 		}
 	}
 	return simplifiedPets, nil
