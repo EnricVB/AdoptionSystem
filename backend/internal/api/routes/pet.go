@@ -11,6 +11,8 @@ import (
 	"backend/internal/api/handlers"
 	m "backend/internal/models"
 	response "backend/internal/utils/rest"
+	"backend/internal/utils/time"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -111,9 +113,24 @@ func handleGetPetByID(c echo.Context) error {
 func handleCreatePet(c echo.Context) error {
 	var pet m.Pet
 
-	// Bind and validate request body
+	// Bind request body
 	if err := c.Bind(&pet); err != nil {
-		return response.ErrorResponse(c, http.StatusBadRequest, "datos de mascota inválidos")
+		return response.ErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("datos de mascota inválidos: %v", err))
+	}
+
+	// Basic validation for required fields (example: Name, Species)
+	if pet.Name == "" || pet.SpeciesID == 0 {
+		return response.ErrorResponse(c, http.StatusBadRequest, "nombre y especie son requeridos")
+	}
+
+	// If birthdate is zero, set to a valid default date
+	if pet.BirthDate.IsZero() {
+		pet.BirthDate = time.DefaultDate()
+	}
+
+	// If Adoptdate is zero, set to a valid default date
+	if pet.AdoptDate.IsZero() {
+		pet.AdoptDate = time.DefaultDate()
 	}
 
 	// Delegate pet creation to handler layer
@@ -157,6 +174,16 @@ func handleUpdatePet(c echo.Context) error {
 
 	// Ensure URL ID matches request body
 	pet.ID = uint(id)
+
+	// If birthdate is zero, set to a valid default date
+	if pet.BirthDate.IsZero() {
+		pet.BirthDate = time.DefaultDate()
+	}
+
+	// If Adoptdate is zero, set to a valid default date
+	if pet.AdoptDate.IsZero() {
+		pet.AdoptDate = time.DefaultDate()
+	}
 
 	// Delegate pet update to handler layer
 	updated, httpErr := handlers.HandleUpdatePet(&pet)

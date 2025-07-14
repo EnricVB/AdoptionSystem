@@ -35,17 +35,30 @@ import (
 //   - []m.SimplifiedPet: Slice of all pets with essential information and adoption status
 //   - error: Database error or nil on success
 func GetAllPets() ([]m.SimplifiedPet, error) {
-	// Open database connection
 	gormDB := db.ORMOpen()
 
-	// Retrieve all pets with user relationship preloaded
-	var pets []m.SimplifiedPet
-	result := gormDB.Preload("AdoptUser").Find(&pets)
+	var pets []m.Pet
+	result := gormDB.Preload("Species").Preload("AdoptUser").Find(&pets)
+
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer mascotas: %v", result.Error)
 	}
 
-	return pets, nil
+	simplifiedPets := make([]m.SimplifiedPet, len(pets))
+
+	for i, pet := range pets {
+		simplifiedPets[i] = m.SimplifiedPet{
+			ID:        pet.ID,
+			Name:      pet.Name,
+			SpeciesID: pet.SpeciesID,
+			Species:   pet.Species,
+			Breed:     pet.Breed,
+			IsAdopted: pet.IsAdopted,
+			AdoptUser: pet.AdoptUser,
+			ImageURL:  pet.ImageURL,
+		}
+	}
+	return simplifiedPets, nil
 }
 
 // GetPetByID retrieves a specific pet by its unique identifier.
@@ -68,12 +81,11 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 //   - *m.Pet: Complete pet data with all relationships
 //   - error: Database error or record not found error
 func GetPetByID(id uint) (*m.Pet, error) {
-	// Open database connection
 	gormDB := db.ORMOpen()
 
-	// Retrieve specific pet by ID with relationships
 	var pet m.Pet
-	result := gormDB.Preload("AdoptUser").Where("id = ?", id).First(&pet)
+	result := gormDB.Preload("Species").Preload("AdoptUser").First(&pet, id)
+
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer mascota con id %d: %v", id, result.Error)
 	}
@@ -111,20 +123,18 @@ func GetPetByID(id uint) (*m.Pet, error) {
 //   - *m.Pet: Created pet data with assigned ID and timestamps
 //   - error: Database error or validation error
 func CreatePet(pet *m.Pet) (*m.Pet, error) {
-	// Open database connection
 	gormDB := db.ORMOpen()
-
-	// Set creation and update timestamps
 	now := time.Now()
 	pet.CrtDate = now
 	pet.UptDate = now
-
-	// Create new pet record in database
 	result := gormDB.Create(pet)
+
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al crear mascota: %v", result.Error)
 	}
 
+	// Preload relaciones después de crear
+	gormDB.Preload("Species").Preload("AdoptUser").First(pet, pet.ID)
 	return pet, nil
 }
 
@@ -153,13 +163,9 @@ func CreatePet(pet *m.Pet) (*m.Pet, error) {
 // Returns:
 //   - error: Database error or validation error, nil on success
 func UpdatePet(pet *m.Pet) error {
-	// Open database connection
 	gormDB := db.ORMOpen()
 
-	// Update modification timestamp
 	pet.UptDate = time.Now()
-
-	// Update pet record with all fields
 	result := gormDB.Model(&m.Pet{}).
 		Where("id = ?", pet.ID).
 		Select("*").
@@ -169,6 +175,8 @@ func UpdatePet(pet *m.Pet) error {
 		return fmt.Errorf("error al actualizar mascota con id %d: %v", pet.ID, result.Error)
 	}
 
+	// Preload relaciones después de actualizar
+	gormDB.Preload("Species").Preload("AdoptUser").First(pet, pet.ID)
 	return nil
 }
 
