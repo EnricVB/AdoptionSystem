@@ -8,9 +8,9 @@ interface Pet {
   name: string;
   species: any;
   breed?: string;
-  isAdopted: boolean;
+  is_adopted: boolean;
   description?: string;
-  imageURL?: string;
+  image_url?: string;
 }
 
 @Component({
@@ -56,6 +56,7 @@ export class CardList implements OnInit {
   }
 
   private handlePetsSuccess(data: any): void {
+    console.log('Fetched pets:', data);
     this.animals = data.content;
   }
 
