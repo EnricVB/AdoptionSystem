@@ -274,7 +274,7 @@ export class ApiService {
     name: string;
     species: string;
     breed?: string;
-    birth_date?: string;
+    birthdate?: string;
     description?: string;
   }): Observable<any> {
     return this.http.post<any>(

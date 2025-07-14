@@ -77,7 +77,7 @@ func HandleGetPetByID(id uint) (*m.Pet, response.HTTPError) {
 //   - response.HTTPError: HTTP error or EmptyError on success
 func HandleCreatePet(pet *m.Pet) (*m.Pet, response.HTTPError) {
 	// Input validation
-	if pet.Name == "" || pet.Species == "" {
+	if pet.Name == "" || pet.SpeciesID == 0 {
 		return nil, response.Error(http.StatusBadRequest, "nombre y especie de mascota son obligatorios")
 	}
 
@@ -110,7 +110,7 @@ func HandleUpdatePet(pet *m.Pet) (*m.Pet, response.HTTPError) {
 		return nil, response.Error(http.StatusBadRequest, "ID de mascota no válido")
 	}
 
-	if pet.Name == "" || pet.Species == "" {
+	if pet.Name == "" || pet.SpeciesID == 0 {
 		return nil, response.Error(http.StatusBadRequest, "nombre y especie de mascota son obligatorios")
 	}
 

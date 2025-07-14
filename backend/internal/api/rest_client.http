@@ -131,10 +131,8 @@ Content-Type: application/json
   "name": "Buddy",
   "species_id": 1,
   "breed": "Golden Retriever",
-  "age": 3,
   "description": "Perro amigable y enérgico buscando un hogar amoroso",
-  "status": "available",
-  "image_url": "https://example.com/buddy.jpg"
+  "adopt_user_id": 1
 }
 
 ###
@@ -147,10 +145,7 @@ Content-Type: application/json
   "name": "Buddy Actualizado",
   "species_id": 1,
   "breed": "Golden Retriever",
-  "age": 4,
-  "description": "Actualizado: Perro amigable y enérgico buscando un hogar amoroso",
-  "status": "adopted",
-  "image_url": "https://example.com/buddy-updated.jpg"
+  "description": "Actualizado: Perro amigable y enérgico buscando un hogar amoroso"
 }
 
 ###
