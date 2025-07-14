@@ -1,30 +1,104 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-  <app-card
-    *ngFor="let animal of paginatedAnimals"
-    [title]="animal.name"
-    [species]="animal.species.name"
-    [image]="animal.image_url || ''"
-    [isAdopted]="animal.is_adopted"
-    [description]="animal.description || 'Sin descripción disponible'"
-  ></app-card>
-</div>
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
 
-<div class="flex justify-center gap-4 mt-6">
-  <button
-    (click)="previousPage()"
-    [disabled]="currentPage === 1"
-    class="px-4 py-2 cursor-pointer bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    <i class="fa-solid fa-arrow-left-long"></i>
-  </button>
+  <!-- FILTER -->
+  @if (showFilter) {
+    <div class="bg-white shadow-sm border-b border-gray-200 p-4 mb-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <!-- Header -->
+          <h1 class="text-2xl font-bold text-gray-800">Mascotas en Adopción</h1>
+          
+          <!-- Filtres -->
+          <div class="flex flex-wrap gap-3">
+            <div class="relative">
+              <input 
+                type="text" 
+                placeholder="Buscar mascotas..."
+                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <i class="fa-solid fa-search absolute left-4 top-4.5 text-gray-400"></i>
+            </div>
+            
+            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">Todas las especies</option>
+              <option value="dog">Perros</option>
+              <option value="cat">Gatos</option>
+              <option value="bird">Aves</option>
+              <option value="rabbit">Conejos</option>
+            </select>
+            
+            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">Estado</option>
+              <option value="available">Disponible</option>
+              <option value="adopted">Adoptado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 
-  <span class="self-center">{{ currentPage }} of {{ totalPages }}</span>
+  <!-- CARD LIST -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-20 p-4">
+    <app-card
+      class="flex justify-center items-center"
+      
+      *ngFor="let animal of paginatedAnimals"
+      [title]="animal.name"
+      [species]="animal.species.name"
+      [image]="animal.image_url || ''"
+      [isAdopted]="animal.is_adopted"
+      [description]="animal.description || 'Sin descripción disponible'"
+    ></app-card>
+  </div>
 
-  <button
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-    class="px-4 py-2 cursor-pointer bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    <i class="fa-solid fa-arrow-right-long"></i>
-  </button>
+  <!-- PAGINATION -->
+  @if (showPagination) {
+    <div class="flex items-center justify-center 
+                mt-10 p-2 w-full gap-10
+                bg-white shadow-sm ">
+      <button
+          (click)="goToPage(1)"
+          [disabled]="currentPage === 1"
+            class="px-4 py-2 
+                  enabled:cursor-pointer rounded-sm 
+                  enabled:hover:bg-gray-100 disabled:opacity-50 
+                  transition-all duration-300 ease-in-out">
+        <i class="fa-solid fa-angles-left"></i>
+      </button>
+
+      <div class="flex items-center gap-5">
+        <button
+            (click)="previousPage()"
+            [disabled]="currentPage === 1"
+            class="px-4 py-2 
+                  enabled:cursor-pointer rounded-sm 
+                  enabled:hover:bg-gray-100 disabled:opacity-50 
+                  transition-all duration-300 ease-in-out">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+
+        <span class="self-center text-lg font-medium">{{ currentPage }} de {{ totalPages }}</span>
+
+        <button
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+            class="px-4 py-2 
+                  enabled:cursor-pointer rounded-sm 
+                  enabled:hover:bg-gray-100 disabled:opacity-50 
+                  transition-all duration-300 ease-in-out">
+          <i class="fa-solid fa-angle-right"></i>
+        </button>
+      </div>
+
+      <button
+          (click)="goToPage(totalPages)"
+          [disabled]="currentPage === totalPages"
+            class="px-4 py-2 
+                  enabled:cursor-pointer rounded-sm 
+                  enabled:hover:bg-gray-100 disabled:opacity-50 
+                  transition-all duration-300 ease-in-out">
+        <i class="fa-solid fa-angles-right"></i>
+      </button>
+    </div>
+  }
 </div>
