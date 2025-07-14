@@ -1,14 +1,50 @@
-<div class="shadow-md rounded-2xl max-w-60 min-w-60 w-full bg-[#fdfcf9] cursor-pointer transition-all duration-300 ease-in-out hover:shadow-orange-200 border border-orange-100">
+<div class="shadow-md rounded-2xl 
+      max-w-61 min-w-61 w-full 
+      bg-[#fdfcf9] cursor-pointer 
+      transition-all duration-300 ease-in-out 
+      hover:shadow-orange-200 border border-orange-100">
+  
+  <!-- CARD IMAGE AND ADOPTED STATUS -->
   <div
-    class="relative h-50 overflow-hidden rounded-t-2xl bg-cover bg-center"
-    [ngStyle]="{ 'background-image': 'url(' + image + ')' }">
-    <wave color="#fdfcf9" class="absolute top-40 w-full"></wave>
-    <div *ngIf="isAdopted" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow">
-      <i class="fa-regular fa-circle-check text-3xl text-green-600 transform mt-0.15"></i>
+      class="relative h-50 overflow-hidden rounded-t-xl bg-cover bg-center m-2"
+      [ngStyle]="{ 'background-image': 'url(' + image + ')' }">
+
+    <wave color="#fdfcf9" class="absolute top-42 w-full"></wave>
+
+    <div *ngIf="status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
+      <i class="fa-solid fa-circle-check text-3xl text-green-600 transform mt-0.15"></i>
+    </div>
+
+    <div *ngIf="status === 'FosterHome'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En casa de acogida">
+      <i class="fa-solid fa-circle-user text-3xl text-red-600 transform mt-0.15"></i>
+    </div>
+    
+    <div *ngIf="status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
+      <i class="fa-solid fa-circle-exclamation text-3xl text-yellow-600 transform mt-0.15"></i>
     </div>
   </div>
-  <div class="relative h-30 flex flex-col gap-2 items-center justify-center mb-4 p-4 pb-8">
-    <h3 class="text-xl font-bold text-orange-900 text-center drop-shadow-sm">{{ title }}</h3>
-    <p class="text-gray-700 text-sm text-center">{{ description }}</p>
+
+  <!-- CARD CONTENT -->
+  <div class="relative h-28
+        flex flex-col 
+        gap-2 items-left justify-between 
+        p-4">
+
+    <div>
+      <h3 class="text-xl font-bold text-orange-900 text-left drop-shadow-sm">{{ title }}</h3>
+      <p class="text-gray-700 mt-1 text-sm text-left whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{{ description }}</p>
+    </div>
+
+    <div class="flex flex-row flex-wrap mt-2 w-full">
+      <div class="flex items-center gap-2 flex-1 min-w-0">
+        <i class="fa-regular fa-calendar"></i>
+        <span class="font-thin text-sm truncate">{{ age }}</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-1 min-w-0">
+        <i class="fa-solid fa-syringe"></i>
+        <span class="font-thin text-sm truncate">{{ vaccinated }}</span>
+      </div>
+    </div>
   </div>
 </div>

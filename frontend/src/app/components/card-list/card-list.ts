@@ -8,9 +8,10 @@ interface Pet {
   name: string;
   species: any;
   breed?: string;
-  is_adopted: boolean;
   description?: string;
   image_url?: string;
+  birthdate?: string;
+  vaccinated?: boolean;
 }
 
 @Component({
@@ -59,13 +60,25 @@ export class CardList implements OnInit {
   }
 
   private handlePetsSuccess(data: any): void {
-    console.log('Fetched pets:', data);
-    this.animals = data.content;
+    this.animals = data.content.map((pet: any) => ({
+      ...pet,
+      birthdate: pet.birthdate && pet.birthdate !== "0001-01-01T00:00:00Z"
+        ? this.parseDateToDDMMYYYY(pet.birthdate)
+        : ''
+    }));
+    console.log('Fetched pets:', data.content);
+  }
+
+  private parseDateToDDMMYYYY(dateStr: string): string {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   private handlePetsError(error: any): void {
     this.error = 'Error fetching pets.';
-    console.error('Error fetching pets: ', error);
   }
 
   // ======================================

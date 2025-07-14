@@ -1,27 +1,4 @@
 @import "tailwindcss";
-@import "./transitions/2fa-transition.css";
-
-/* Scrollbar base */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #eef1e1;
-  border-radius: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #cabda2;
-  border-radius: 10px;
-}
-
-/* Hover del handle */
-::-webkit-scrollbar-thumb:hover {
-  background: #918874;
-}
 
 
 /* Header Styles */
@@ -33,85 +10,20 @@
   position: relative;
 }
 
-/* Decoration Styles */
-hr {
-  display: block;
-  height: 1px;
-  width: 15%;
-
-  border: 0;
-  border-top: 1px solid rgba(255, 107, 107, 0.2);
-
-  margin: 1.5em auto;
-  padding: 0;
-}
-
-/* Form Card Styles */
-.form-card {
-  padding-inline: 40px;
-}
-
-
-/* Button Styles */
-.fa-eye-slash, .fa-eye {
-  cursor: pointer;
-}
-
-.pet-button {
-  border: none;
-  color: white;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.pet-button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.pet-button:hover::before {
-  width: 500px;
-  height: 500px;
-}
-
-.pet-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
-  cursor: pointer;
-}
-
-.pet-button:active {
-  transform: translateY(0);
-}
-
 /* Floating Label Styles */
 .floating-label {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #835454c9 !important;
 }
 
 .floating-label.active {
   transform: translateY(-15px) translateX(-12px) !important;
   font-size: 0.875rem !important;
-  color: #835454c9 !important;
+  color: #ff6b6b !important;
   top: 0 !important;
 }
 
 /* Input Styles */
 input {
-  height: 50px;
-
   position: relative;
   z-index: 0;
   border-radius: 12px !important;
@@ -121,7 +33,7 @@ input {
 
 input:focus {
   background: rgba(255, 255, 255, 1) !important;
-  border-color: #9f6bff !important;
+  border-color: #ff6b6b !important;
   box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
   transform: translateY(-2px);
 }
@@ -132,8 +44,6 @@ input:-webkit-autofill {
 
 input::placeholder {
   color: rgba(0, 0, 0, 0.5) !important;
-  font-size: small !important;
-  font-weight: normal !important;
 }
 
 /* Button Styles */
@@ -144,11 +54,4 @@ input::placeholder {
 /* Error Styles */
 .error:first-letter {
   text-transform: uppercase;
-}
-
-/* Background responsive styles */
-@media (max-width: 640px) {
-  .pet-paw {
-    display: none;
-  }
 }
