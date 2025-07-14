@@ -27,7 +27,6 @@ export class CardList implements OnInit {
   // COMPONENT PROPERTIES
   // ======================================
   animals: ReadonlyArray<Pet> = [];
-  loading = false;
   error: string | null = null;
   currentPage = 1;
   itemsPerPage = 4;
@@ -49,7 +48,6 @@ export class CardList implements OnInit {
   // DATA FETCHING & HANDLING
   // ======================================
   fetchPets(): void {
-    this.loading = true;
     this.error = null;
     this.apiService.getPets().subscribe({
       next: (data) => this.handlePetsSuccess(data),
@@ -59,11 +57,9 @@ export class CardList implements OnInit {
 
   private handlePetsSuccess(data: any): void {
     this.animals = data.content;
-    this.loading = false;
   }
 
   private handlePetsError(error: any): void {
-    this.loading = false;
     this.error = 'Error fetching pets.';
     console.error('Error fetching pets: ', error);
   }
