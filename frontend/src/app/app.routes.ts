@@ -46,4 +46,9 @@ export const routes: Routes = [
         component: Twofa,
         data: { animation: 'twofa' }
     },
+    { 
+        path: 'dashboard', 
+        component: Dashboard,
+        data: { animation: 'dashboard' }
+    },
 ];
