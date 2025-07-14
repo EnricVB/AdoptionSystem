@@ -20,16 +20,14 @@
             
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="">Todas las especies</option>
-              <option value="dog">Perros</option>
-              <option value="cat">Gatos</option>
-              <option value="bird">Aves</option>
-              <option value="rabbit">Conejos</option>
+              <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
             </select>
             
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="">Estado</option>
-              <option value="available">Disponible</option>
-              <option value="adopted">Adoptado</option>
+              <option value="Available">Disponible</option>
+              <option value="Adopted">Adoptado</option>
+              <option value="FosterHome">En acogida</option>
             </select>
           </div>
         </div>
