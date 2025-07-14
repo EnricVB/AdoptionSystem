@@ -1,8 +1,7 @@
-<div class="flex flex-col min-h-screen bg-[#f4f8e6]">
-
+<div class="min-h-screen flex flex-col items-center justify-center bg-[#f4f8e6] overflow-x-hidden">
   <!-- FILTER -->
   @if (showFilter) {
-    <div class="bg-[#edf1dc] shadow-sm border-b border-orange-50/10 p-4 mb-6">
+    <div class="bg-[#edf1dc] shadow-sm border-b border-orange-50/10 p-4 mb-6 w-full">
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <!-- Header -->
@@ -24,7 +23,7 @@
             </select>
             
             <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="" disabled>Estado</option>
+              <option value="">Estado</option>
               <option value="Available">Disponible</option>
               <option value="Adopted">Adoptado</option>
               <option value="FosterHome">En acogida</option>
@@ -79,7 +78,7 @@
           <i class="fa-solid fa-angle-left"></i>
         </button>
 
-        <span class="self-center text-lg font-medium">{{ currentPage }} de {{ totalPages }}</span>
+        <span class="self-center text-lg font-medium">{{ currentPage }}/{{ totalPages }}</span>
 
         <button
             (click)="nextPage()"
