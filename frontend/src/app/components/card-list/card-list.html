@@ -3,9 +3,9 @@
     *ngFor="let animal of paginatedAnimals"
     [title]="animal.name"
     [species]="animal.species"
-    [image]="animal.image"
+    [image]="animal.imageURL || ''"
     [isAdopted]="animal.isAdopted"
-    [description]="animal.description"
+    [description]="animal.description || ''"
   ></app-card>
 </div>
 
