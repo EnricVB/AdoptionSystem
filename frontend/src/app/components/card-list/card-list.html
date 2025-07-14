@@ -39,7 +39,7 @@
 
   <!-- CARD LIST -->
   <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 
-              gap-y-11 p-4 gap-x-30
+              gap-y-16 p-4 gap-x-30
               mx-auto">
     <app-card
       class="flex justify-center items-center"
@@ -48,8 +48,9 @@
       [title]="animal.name"
       [species]="animal.species.name"
       [image]="animal.image_url || ''"
-      [isAdopted]="animal.is_adopted"
       [description]="animal.description || 'Sin descripción disponible'"
+      [age]="(animal.birthdate || 'Sin datos')"
+      [vaccinated]="animal.vaccinated ? 'Vecunado' : 'No Vacunado'"
     ></app-card>
   </div>
 
