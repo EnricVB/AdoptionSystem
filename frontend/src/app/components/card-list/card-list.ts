@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { ApiService } from '@app/services/api.service';
@@ -29,7 +29,10 @@ export class CardList implements OnInit {
   animals: ReadonlyArray<Pet> = [];
   error: string | null = null;
   currentPage = 1;
-  itemsPerPage = 4;
+  itemsPerPage = 8;
+
+  @Input() showPagination = true;
+  @Input() showFilter = true;
 
   // ======================================
   // CONSTRUCTOR
@@ -76,6 +79,12 @@ export class CardList implements OnInit {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.animals.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   nextPage(): void {
