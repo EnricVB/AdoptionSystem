@@ -1,0 +1,38 @@
+<nav class="flex items-center space-x-2 text-sm text-gray-600">
+  <ng-container *ngFor="let item of items; let last = last">
+    <!-- Breadcrumb Item -->
+    <ng-container *ngIf="isNavigable(item, last); else staticItem">
+      <!-- RouterLink navigation -->
+      <a *ngIf="item.routerLink; else externalLink"
+        [routerLink]="item.routerLink" 
+        class="flex items-center space-x-1 px-3 py-2 rounded-lg
+               hover:bg-white/50 hover:text-gray-800 
+               transition-all duration-200 group">
+        <i *ngIf="item.icon" [class]="item.icon + ' text-orange-500 group-hover:text-orange-600'"></i>
+        <span class="font-medium">{{ item.label }}</span>
+      </a>
+      
+      <!-- External URL navigation -->
+      <ng-template #externalLink>
+        <a [href]="item.url"
+          class="flex items-center space-x-1 px-3 py-2 rounded-lg
+                 hover:bg-white/50 hover:text-gray-800 
+                 transition-all duration-200 group">
+          <i *ngIf="item.icon" [class]="item.icon + ' text-orange-500 group-hover:text-orange-600'"></i>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+      </ng-template>
+    </ng-container>
+    
+    <!-- Static item (last item or non-navigable) -->
+    <ng-template #staticItem>
+      <span class="flex items-center space-x-1 px-3 py-2 text-gray-800 font-semibold">
+        <i *ngIf="item.icon" [class]="item.icon + ' text-orange-500'"></i>
+        <span>{{ item.label }}</span>
+      </span>
+    </ng-template>
+    
+    <!-- Separator -->
+    <i *ngIf="!last" class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+  </ng-container>
+</nav>

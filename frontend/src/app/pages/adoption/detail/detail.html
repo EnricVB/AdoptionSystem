@@ -90,7 +90,7 @@
         <div class="p-6 bg-white">
             <h2 class="text-xs font-semibold text-gray-800 mb-4 uppercase">Descripción</h2>
 
-            <p class="text-md font-thin leading-relaxed mx-4">
+            <p class="text-md text-gray-600 font-thin leading-relaxed mx-4">
                 {{ pet?.description || 'Esta adorable mascota está buscando un hogar lleno de amor. ¡Podrías ser tú quien le dé la familia que tanto merece!' }}
             </p>
         </div>
@@ -135,21 +135,17 @@
                     Volver
                 </button>
                 <button *ngIf="pet?.status === 'Available'" (click)="adoptionContact()"
-                        class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold
-                                py-3 px-6 rounded-lg cursor-pointer
-                                transition-colors duration-300 
-                                flex items-center justify-center 
-                                gap-2 text-md">
+                        [title]="!isLoggedIn() ? 'You must be logged in' : ''"
+                        [class]="!isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!isLoggedIn()">
 
                     <i class="fa-solid fa-heart"></i>
                     ¡Adoptame!
                 </button>
                 <button *ngIf="pet?.status === 'FosterHome'" (click)="fosterHomeContact()"
-                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold 
-                                py-3 px-6 rounded-lg cursor-pointer
-                                transition-colors duration-300 
-                                flex items-center justify-center 
-                                gap-2 text-md">
+                        [title]="!isLoggedIn() ? 'You must be logged in' : ''"
+                        [class]="!isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!isLoggedIn()">
                     <i class="fa-solid fa-check"></i>
                     Contactar
                 </button>

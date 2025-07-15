@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 /* Header Styles */
 .pet-header {
   background: linear-gradient(135deg, #ff6b6b, #ffa500);
@@ -54,4 +53,10 @@ input::placeholder {
 /* Error Styles */
 .error:first-letter {
   text-transform: uppercase;
+}
+
+nav.p-breadcrumb {
+  background: #00000000 !important;
+  padding-inline: 0 !important;
+  padding-bottom: 0 !important;
 }

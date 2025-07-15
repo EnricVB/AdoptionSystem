@@ -3,37 +3,45 @@
   @if (showFilter) {
     <div class="bg-[#edf1dc] shadow-sm 
                   border-b border-orange-50/10 
-                  p-4 mb-6 w-full 
-                  absolute top-0 z-10">
+                  p-4 mb-2 w-full 
+                  relative top-0 z-10">
 
       <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <!-- Header -->
-          <h1 class="text-2xl font-bold text-gray-800">Mascotas en Adopción</h1>
+        <div class="flex flex-col gap-6">
           
-          <!-- Filtres -->
-          <div class="flex flex-wrap gap-3">
-            <div class="relative">
-              <input 
-                type="text" 
-                placeholder="Buscar mascotas..."
-                [(ngModel)]="filters.name"
-                (ngModelChange)="fetchFilteredPets()"
-                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:translate-y-0.5 focus:ring-blue-500 focus:border-transparent">
-              <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+          <!-- Breadcrumb -->
+          <div class="flex justify-start">
+            <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+          </div>
+
+          <!-- Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+            <h1 class="text-2xl font-bold text-gray-800">Mascotas en Adopción</h1>
+            
+            <!-- Filtres -->
+            <div class="flex flex-wrap gap-3">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  placeholder="Buscar mascotas..."
+                  [(ngModel)]="filters.name"
+                  (ngModelChange)="fetchFilteredPets()"
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:translate-y-0.5 focus:ring-blue-500 focus:border-transparent">
+                <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+              </div>
+              
+              <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 text-black border border-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Todas las especies</option>
+                <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
+              </select>
+              
+              <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 text-black border border-gray-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Estado</option>
+                <option value="Available">Disponible</option>
+                <option value="Adopted">Adoptado</option>
+                <option value="FosterHome">En acogida</option>
+              </select>
             </div>
-            
-            <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="">Todas las especies</option>
-              <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
-            </select>
-            
-            <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option value="">Estado</option>
-              <option value="Available">Disponible</option>
-              <option value="Adopted">Adoptado</option>
-              <option value="FosterHome">En acogida</option>
-            </select>
           </div>
         </div>
       </div>
@@ -43,7 +51,7 @@
   <!-- CARD LIST -->
   <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 
               gap-y-16 p-4 gap-x-30
-              mx-auto mt-50 md:mt-35 lg:mt-25 mb-10">
+              mx-auto">
     <app-card
       class="flex justify-center items-center"
       *ngFor="let animal of paginatedAnimals"
@@ -56,7 +64,7 @@
     <div class="flex items-center justify-center 
                 p-2 w-full gap-10
                 bg-[#edf1dc] shadow-sm
-                sticky bottom-0 z-10 mt-auto">
+                sticky bottom-0 z-10 mt-1 text-black">
       <button
           (click)="goToPage(1)"
           [disabled]="currentPage === 1"

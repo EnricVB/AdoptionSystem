@@ -1,13 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { Card } from '../card/card';
+import { Breadcrumb, BreadcrumbItem } from '../breadcrumb/breadcrumb';
 import { ApiService } from '@app/services/api.service';
 import { SimplifiedPet, Species } from '@app/models';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-card-list',
-  imports: [CommonModule, Card, FormsModule],
+  imports: [CommonModule, Card, FormsModule, RouterModule, Breadcrumb],
   templateUrl: './card-list.html',
   host: {
     'style': 'view-transition-name: card-list'
@@ -23,6 +25,18 @@ export class CardList implements OnInit {
   error: string | null = null;
   currentPage = 1;
 
+  breadcrumbItems: BreadcrumbItem[] = [
+    { 
+      label: 'Dashboard', 
+      icon: 'fa-solid fa-house', 
+      routerLink: '/dashboard' 
+    },
+    { 
+      label: 'Adopción', 
+      icon: 'fa-solid fa-paw' 
+    }
+  ];
+
   @Input() showPagination = true;
   @Input() showFilter = true;
   @Input() itemsPerPage: number = 8; 
@@ -30,7 +44,10 @@ export class CardList implements OnInit {
   // ======================================
   // CONSTRUCTOR
   // ======================================
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    private router: Router
+  ) {
   }
 
   // ======================================
@@ -165,4 +182,26 @@ export class CardList implements OnInit {
       this.currentPage--;
     }
   }
+
+  // ======================================
+  // NAVIGATION
+  // ======================================
+  goToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  // ======================================
+  // FILTER MANAGEMENT
+  // ======================================
+  clearFilters(): void {
+    this.filters = {
+      name: '',
+      status: '',
+      species_id: ''
+    };
+    this.currentPage = 1; // Reset to first page
+    this.fetchPets(); // Reload all pets without filters
+  }
+
+  // ======================================
 }
