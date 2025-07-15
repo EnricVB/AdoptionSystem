@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '@app/services/api.service';
 import { CommonModule } from '@angular/common';
 import { Pet, PetStatus } from '@app/models';
+import { CookieService } from '@app/services/cookie.service';
 
 @Component({
   selector: 'app-detail',
@@ -22,7 +23,8 @@ export class Detail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private cookieService: CookieService
   ) {
     // Initialization logic can go here if needed
   }
@@ -102,5 +104,9 @@ export class Detail implements OnInit {
   adoptionContact(): void {
     if (!this.pet) return;
     
+  }
+
+  public isLoggedIn(): boolean {
+    return !!this.cookieService.getCookie('sessionID');
   }
 }
