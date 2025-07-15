@@ -79,7 +79,9 @@ export class CardList implements OnInit {
   filters = {
     name: '',
     status: '',
-    species_id: ''
+    species_id: '',
+    genre: '',
+    vaccinated: ''
   };
 
   fetchFilteredPets(): void {
@@ -87,14 +89,16 @@ export class CardList implements OnInit {
     const filters = {
       name: this.filters.name || '',
       status: this.filters.status || '',
-      species_id: this.filters.species_id || ''
+      species_id: this.filters.species_id || '',
+      genre: this.filters.genre || '',
+      vaccinated: this.filters.vaccinated || ''
     };
-    console.log('filters: ',filters)
     this.apiService.getFilteredPets(filters).subscribe({
       
       next: (data) => this.handleFilteredPetsSuccess(data),
       error: (err) => this.handleFilteredPetsError(err)
     });
+    console.log('Filters applied:', filters);
   }
 
   private handlePetsSuccess(data: any): void {
