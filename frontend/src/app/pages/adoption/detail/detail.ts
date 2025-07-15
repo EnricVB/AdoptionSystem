@@ -92,4 +92,15 @@ export class Detail implements OnInit {
   goBack(): void {
     this.router.navigate(['/adopt']);
   }
+
+  fosterHomeContact(): void {
+    if (!this.pet) return;
+
+        
+  }
+
+  adoptionContact(): void {
+    if (!this.pet) return;
+    
+  }
 }
