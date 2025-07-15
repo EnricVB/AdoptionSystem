@@ -1,5 +1,5 @@
 <div class="flex flex-col items-center justify-center bg-[#f4f8e6] overflow-x-hidden">
-  <!-- FILTER -->
+  FILTER
   @if (showFilter) {
     <div class="bg-[#edf1dc] shadow-sm 
                   border-b border-orange-50/10 
@@ -42,11 +42,40 @@
                 <option value="FosterHome">En acogida</option>
               </select>
             </div>
+            
+            <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">Todas las especies</option>
+              <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
+            </select>
+            
+            <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="">Estado</option>
+              <option value="Available">Disponible</option>
+              <option value="Adopted">Adoptado</option>
+              <option value="FosterHome">En acogida</option>
+            </select>
+            
+            <select [(ngModel)]="filters.genre" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Género</option>
+                <option value="Male">Macho</option>
+                <option value="Female">Hembra</option>
+            </select>
+
+            <select [(ngModel)]="filters.vaccinated" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value=>Vacuna</option>
+                <option value=1>Vacunado</option>
+                <option value=0>No Vacunado</option>
+            </select>
           </div>
         </div>
       </div>
     </div>
   }
+
+
+
+
+  
 
   <!-- CARD LIST -->
   <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 

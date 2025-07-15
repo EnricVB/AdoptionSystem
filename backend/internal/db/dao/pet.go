@@ -100,7 +100,7 @@ func GetPetByID(id uint) (*m.Pet, error) {
 	return &pet, nil
 }
 
-func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedPet, error) {
+func GetFilteredPets(name string, status string, speciesID int, genre string, vaccinated string) ([]m.SimplifiedPet, error) {
 	db := db.ORMOpen()
 
 	var pets []m.Pet
@@ -128,6 +128,14 @@ func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedP
 	// Filtro por especie
 	if speciesID > 0 {
 		query = query.Where("species_id = ?", speciesID)
+	}
+
+	if genre != "" {
+		query = query.Where("genre = ?", genre)
+	}
+
+	if vaccinated != "" {
+		query = query.Where("vaccinated = ?", vaccinated)
 	}
 
 	// Ejecutar la query
