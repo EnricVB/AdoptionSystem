@@ -265,6 +265,15 @@ export class ApiService {
     );
   }
 
+  getFilteredPets(filters: any): Observable<any> {
+    const queryString = new URLSearchParams(filters).toString();
+    return this.http.get<any>(
+      `${this.baseUrl}/filtered-pets?${queryString}`,
+      { headers: this.defaultHeaders }
+    );
+  }
+
+
   /**
    * Create a new pet record
    * 

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { ApiService } from '@app/services/api.service';
 import { SimplifiedPet, Species } from '@app/models';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-card-list',
-  imports: [CommonModule, Card],
+  imports: [CommonModule, Card, FormsModule],
   templateUrl: './card-list.html',
   host: {
     'style': 'view-transition-name: card-list'
@@ -58,8 +59,29 @@ export class CardList implements OnInit {
     });
   }
 
-  private handlePetsSuccess(data: { content: SimplifiedPet[] }): void {
-    this.animals = data.content.map((pet: SimplifiedPet) => ({
+  filters = {
+    name: '',
+    status: '',
+    species_id: ''
+  };
+
+  fetchFilteredPets(): void {
+    this.error = null;
+    const filters = {
+      name: this.filters.name || '',
+      status: this.filters.status || '',
+      species_id: this.filters.species_id || ''
+    };
+    console.log('filters: ',filters)
+    this.apiService.getFilteredPets(filters).subscribe({
+      
+      next: (data) => this.handleFilteredPetsSuccess(data),
+      error: (err) => this.handleFilteredPetsError(err)
+    });
+  }
+
+  private handlePetsSuccess(data: any): void {
+    this.animals = data.content.map((pet: any) => ({
       ...pet,
       birthdate: pet.birthdate && pet.birthdate !== "0001-01-01T00:00:00Z"
         ? this.parseDateToDDMMYYYY(pet.birthdate)
@@ -86,6 +108,26 @@ export class CardList implements OnInit {
   private handleSpeciesError(error: any): void {
     this.error = 'Error fetching pets.';
     console.error('Error fetching pets: ', error);
+  }
+
+  private handleFilteredPetsSuccess(data: any): void {
+    if (!data.content || !Array.isArray(data.content)) {
+    this.animals = [];
+    console.warn('No pets found or content is null.');
+    return;
+  }
+
+    this.animals = data.content.map((pet: any) => ({
+      ...pet,
+      birthdate: pet.birthdate && pet.birthdate !== "0001-01-01T00:00:00Z"
+        ? this.parseDateToDDMMYYYY(pet.birthdate)
+        : ''
+    }));
+  }
+
+  private handleFilteredPetsError(error: any): void {
+    this.error = 'Error fetching filtered pets.';
+    console.error('Error fetching filtered pets:', error);
   }
 
   // ======================================
