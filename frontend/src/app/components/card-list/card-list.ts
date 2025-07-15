@@ -83,10 +83,11 @@ export class CardList implements OnInit {
       status: this.filters.status || '',
       species_id: this.filters.species_id || ''
     };
-
+    console.log('filters: ',filters)
     this.apiService.getFilteredPets(filters).subscribe({
-      next: (data) => this.handlePetsSuccess(data),
-      error: (err) => this.handlePetsError(err)
+      
+      next: (data) => this.handleFilteredPetsSuccess(data),
+      error: (err) => this.handleFilteredPetsError(err)
     });
   }
 
@@ -120,6 +121,26 @@ export class CardList implements OnInit {
   private handleSpeciesError(error: any): void {
     this.error = 'Error fetching pets.';
     console.error('Error fetching pets: ', error);
+  }
+
+  private handleFilteredPetsSuccess(data: any): void {
+    if (!data.content || !Array.isArray(data.content)) {
+    this.animals = [];
+    console.warn('No pets found or content is null.');
+    return;
+  }
+
+    this.animals = data.content.map((pet: any) => ({
+      ...pet,
+      birthdate: pet.birthdate && pet.birthdate !== "0001-01-01T00:00:00Z"
+        ? this.parseDateToDDMMYYYY(pet.birthdate)
+        : ''
+    }));
+  }
+
+  private handleFilteredPetsError(error: any): void {
+    this.error = 'Error fetching filtered pets.';
+    console.error('Error fetching filtered pets:', error);
   }
 
   // ======================================
