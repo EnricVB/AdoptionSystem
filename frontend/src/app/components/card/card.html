@@ -12,7 +12,7 @@
 
     <wave color="#fdfcf9" class="absolute top-42 w-full"></wave>
 
-    <div *ngIf="status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
+    <div *ngIf="status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
       <i class="fa-solid fa-circle-check text-3xl text-green-600 transform mt-0.15"></i>
     </div>
 
@@ -20,7 +20,7 @@
       <i class="fa-solid fa-circle-user text-3xl text-yellow-500 transform mt-0.15"></i>
     </div>
     
-    <div *ngIf="status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
+    <div *ngIf="status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
       <i class="fa-solid fa-smile text-3xl text-blue-400 transform mt-0.15"></i>
     </div>
   </div>
