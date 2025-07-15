@@ -137,8 +137,8 @@ func DeletePet(id uint) error {
 	return nil
 }
 
-func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedPet, error) {
-	pets, err := dao.GetFilteredPets(name, status, speciesID)
+func GetFilteredPets(name string, status string, speciesID int, genre string, vaccinated string) ([]m.SimplifiedPet, error) {
+	pets, err := dao.GetFilteredPets(name, status, speciesID, genre, vaccinated)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener mascotas filtradas: %v", err)
 	}
