@@ -1,7 +1,7 @@
 <div class="min-h-screen flex flex-col items-center justify-center bg-[#f4f8e6] overflow-x-hidden">
   <!-- FILTER -->
   @if (showFilter) {
-    <div class="bg-[#edf1dc] shadow-sm border-b border-orange-50/10 p-4 mb-6 w-full">
+    <div class="bg-[#edf1dc] shadow-sm border-b border-orange-50/10 p-4 mb-6 w-full absolute top-0 z-10">
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <!-- Header -->
@@ -37,7 +37,7 @@
   <!-- CARD LIST -->
   <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 
               gap-y-16 p-4 gap-x-30
-              mx-auto">
+              mx-auto mt-10 mb-10">
     <app-card
       class="flex justify-center items-center"
       
@@ -55,8 +55,9 @@
   <!-- PAGINATION -->
   @if (showPagination) {
     <div class="flex items-center justify-center 
-                mt-10 p-2 w-full gap-10
-                bg-[#edf1dc] shadow-sm ">
+                p-2 w-full gap-10
+                bg-[#edf1dc] shadow-sm
+                absolute bottom-0 z-10">
       <button
           (click)="goToPage(1)"
           [disabled]="currentPage === 1"
