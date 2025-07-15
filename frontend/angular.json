@@ -25,8 +25,7 @@
               }
             ],
             "styles": [
-              "src/styles/styles.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.css"
+              "@styles/styles.css"
             ]
           },
           "configurations": {
@@ -83,7 +82,7 @@
               }
             ],
             "styles": [
-              "src/styles/styles.css"
+              "@styles/styles.css"
             ]
           }
         }

@@ -3,5 +3,5 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { CardList } from '@app/components/card-list/card-list';
 
-bootstrapApplication(CardList, appConfig)
+bootstrapApplication(App, appConfig)
   .catch((err) => console.error(err));

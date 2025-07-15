@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { ApiService } from '@app/services/api.service';
-import { MobileFooter } from "../mobile-footer/mobile-footer";
 
 interface Pet {
   id: number;
@@ -18,7 +17,7 @@ interface Pet {
 
 @Component({
   selector: 'app-card-list',
-  imports: [CommonModule, Card, MobileFooter],
+  imports: [CommonModule, Card],
   templateUrl: './card-list.html',
   host: {
     'style': 'view-transition-name: card-list'
