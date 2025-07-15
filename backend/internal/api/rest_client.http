@@ -123,6 +123,12 @@ Content-Type: application/json
 
 ###
 
+### Obtener mascota filtrada
+  GET {{BASE_URL}}/api/filtered-pets?name=M
+Content-Type: application/json
+
+###
+
 ### Crear una nueva mascota
 POST {{BASE_URL}}/api/pets
 Content-Type: application/json
