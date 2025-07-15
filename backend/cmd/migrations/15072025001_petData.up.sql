@@ -1,12 +1,9 @@
-ALTER TABLE Pets
-  ADD COLUMN Genre ENUM('Male', 'Female'),
-  ADD COLUMN Weight DECIMAL(5,2) NOT NULL DEFAULT 0.00;
 
 CREATE TABLE VaccinationHistory (
-  ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   Pet_ID INT UNSIGNED NOT NULL,
   Vaccination_Date DATE NOT NULL,
   Vaccine_Name VARCHAR(100) NOT NULL,
+  PRIMARY KEY (Pet_ID, Vaccination_Date, Vaccine_Name),
   FOREIGN KEY (Pet_ID) REFERENCES Pets(ID)
 );
 
