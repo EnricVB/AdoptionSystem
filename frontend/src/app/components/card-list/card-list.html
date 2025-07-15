@@ -17,16 +17,18 @@
               <input 
                 type="text" 
                 placeholder="Buscar mascotas..."
+                [(ngModel)]="filters.name"
+                (ngModelChange)="fetchFilteredPets()"
                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:translate-y-0.5 focus:ring-blue-500 focus:border-transparent">
               <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
             </div>
             
-            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="">Todas las especies</option>
               <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
             </select>
             
-            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="">Estado</option>
               <option value="Available">Disponible</option>
               <option value="Adopted">Adoptado</option>

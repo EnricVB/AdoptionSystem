@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { ApiService } from '@app/services/api.service';
+import { FormsModule } from '@angular/forms';
 
 interface Pet {
   id: number;
@@ -17,7 +18,7 @@ interface Pet {
 
 @Component({
   selector: 'app-card-list',
-  imports: [CommonModule, Card],
+  imports: [CommonModule, Card, FormsModule],
   templateUrl: './card-list.html',
   host: {
     'style': 'view-transition-name: card-list'
@@ -66,6 +67,26 @@ export class CardList implements OnInit {
     this.apiService.getSpecies().subscribe({
       next: (data) => this.handleSpeciesSuccess(data),
       error: (err) => this.handleSpeciesError(err)
+    });
+  }
+
+  filters = {
+    name: '',
+    status: '',
+    species_id: ''
+  };
+
+  fetchFilteredPets(): void {
+    this.error = null;
+    const filters = {
+      name: this.filters.name || '',
+      status: this.filters.status || '',
+      species_id: this.filters.species_id || ''
+    };
+
+    this.apiService.getFilteredPets(filters).subscribe({
+      next: (data) => this.handlePetsSuccess(data),
+      error: (err) => this.handlePetsError(err)
     });
   }
 
