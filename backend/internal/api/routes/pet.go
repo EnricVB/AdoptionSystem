@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -41,6 +42,7 @@ func RegisterPetRoutes(e *echo.Echo) {
 	e.POST("/api/pets", handleCreatePet)
 	e.PUT("/api/pets/:id", handleUpdatePet)
 	e.DELETE("/api/pets/:id", handleDeletePet)
+	e.GET("/api/filtered-pets", handleGetFilteredPets)
 }
 
 // ========================================
@@ -221,4 +223,29 @@ func handleDeletePet(c echo.Context) error {
 
 	// Return deletion confirmation
 	return response.MarshalResponse(c, map[string]string{"status": "deleted"})
+}
+
+func handleGetFilteredPets(c echo.Context) error {
+	name := strings.TrimSpace(c.QueryParam("name"))
+	status := strings.TrimSpace(c.QueryParam("status"))
+	speciesIDStr := strings.TrimSpace(c.QueryParam("species_id"))
+
+	var speciesID int
+	if speciesIDStr != "" {
+		var err error
+		speciesID, err = strconv.Atoi(speciesIDStr)
+		if err != nil {
+			return response.ErrorResponse(
+				c,
+				http.StatusBadRequest,
+				"invalid species_id",
+			)
+		}
+	}
+
+	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+	return response.MarshalResponse(c, pets)
 }
