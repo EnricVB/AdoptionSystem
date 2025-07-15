@@ -124,7 +124,7 @@ Content-Type: application/json
 ###
 
 ### Obtener mascota filtrada
-  GET {{BASE_URL}}/api/filtered-pets?name=M
+GET {{BASE_URL}}/api/filtered-pets?name=M
 Content-Type: application/json
 
 ###

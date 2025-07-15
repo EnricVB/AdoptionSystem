@@ -39,7 +39,7 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 	gormDB := db.ORMOpen()
 
 	var pets []m.Pet
-	result := gormDB.Preload("Species").Preload("AdoptUser").Find(&pets)
+	result := gormDB.Preload("Species").Preload("AdoptUser").Preload("VaccinationHistory").Find(&pets)
 
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer mascotas: %v", result.Error)
@@ -49,17 +49,18 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 
 	for i, pet := range pets {
 		simplifiedPets[i] = m.SimplifiedPet{
-			ID:           pet.ID,
-			Name:         pet.Name,
-			SpeciesID:    pet.SpeciesID,
-			Species:      pet.Species,
-			Breed:        pet.Breed,
-			Status:       pet.Status,
-			IsVaccinated: pet.IsVaccinated,
-			AdoptUser:    pet.AdoptUser,
-			ImageURL:     pet.ImageURL,
-			Description:  pet.Description,
-			BirthDate:    pet.BirthDate,
+			ID:                 pet.ID,
+			Name:               pet.Name,
+			SpeciesID:          pet.SpeciesID,
+			Species:            pet.Species,
+			Breed:              pet.Breed,
+			Status:             pet.Status,
+			IsVaccinated:       pet.IsVaccinated,
+			AdoptUser:          pet.AdoptUser,
+			ImageURL:           pet.ImageURL,
+			Description:        pet.Description,
+			BirthDate:          pet.BirthDate,
+			VaccinationHistory: pet.VaccinationHistory,
 		}
 	}
 	return simplifiedPets, nil
@@ -90,7 +91,7 @@ func GetPetByID(id uint) (*m.Pet, error) {
 
 	// Retrieve specific pet by ID with relationships
 	var pet m.Pet
-	result := gormDB.Preload("Species").Preload("AdoptUser").First(&pet, id)
+	result := gormDB.Preload("Species").Preload("AdoptUser").Preload("VaccinationHistory").First(&pet, id)
 
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al leer mascota con id %d: %v", id, result.Error)
@@ -138,17 +139,18 @@ func GetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedP
 	var result []m.SimplifiedPet
 	for _, pet := range pets {
 		result = append(result, m.SimplifiedPet{
-			ID:           pet.ID,
-			Name:         pet.Name,
-			Description:  pet.Description,
-			SpeciesID:    pet.SpeciesID,
-			Species:      pet.Species,
-			Breed:        pet.Breed,
-			Status:       pet.Status,
-			IsVaccinated: pet.IsVaccinated,
-			AdoptUserID:  pet.AdoptUserID,
-			AdoptUser:    pet.AdoptUser,
-			ImageURL:     pet.ImageURL,
+			ID:                 pet.ID,
+			Name:               pet.Name,
+			Description:        pet.Description,
+			SpeciesID:          pet.SpeciesID,
+			Species:            pet.Species,
+			Breed:              pet.Breed,
+			Status:             pet.Status,
+			IsVaccinated:       pet.IsVaccinated,
+			AdoptUserID:        pet.AdoptUserID,
+			AdoptUser:          pet.AdoptUser,
+			ImageURL:           pet.ImageURL,
+			VaccinationHistory: pet.VaccinationHistory,
 		})
 	}
 
