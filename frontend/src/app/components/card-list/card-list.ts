@@ -2,18 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { ApiService } from '@app/services/api.service';
-
-interface Pet {
-  id: number;
-  name: string;
-  species: any;
-  breed?: string;
-  description?: string;
-  image_url?: string;
-  birthdate?: string;
-  status?: string;
-  is_vaccinated?: boolean;
-}
+import { SimplifiedPet, Species } from '@app/models';
 
 @Component({
   selector: 'app-card-list',
@@ -28,8 +17,8 @@ export class CardList implements OnInit {
   // ======================================
   // COMPONENT PROPERTIES
   // ======================================
-  animals: ReadonlyArray<Pet> = [];
-  species: ReadonlyArray<any> = [];
+  animals: ReadonlyArray<SimplifiedPet> = [];
+  species: ReadonlyArray<Species> = [];
   error: string | null = null;
   currentPage = 1;
 
@@ -69,14 +58,13 @@ export class CardList implements OnInit {
     });
   }
 
-  private handlePetsSuccess(data: any): void {
-    this.animals = data.content.map((pet: any) => ({
+  private handlePetsSuccess(data: { content: SimplifiedPet[] }): void {
+    this.animals = data.content.map((pet: SimplifiedPet) => ({
       ...pet,
       birthdate: pet.birthdate && pet.birthdate !== "0001-01-01T00:00:00Z"
         ? this.parseDateToDDMMYYYY(pet.birthdate)
         : ''
     }));
-    console.log('Fetched pets:', data.content);
   }
 
   private parseDateToDDMMYYYY(dateStr: string): string {
@@ -91,8 +79,7 @@ export class CardList implements OnInit {
     this.error = 'Error fetching pets.';
   }
 
-  private handleSpeciesSuccess(data: any): void {
-    console.log('Fetched species:', data);
+  private handleSpeciesSuccess(data: { content: Species[] }): void {
     this.species = data.content;
   }
 
@@ -108,7 +95,7 @@ export class CardList implements OnInit {
     return Math.ceil(this.animals.length / this.itemsPerPage);
   }
 
-  get paginatedAnimals(): Pet[] {
+  get paginatedAnimals(): SimplifiedPet[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.animals.slice(start, end);
