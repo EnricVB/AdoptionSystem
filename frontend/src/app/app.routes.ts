@@ -6,13 +6,15 @@ import { RecoverPassword } from './pages/login/recover-password/recover-password
 import { ChangePass } from './pages/login/change-pass/change-pass';
 import { Register } from './pages/register/register';
 import { Twofa } from './pages/twofa/twofa';
+import { Adoption } from './pages/adoption/adoption';
 
 export const routes: Routes = [
     { 
         path: '', 
         component: Dashboard,
         data: { animation: 'dashboard' }
-    },{ 
+    },
+    { 
         path: 'dashboard', 
         component: Dashboard,
         data: { animation: 'dashboard' }
@@ -47,8 +49,8 @@ export const routes: Routes = [
         data: { animation: 'twofa' }
     },
     { 
-        path: 'dashboard', 
-        component: Dashboard,
-        data: { animation: 'dashboard' }
+        path: 'adopt', 
+        component: Adoption,
+        data: { animation: 'adopt' }
     },
 ];

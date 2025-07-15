@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'call-to-action',
@@ -9,4 +10,12 @@ export class CallToAction {
   @Input() icon!: string;
   @Input() boxTitle!: string;
   @Input() url!: string;
+
+  constructor(private router: Router) {}
+
+  navigateTo(url: string): void {
+    if (url) {
+      this.router.navigate([url]);
+    }
+  }
 }
