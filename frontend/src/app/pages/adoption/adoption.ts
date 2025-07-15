@@ -7,5 +7,4 @@ import { CardList } from '@app/components/card-list/card-list';
   templateUrl: './adoption.html',
 })
 export class Adoption {
-
 }
