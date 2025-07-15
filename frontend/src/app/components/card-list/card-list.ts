@@ -201,7 +201,9 @@ export class CardList implements OnInit {
     this.filters = {
       name: '',
       status: '',
-      species_id: ''
+      species_id: '',
+      genre: '',
+      vaccinated: ''
     };
     this.currentPage = 1; // Reset to first page
     this.fetchPets(); // Reload all pets without filters
