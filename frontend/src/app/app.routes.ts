@@ -53,4 +53,9 @@ export const routes: Routes = [
         component: Adoption,
         data: { animation: 'adopt' }
     },
+    {
+        path: 'adopt/:id',
+        loadComponent: () => import('./pages/adoption/detail/detail').then(m => m.Detail),
+        data: { animation: 'adopt-detail' }
+    }
 ];

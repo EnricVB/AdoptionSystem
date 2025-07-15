@@ -3,24 +3,25 @@
       bg-[#fdfcf9] cursor-pointer 
       transition-all duration-300 ease-in-out 
       hover:shadow-orange-200 hover:-translate-y-1
-      border border-orange-100">
+      border border-orange-100"
+      (click)="onCardClick()">
   
   <!-- CARD IMAGE AND ADOPTED STATUS -->
   <div
     class="relative h-50 overflow-hidden rounded-t-xl bg-cover bg-center m-2"
-    [ngStyle]="{ 'background-image': 'url(' + image + ')' }">
+    [ngStyle]="{ 'background-image': 'url(' + pet.image_url + ')' }">
 
     <wave color="#fdfcf9" class="absolute top-42 w-full"></wave>
 
-    <div *ngIf="status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
+    <div *ngIf="pet.status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
       <i class="fa-solid fa-circle-check text-3xl text-green-600 transform mt-0.15"></i>
     </div>
 
-    <div *ngIf="status === 'FosterHome'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En casa de acogida">
+    <div *ngIf="pet.status === 'FosterHome'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En casa de acogida">
       <i class="fa-solid fa-circle-user text-3xl text-yellow-500 transform mt-0.15"></i>
     </div>
     
-    <div *ngIf="status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
+    <div *ngIf="pet.status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
       <i class="fa-solid fa-smile text-3xl text-blue-400 transform mt-0.15"></i>
     </div>
   </div>
@@ -32,19 +33,19 @@
         p-4">
 
     <div>
-      <h3 class="text-xl font-bold text-orange-400 text-left">{{ title }}</h3>
-      <p class="text-gray-700 mt-1 text-sm text-left whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{{ description }}</p>
+      <h3 class="text-xl font-bold text-orange-400 text-left">{{ pet.name }}</h3>
+      <p class="text-gray-700 mt-1 text-sm text-left whitespace-nowrap overflow-hidden text-ellipsis max-w-full">{{ pet.description || 'Sin descripción' }}</p>
     </div>
 
     <div class="flex flex-row flex-wrap mt-2 w-full">
       <div class="flex items-center gap-2 flex-1 min-w-0">
         <i class="fa-regular fa-calendar"></i>
-        <span class="font-thin text-sm truncate">{{ age }}</span>
+        <span class="font-thin text-sm truncate">{{ getAgeFromBirthdate(pet.birthdate) }}</span>
       </div>
 
       <div class="flex items-center gap-2 flex-1 min-w-0">
         <i class="fa-solid fa-syringe"></i>
-        <span class="font-thin text-sm truncate">{{ vaccinated }}</span>
+        <span class="font-thin text-sm truncate">{{ pet.is_vaccinated ? 'Vacunado' : 'No vacunado' }}</span>
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Pet, SimplifiedPet, User, Species } from '@app/models';
 
 /**
  * API Service
@@ -244,8 +245,8 @@ export class ApiService {
    * 
    * @returns Observable with array of all pets
    */
-  getPets(): Observable<any> {
-    return this.http.get<any>(
+  getPets(): Observable<{ content: SimplifiedPet[] }> {
+    return this.http.get<{ content: SimplifiedPet[] }>(
       `${this.baseUrl}/pets`, 
       { headers: this.defaultHeaders }
     );
@@ -258,7 +259,7 @@ export class ApiService {
    * @returns Observable with pet data
    */
   getPetById(petId: number): Observable<any> {
-    return this.http.get<any>(
+    return this.http.get<Pet>(
       `${this.baseUrl}/pets/${petId}`, 
       { headers: this.defaultHeaders }
     );
@@ -336,8 +337,8 @@ export class ApiService {
    * 
    * @returns Observable with array of all species
    */
-  getSpecies(): Observable<any> {
-    return this.http.get<any>(
+  getSpecies(): Observable<{ content: Species[] }> {
+    return this.http.get<{ content: Species[] }>(
       `${this.baseUrl}/species`, 
       { headers: this.defaultHeaders }
     );
@@ -349,8 +350,8 @@ export class ApiService {
    * @param speciesId - Unique identifier of the species
    * @returns Observable with species data
    */
-  getSpeciesById(speciesId: number): Observable<any> {
-    return this.http.get<any>(
+  getSpeciesById(speciesId: number): Observable<Species> {
+    return this.http.get<Species>(
       `${this.baseUrl}/species/${speciesId}`, 
       { headers: this.defaultHeaders }
     );

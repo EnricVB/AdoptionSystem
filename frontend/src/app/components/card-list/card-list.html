@@ -44,15 +44,8 @@
               mx-auto mt-50 md:mt-35 lg:mt-25 mb-10">
     <app-card
       class="flex justify-center items-center"
-      
       *ngFor="let animal of paginatedAnimals"
-      [title]="animal.name"
-      [species]="animal.species.name"
-      [image]="animal.image_url || ''"
-      [description]="animal.description || 'Sin descripción disponible'"
-      [age]="(animal.birthdate || 'Sin datos')"
-      [vaccinated]="animal.is_vaccinated ? 'Vacunado' : 'No Vacunado'"
-      [status]="animal.status || 'Available'"
+      [pet]="animal"
     ></app-card>
   </div>
 
