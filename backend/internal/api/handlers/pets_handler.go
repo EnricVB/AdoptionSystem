@@ -149,3 +149,28 @@ func HandleDeletePet(id uint) response.HTTPError {
 
 	return response.EmptyError
 }
+
+func HandleGetFilteredPets(name string, status string, speciesID int) ([]m.SimplifiedPet, response.HTTPError) {
+
+	validStatuses := map[string]bool{
+		"":           true,
+		"Available":  true,
+		"Adopted":    true,
+		"FosterHome": true,
+	}
+
+	if !validStatuses[status] {
+		return nil, response.Error(http.StatusBadRequest, "Estado de mascota no válido")
+	}
+
+	if speciesID < 0 {
+		return nil, response.Error(http.StatusBadRequest, "ID de especie no válido")
+	}
+
+	pets, err := s.GetFilteredPets(name, status, speciesID)
+	if err != nil {
+		return nil, response.Error(http.StatusInternalServerError, err.Error())
+	}
+
+	return pets, response.EmptyError
+}
