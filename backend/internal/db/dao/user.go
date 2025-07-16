@@ -47,16 +47,7 @@ func GetAllUsers() ([]m.NonValidatedUser, error) {
 
 	var nonValidatedUsers []m.NonValidatedUser
 	for _, user := range users {
-		nonValidatedUser := m.NonValidatedUser{
-			ID:           user.ID,
-			Name:         user.Name,
-			Surname:      user.Surname,
-			Email:        user.Email,
-			Address:      user.Address,
-			FailedLogins: user.FailedLogins,
-			IsBlocked:    user.IsBlocked,
-		}
-		nonValidatedUsers = append(nonValidatedUsers, nonValidatedUser)
+		nonValidatedUsers = append(nonValidatedUsers, user.ToNonValidatedUser())
 	}
 
 	return nonValidatedUsers, nil
@@ -88,17 +79,8 @@ func GetUserByID(id uint) (*m.NonValidatedUser, error) {
 		return nil, fmt.Errorf("error al leer usuario con id %d: %v", id, result.Error)
 	}
 
-	nonValidatedUser := &m.NonValidatedUser{
-		ID:           user.ID,
-		Name:         user.Name,
-		Surname:      user.Surname,
-		Email:        user.Email,
-		Address:      user.Address,
-		FailedLogins: user.FailedLogins,
-		IsBlocked:    user.IsBlocked,
-	}
-
-	return nonValidatedUser, nil
+	nonValidatedUser := user.ToNonValidatedUser()
+	return &nonValidatedUser, nil
 }
 
 // GetUserByEmail retrieves a user by their email address.
@@ -125,18 +107,8 @@ func GetUserByEmail(email string) (*m.NonValidatedUser, error) {
 		return nil, fmt.Errorf("error al leer usuario con email %s: %v", email, result.Error)
 	}
 
-	nonValidatedUser := &m.NonValidatedUser{
-		ID:           user.ID,
-		Name:         user.Name,
-		Surname:      user.Surname,
-		Email:        user.Email,
-		Address:      user.Address,
-		FailedLogins: user.FailedLogins,
-		IsBlocked:    user.IsBlocked,
-		Provider:     user.Provider,
-	}
-
-	return nonValidatedUser, nil
+	nonValidatedUser := user.ToNonValidatedUser()
+	return &nonValidatedUser, nil
 }
 
 // GetUserBySessionID retrieves a user by their active session identifier.
@@ -166,17 +138,8 @@ func GetUserBySessionID(sessionID string) (*m.NonValidatedUser, error) {
 		return nil, fmt.Errorf("error al buscar usuario por sessionID: %v", result.Error)
 	}
 
-	nonValidatedUser := &m.NonValidatedUser{
-		ID:           user.ID,
-		Name:         user.Name,
-		Surname:      user.Surname,
-		Email:        user.Email,
-		Address:      user.Address,
-		FailedLogins: user.FailedLogins,
-		IsBlocked:    user.IsBlocked,
-	}
-
-	return nonValidatedUser, nil
+	nonValidatedUser := user.ToNonValidatedUser()
+	return &nonValidatedUser, nil
 }
 
 // Get2FA retrieves the current 2FA token for a user session.
@@ -293,14 +256,23 @@ func GetValidatedUser(email string, password string) (*m.User, error) {
 func DeleteUserByID(id uint) (*m.SimplifiedUser, error) {
 	gormDB := db.ORMOpen()
 
-	var user m.SimplifiedUser
-	result := gormDB.Delete(&m.User{}, id)
+	// First, get the user to return simplified data
+	var user m.User
+	result := gormDB.Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		return nil, fmt.Errorf("error al obtener usuario con id %d: %v", id, result.Error)
+	}
 
+	// Convert to simplified user before deletion
+	simplifiedUser := user.ToSimplifiedUser()
+
+	// Delete the user
+	result = gormDB.Delete(&m.User{}, id)
 	if result.Error != nil {
 		return nil, fmt.Errorf("error al eliminar usuario con id %d: %v", id, result.Error)
 	}
 
-	return &user, nil
+	return &simplifiedUser, nil
 }
 
 // CreateUser creates a new user record in the database.

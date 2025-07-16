@@ -5,8 +5,11 @@ package services
 
 import (
 	"backend/internal/db/dao"
+	"backend/internal/models"
 	m "backend/internal/models"
+	"backend/internal/services/mail"
 	"fmt"
+	"time"
 )
 
 // ========================================
@@ -137,6 +140,25 @@ func DeletePet(id uint) error {
 	return nil
 }
 
+// GetFilteredPets retrieves pets that match specified filtering criteria.
+// Returns simplified pet data filtered by multiple optional parameters.
+//
+// Business Logic:
+// - Applies multiple filters simultaneously (name, status, species, gender, vaccination)
+// - Empty or zero values for parameters are ignored in filtering
+// - Returns simplified data to optimize performance for listing views
+// - Used for pet search and filtering functionality
+//
+// Parameters:
+//   - name: Pet name filter (partial match, empty string ignores filter)
+//   - status: Pet status filter (e.g., "available", "adopted", empty string ignores filter)
+//   - speciesID: Species identifier filter (0 ignores filter)
+//   - gender: Pet gender filter (empty string ignores filter)
+//   - vaccinated: Vaccination status filter (empty string ignores filter)
+//
+// Returns:
+//   - []m.SimplifiedPet: Slice of pets matching the filter criteria
+//   - error: Database error or nil on success
 func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string) ([]m.SimplifiedPet, error) {
 	pets, err := dao.GetFilteredPets(name, status, speciesID, gender, vaccinated)
 	if err != nil {
@@ -144,4 +166,83 @@ func GetFilteredPets(name string, status string, speciesID int, gender string, v
 	}
 
 	return pets, nil
+}
+
+// ========================================
+// PET ADOPTION SERVICES
+// ========================================
+
+// AdoptPet processes a pet adoption request.
+// Updates the pet's status to adopted and records adoption details.
+//
+// Business Logic:
+// - Validates pet is available for adoption
+// - Updates pet status to "adopted"
+// - Records adoption information
+// - Ensures data consistency during the adoption process
+//
+// Parameters:
+//   - petID: Unique identifier of the pet to adopt
+//   - userID: Unique identifier of the adopting user
+//
+// Returns:
+//   - error: Adoption error or nil on success
+func AdoptPet(petID uint, userID uint) (*models.Pet, error) {
+	// Verify pet exists and is available for adoption
+	pet, err := dao.GetPetByID(petID)
+	if err != nil {
+		return nil, fmt.Errorf("mascota no encontrada: %v", err)
+	}
+
+	if pet.Status != "available" {
+		return nil, fmt.Errorf("mascota no disponible para adopción")
+	}
+
+	// Update pet status to adopted
+	pet.Status = m.PetStatusAdopted
+	pet.AdoptUserID = userID
+	pet.AdoptDate = time.Now()
+
+	err = dao.UpdatePet(pet)
+	if err != nil {
+		return nil, fmt.Errorf("error al actualizar estado de adopción: %v", err)
+	}
+
+	// Get updated pet data with relationships
+	pet, err = dao.GetPetByID(petID)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener mascota actualizada: %v", err)
+	}
+
+	return pet, nil
+}
+
+func SendPetFosterHomeRequest(to string, pet m.Pet, user m.SimplifiedUser) error {
+	err := mail.SendPetFosterHomeRequest(to, pet, user)
+
+	if err != nil {
+		return fmt.Errorf("error al enviar solicitud de casa de acogida: %v", err)
+	}
+
+	return nil
+}
+
+func SendPetAdoptionRequest(to string, pet m.Pet, user m.SimplifiedUser) error {
+	err := mail.SendPetAdoptionRequest(to, pet, user)
+
+	if err != nil {
+		return fmt.Errorf("error al enviar solicitud de adopción: %v", err)
+	}
+
+	return nil
+}
+
+func SendPetFosterHomeContact(to string, pet m.Pet, user m.SimplifiedUser, contact m.SimplifiedUser, reason string, message string) error {
+	err := mail.SendPetFosterHomeContact(to, pet, user, contact, reason, message)
+
+	if err != nil {
+		return fmt.Errorf("error al enviar contacto de casa de acogida: %v", err)
+	}
+
+	return nil
 }

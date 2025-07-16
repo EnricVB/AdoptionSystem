@@ -2,6 +2,11 @@
 // These models define the structure of data expected in HTTP request bodies.
 package r_models
 
+import (
+	"backend/internal/models"
+	"time"
+)
+
 // LoginRequest represents the request payload for user authentication.
 // Used for standard email/password login operations.
 //
@@ -128,4 +133,24 @@ type ResetPasswordRequest struct {
 type ChangePasswordRequest struct {
 	Email    string `json:"email"`    // User's email address (required for identification)
 	Password string `json:"password"` // New password (required, will be hashed for storage)
+}
+
+// ========================================
+// REQUEST MODEL CONVERSION METHODS
+// ========================================
+
+// ToFullUser converts a CreateUserRequest to a FullUser model.
+// This method maps request data to the complete user entity.
+func (cur CreateUserRequest) ToFullUser() *models.FullUser {
+	return &models.FullUser{
+		Name:       cur.Name,
+		Surname:    cur.Surname,
+		Email:      cur.Email,
+		Password:   cur.Password,
+		Address:    cur.Address,
+		Provider:   cur.Provider,
+		ProviderID: cur.ProviderID,
+		CrtDate:    time.Now(),
+		UptDate:    time.Now(),
+	}
 }

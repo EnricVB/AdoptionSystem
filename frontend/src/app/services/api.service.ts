@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Pet, SimplifiedPet, User, Species } from '@app/models';
+import { 
+  Pet, 
+  SimplifiedPet, 
+  User, 
+  Species, 
+  PetAdoptionRequest, 
+  PetFosterHomeRequest, 
+  PetFosterHomeContactRequest,
+  RequestResponse 
+} from '@app/models';
 
 /**
  * API Service
@@ -187,6 +196,19 @@ export class ApiService {
   }
 
   /**
+   * Get a specific user by session ID
+   * 
+   * @param sessionId - Unique session identifier
+   * @returns Observable with user data
+   */
+  getUserBySessionId(sessionId: string): Observable<any> {
+    return this.http.get<User>(
+      `${this.baseUrl}/users/session/${sessionId}`, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
    * Create a new user account
    * 
    * @param userData - User information for account creation
@@ -322,17 +344,72 @@ export class ApiService {
     );
   }
 
+  // ========================================
+  // PET ADOPTION & FOSTER HOME ENDPOINTS
+  // ========================================
+
   /**
-   * Adopt a pet (assign to a user)
+   * Submit a pet adoption request
+   * Sends an adoption request email to the organization for review
    * 
    * @param petId - Unique identifier of the pet to adopt
    * @param userId - Unique identifier of the adopting user
-   * @returns Observable with adoption response
+   * @returns Observable with adoption request response
    */
-  adoptPet(petId: number, userId: number): Observable<any> {
-    return this.http.post<any>(
-      `${this.baseUrl}/pets/${petId}/adopt`, 
-      { user_id: userId }, 
+  submitPetAdoptionRequest(petId: number, userId: number): Observable<RequestResponse> {
+    const requestData: PetAdoptionRequest = { pet_id: petId, user_id: userId };
+    return this.http.post<RequestResponse>(
+      `${this.baseUrl}/pets/adopt`,
+      requestData,
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Submit a foster home request for a pet
+   * Sends a foster home request email to the organization for review
+   * 
+   * @param petId - Unique identifier of the pet for foster care
+   * @param userId - Unique identifier of the foster family user
+   * @returns Observable with foster home request response
+   */
+  submitPetFosterHomeRequest(petId: number, userId: number): Observable<RequestResponse> {
+    const requestData: PetFosterHomeRequest = { pet_id: petId, user_id: userId };
+    return this.http.post<RequestResponse>(
+      `${this.baseUrl}/pets/foster-home`,
+      requestData,
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Send contact message to foster family
+   * Facilitates communication between interested parties and foster families
+   * 
+   * @param petId - Unique identifier of the pet in foster care
+   * @param userId - Unique identifier of the user sending the message
+   * @param contactUserId - Unique identifier of the foster family to contact
+   * @param reason - Reason for contact
+   * @param message - Message content
+   * @returns Observable with contact request response
+   */
+  sendPetFosterHomeContact(
+    petId: number, 
+    userId: number, 
+    contactUserId: number, 
+    reason: string, 
+    message: string
+  ): Observable<RequestResponse> {
+    const requestData: PetFosterHomeContactRequest = {
+      pet_id: petId, 
+      user_id: userId,
+      contact_user_id: contactUserId,
+      reason: reason,
+      message: message
+    };
+    return this.http.post<RequestResponse>(
+      `${this.baseUrl}/pets/foster-home/contact`,
+      requestData,
       { headers: this.defaultHeaders }
     );
   }

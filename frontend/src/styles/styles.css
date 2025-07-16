@@ -48,6 +48,11 @@ input::placeholder {
 /* Button Styles */
 .pet-button {
   background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  cursor: pointer;
+}
+
+.pet-button * {
+  color: #ffffff !important;
 }
 
 /* Error Styles */

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '@app/services/api.service';
 import { CommonModule } from '@angular/common';
-import { Pet, PetStatus } from '@app/models';
+import { Pet, PetStatus, User } from '@app/models';
 import { CookieService } from '@app/services/cookie.service';
 
 @Component({
@@ -95,18 +95,86 @@ export class Detail implements OnInit {
     this.router.navigate(['/adopt']);
   }
 
-  fosterHomeContact(): void {
+  async fosterHomeContact(): Promise<void> {
     if (!this.pet) return;
 
-        
+    const reason = "Solicitud de adopción para " + this.pet.name;
+    const message = "Hola, estoy interesado en acoger a " + this.pet.name + ", que está en su hogar de acogida. Por favor, contáctenme para más detalles.";
+
+    this.apiService.sendPetFosterHomeContact(
+      this.pet.id,
+      await this.getLoggedInUserID(),
+      this.pet.adopt_user_id || 0,
+      reason,
+      message
+    ).subscribe({
+      next: (response) => this.nextSendPetFosterHomeContact(response),
+      error: (err) => this.submitError(err)
+    });
   }
 
-  adoptionContact(): void {
+  async submitAdoption(): Promise<void> {
     if (!this.pet) return;
     
+    this.apiService.submitPetAdoptionRequest(
+      this.pet.id,
+      await this.getLoggedInUserID()
+    ).subscribe({
+      next: (response) => this.nextSubmitPetAdoptionRequest(response),
+      error: (err) => this.submitError(err)
+    });
   }
+
+  async submitFosterHome(): Promise<void> {
+    if (!this.pet) return;
+
+    this.apiService.submitPetFosterHomeRequest(
+      this.pet.id,
+      await this.getLoggedInUserID()
+    ).subscribe({
+      next: (response) => this.nextSubmitPetFosterHomeRequest(response),
+      error: (err) => this.submitError(err)
+    });
+  }
+
+  // ======================================
+  // AUTHENTICATION CHECKS
+  // ======================================
 
   public isLoggedIn(): boolean {
     return !!this.cookieService.getCookie('sessionID');
+  }
+
+  public getLoggedInUserID(): Promise<number> {
+    const sessionID = this.cookieService.getCookie('sessionID');
+    
+    if (!sessionID) return Promise.resolve(0);
+
+    return new Promise((resolve, reject) => {
+      this.apiService.getUserBySessionId(sessionID).subscribe({
+        next: (data) => resolve(data.content.id),
+        error: (err) => { this.submitError(err); reject(0); }
+      });
+    })
+  }
+
+  // ======================================
+  // SUBSCRIBE METHODS
+  // ======================================
+  private nextSendPetFosterHomeContact(response: any): void {
+    alert('Solicitud de contacto enviada correctamente.');
+  }
+
+  private nextSubmitPetAdoptionRequest(response: any): void {
+    alert('Solicitud de adopción enviada correctamente.');
+  }
+
+  private nextSubmitPetFosterHomeRequest(response: any): void {
+    alert('Solicitud de acogida enviada correctamente.');
+  }
+
+  private submitError(err: any): void {
+    alert('Error al enviar la solicitud.');
+    console.error('Error:', err);
   }
 }
