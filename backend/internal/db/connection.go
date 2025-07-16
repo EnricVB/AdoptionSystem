@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -24,11 +25,11 @@ It uses environment variables to configure the connection parameters.
 
 // buildDSN builds a MySQL DSN string using environment variables.
 func buildDSN() string {
-	user := "user"           //os.Getenv("DB_USER")
-	password := "1234"       //os.Getenv("DB_PASSWORD")
-	host := "127.0.0.1"      //os.Getenv("DB_HOST")
-	port := "3306"           //os.Getenv("DB_PORT")
-	dbname := "ADOPTION_SYS" //os.Getenv("DB_NAME")
+	user := os.Getenv("DB_USER")         // "user"
+	password := os.Getenv("DB_PASSWORD") // "1234"
+	host := os.Getenv("DB_HOST")         // "127.0.0.1"
+	port := os.Getenv("DB_PORT")         // "3306"
+	dbname := os.Getenv("DB_NAME")       // "ADOPTION_SYS"
 
 	// charset=utf8mb4 and parseTime=True are standard and recommended for MySQL
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
