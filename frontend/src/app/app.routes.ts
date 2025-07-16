@@ -57,5 +57,10 @@ export const routes: Routes = [
         path: 'adopt/:id',
         loadComponent: () => import('./pages/adoption/detail/detail').then(m => m.Detail),
         data: { animation: 'adopt-detail' }
+    },
+    {
+        path: '**',
+        redirectTo: '',
+        pathMatch: 'full'
     }
 ];
