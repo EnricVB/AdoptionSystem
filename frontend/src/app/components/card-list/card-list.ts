@@ -110,7 +110,7 @@ export class CardList implements OnInit {
       name: '',
       status: '',
       species_id: '',
-      genre: '',
+      gender: '',
       vaccinated: ''
     }
     this.fetchPets();
