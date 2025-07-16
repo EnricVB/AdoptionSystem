@@ -159,6 +159,7 @@ func GetFilteredPets(name string, status string, speciesID int, gender string, v
 			AdoptUser:          pet.AdoptUser,
 			ImageURL:           pet.ImageURL,
 			VaccinationHistory: pet.VaccinationHistory,
+			BirthDate:          pet.BirthDate,
 		})
 	}
 

@@ -101,6 +101,25 @@ export class CardList implements OnInit {
     console.log('Filters applied:', filters);
   }
 
+  isRotating = false;
+
+  resetFilters(): void {
+    this.isRotating = true;
+
+    this.filters = {
+      name: '',
+      status: '',
+      species_id: '',
+      genre: '',
+      vaccinated: ''
+    }
+    this.fetchPets();
+
+    setTimeout(() => {
+      this.isRotating = false;
+    }, 500);
+  }
+
   private handlePetsSuccess(data: any): void {
     this.animals = data.content.map((pet: any) => ({
       ...pet,
