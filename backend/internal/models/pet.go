@@ -19,12 +19,12 @@ const (
 	PetStatusAdopted    PetStatus = "Adopted"
 )
 
-// PetGenre represents the gender of a pet
-type PetGenre string
+// PetGender represents the gender of a pet
+type PetGender string
 
 const (
-	PetGenreMale   PetGenre = "Male"
-	PetGenreFemale PetGenre = "Female"
+	PetGenderMale   PetGender = "Male"
+	PetGenderFemale PetGender = "Female"
 )
 
 // Pet represents the complete pet entity in the adoption system.
@@ -40,7 +40,7 @@ type Pet struct {
 	SpeciesID          uint                 `json:"species_id" gorm:"column:Species_ID"`                                       // Foreign key to Species
 	Species            Species              `json:"species" gorm:"foreignKey:SpeciesID"`                                       // Relationship to Species
 	Breed              string               `json:"breed" gorm:"type:varchar(100)"`                                            // Pet's breed (optional)
-	Genre              PetGenre             `json:"genre" gorm:"type:enum('Male','Female');column:Genre"`                      // Pet's gender
+	Gender             PetGender            `json:"gender" gorm:"type:enum('Male','Female');column:Gender"`                    // Pet's gender
 	Weight             float64              `json:"weight" gorm:"column:Weight;type:decimal(5,2);default:0.00"`                // Pet's weight in kg
 	Status             PetStatus            `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
 	BirthDate          time.Time            `json:"birthdate" gorm:"column:Birthdate"`                                         // Pet's date of birth
@@ -82,7 +82,7 @@ type SimplifiedPet struct {
 	SpeciesID          uint                 `json:"species_id" gorm:"column:Species_ID"`                                       // Foreign key to Species
 	Species            Species              `json:"species"`                                                                   // Relationship to Species
 	Breed              string               `json:"breed"`                                                                     // Pet's breed (optional)
-	Genre              PetGenre             `json:"genre" gorm:"type:enum('Male','Female');column:Genre"`                      // Pet's gender
+	Gender             PetGender            `json:"gender" gorm:"type:enum('Male','Female');column:Gender"`                    // Pet's gender
 	Weight             float64              `json:"weight" gorm:"column:Weight;type:decimal(5,2);default:0.00"`                // Pet's weight in kg
 	Status             PetStatus            `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
 	AdoptUserID        uint                 `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet

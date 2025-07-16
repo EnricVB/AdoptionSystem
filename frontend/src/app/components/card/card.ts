@@ -16,18 +16,18 @@ export class Card {
   } 
 
   getAgeFromBirthdate(birthdate: string): string {
-    if (!birthdate) return 'Edad no especificada';
-    
     const birth = new Date(birthdate);
     const today = new Date();
     const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 + today.getMonth() - birth.getMonth();
     
     if (ageInMonths < 12) {
       return `${ageInMonths} ${ageInMonths === 1 ? 'mes' : 'meses'}`;
-    } else {
+    } else if(ageInMonths >= 12) {
       const years = Math.floor(ageInMonths / 12);
       return `${years} ${years === 1 ? 'año' : 'años'}`;
     }
+
+    return 'Edad no especificada';
   }
 
   onCardClick(): void {

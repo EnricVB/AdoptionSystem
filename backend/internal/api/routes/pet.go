@@ -229,7 +229,7 @@ func handleGetFilteredPets(c echo.Context) error {
 	name := strings.TrimSpace(c.QueryParam("name"))
 	status := strings.TrimSpace(c.QueryParam("status"))
 	speciesIDStr := strings.TrimSpace(c.QueryParam("species_id"))
-	genre := strings.TrimSpace(c.QueryParam("genre"))
+	gender := strings.TrimSpace(c.QueryParam("gender"))
 	var vaccinated string = strings.TrimSpace(c.QueryParam("vaccinated"))
 
 	var speciesID int
@@ -245,7 +245,7 @@ func handleGetFilteredPets(c echo.Context) error {
 		}
 	}
 
-	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID, genre, vaccinated)
+	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID, gender, vaccinated)
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
