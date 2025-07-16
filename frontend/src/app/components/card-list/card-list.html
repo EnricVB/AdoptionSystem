@@ -53,6 +53,15 @@
                   <option value=0>No Vacunado</option>
               </select>
             </div>
+            <div>
+              <i 
+              (click)="resetFilters()" 
+              [ngClass]="{
+              'animate-spin': isRotating}"
+               class="fa-solid fa-rotate py-3 text-xl cursor-pointer text-gray-700">
+              </i>
+            </div>
+            
           </div>
         </div>
       </div>
