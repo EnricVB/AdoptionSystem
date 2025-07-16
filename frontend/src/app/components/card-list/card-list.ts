@@ -80,7 +80,7 @@ export class CardList implements OnInit {
     name: '',
     status: '',
     species_id: '',
-    genre: '',
+    gender: '',
     vaccinated: ''
   };
 
@@ -90,7 +90,7 @@ export class CardList implements OnInit {
       name: this.filters.name || '',
       status: this.filters.status || '',
       species_id: this.filters.species_id || '',
-      genre: this.filters.genre || '',
+      gender: this.filters.gender || '',
       vaccinated: this.filters.vaccinated || ''
     };
     this.apiService.getFilteredPets(filters).subscribe({
@@ -202,7 +202,7 @@ export class CardList implements OnInit {
       name: '',
       status: '',
       species_id: '',
-      genre: '',
+      gender: '',
       vaccinated: ''
     };
     this.currentPage = 1; // Reset to first page

@@ -10,7 +10,7 @@ export enum PetStatus {
   Adopted = 'Adopted'
 }
 
-export enum PetGenre {
+export enum PetGender {
   Male = 'Male',
   Female = 'Female'
 }
@@ -27,7 +27,7 @@ export interface Pet {
   species_id: number;
   species: Species;
   breed: string;
-  genre: PetGenre;
+  gender: PetGender;
   weight: number;
   status: PetStatus;
   birthdate: string; // ISO date string
@@ -49,7 +49,7 @@ export interface SimplifiedPet {
   species_id: number;
   species: Species;
   breed: string;
-  genre: PetGenre;
+  gender: PetGender;
   weight: number;
   status: PetStatus;
   adopt_user_id: number;

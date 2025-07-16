@@ -150,7 +150,7 @@ func HandleDeletePet(id uint) response.HTTPError {
 	return response.EmptyError
 }
 
-func HandleGetFilteredPets(name string, status string, speciesID int, genre string, vaccinated string) ([]m.SimplifiedPet, response.HTTPError) {
+func HandleGetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string) ([]m.SimplifiedPet, response.HTTPError) {
 
 	validStatuses := map[string]bool{
 		"":           true,
@@ -159,7 +159,7 @@ func HandleGetFilteredPets(name string, status string, speciesID int, genre stri
 		"FosterHome": true,
 	}
 
-	validGenres := map[string]bool{
+	validGenders := map[string]bool{
 		"":       true,
 		"Male":   true,
 		"Female": true,
@@ -173,11 +173,11 @@ func HandleGetFilteredPets(name string, status string, speciesID int, genre stri
 		return nil, response.Error(http.StatusBadRequest, "ID de especie no válido")
 	}
 
-	if !validGenres[genre] {
+	if !validGenders[gender] {
 		return nil, response.Error(http.StatusBadRequest, "Género de mascota no válido")
 	}
 
-	pets, err := s.GetFilteredPets(name, status, speciesID, genre, vaccinated)
+	pets, err := s.GetFilteredPets(name, status, speciesID, gender, vaccinated)
 	if err != nil {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}

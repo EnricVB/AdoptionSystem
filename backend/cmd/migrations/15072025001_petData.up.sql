@@ -1,5 +1,5 @@
 ALTER TABLE Pets
-  ADD COLUMN Genre ENUM('Male', 'Female'),
+  ADD COLUMN Gender ENUM('Male', 'Female'),
   ADD COLUMN Weight DECIMAL(5,2) NOT NULL DEFAULT 0.00;
 
 CREATE TABLE VaccinationHistory (
