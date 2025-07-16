@@ -31,6 +31,7 @@ func setupCORS() {
 	api.RegisterUserRoutes(e)
 	api.RegisterPetRoutes(e)
 	api.RegisterSpeciesRoutes(e)
+	api.RegisterCompanyRoutes(e)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:4200"},

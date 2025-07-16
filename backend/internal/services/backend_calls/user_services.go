@@ -301,9 +301,27 @@ func ListAllUsers() (*[]m.NonValidatedUser, error) {
 //   - *m.NonValidatedUser: User data without sensitive information
 //   - error: Database error or nil on success
 func GetUserProfile(id uint) (*m.NonValidatedUser, error) {
-	user, err := dao.GetUserByID(uint(id))
+	user, err := dao.GetUserByID(id)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener usuario con id: %d %v", id, err)
+	}
+
+	return user, nil
+}
+
+// GetUserProfile retrieves a specific user by their SessionID.
+// Returns non-validated user data (without sensitive information like passwords).
+//
+// Parameters:
+//   - id: User ID to retrieve
+//
+// Returns:
+//   - *m.NonValidatedUser: User data without sensitive information
+//   - error: Database error or nil on success
+func GetUserProfileBySessionID(sessionID string) (*m.NonValidatedUser, error) {
+	user, err := dao.GetUserBySessionID(sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("error al obtener usuario con session id: %s %v", sessionID, err)
 	}
 
 	return user, nil

@@ -245,6 +245,34 @@ func HandleGetUserByID(id uint) (*models.NonValidatedUser, response.HTTPError) {
 	return user, response.EmptyError
 }
 
+// HandleGetUserBySessionID processes requests to retrieve a specific user by Web SessionID.
+// Returns non-sensitive user data for the requested user.
+//
+// Validation:
+// - Ensures user SessionID is valid (not empty)
+// - Delegates user retrieval to service layer
+//
+// Parameters:
+//   - sessionID: User SessionID to retrieve
+//
+// Returns:
+//   - *models.NonValidatedUser: User data without sensitive information
+//   - response.HTTPError: HTTP error or EmptyError on success
+func HandleGetUserBySessionID(sessionID string) (*models.NonValidatedUser, response.HTTPError) {
+	// Input validation
+	if sessionID == "" {
+		return nil, response.Error(http.StatusBadRequest, "SessionID de usuario no válido")
+	}
+
+	// Delegate user retrieval to service layer
+	user, err := s.GetUserProfileBySessionID(sessionID)
+	if err != nil {
+		return nil, response.Error(http.StatusNotFound, err.Error())
+	}
+
+	return user, response.EmptyError
+}
+
 // HandleCreateUser processes user registration requests.
 // Creates new user accounts with proper data transformation and validation.
 //
@@ -265,17 +293,7 @@ func HandleCreateUser(user *r_models.CreateUserRequest) response.HTTPError {
 	}
 
 	// Transform request data to internal model
-	fullUser := &models.FullUser{
-		Name:       user.Name,
-		Surname:    user.Surname,
-		Email:      user.Email,
-		Password:   user.Password,
-		Address:    user.Address,
-		Provider:   user.Provider,
-		ProviderID: user.ProviderID,
-		CrtDate:    time.Now(),
-		UptDate:    time.Now(),
-	}
+	fullUser := user.ToFullUser()
 
 	// Delegate user creation to service layer
 	err := s.RegisterUser(fullUser)

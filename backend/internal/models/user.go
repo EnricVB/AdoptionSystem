@@ -91,3 +91,148 @@ type SimplifiedUser struct {
 	Email   string `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"` // User's email address (unique)
 	Address string `json:"address" gorm:"type:varchar(255)"`                    // User's physical address
 }
+
+// ========================================
+// USER CONVERSION METHODS
+// ========================================
+
+// ToUser converts a FullUser to a standard User model.
+// This method strips sensitive information like two-factor auth codes
+// while preserving most user data for API responses.
+func (fu FullUser) ToUser() User {
+	return User{
+		ID:           fu.ID,
+		Name:         fu.Name,
+		Surname:      fu.Surname,
+		Email:        fu.Email,
+		SessionID:    fu.SessionID,
+		Address:      fu.Address,
+		Provider:     fu.Provider,
+		ProviderID:   fu.ProviderID,
+		Password:     fu.Password,
+		ChangePass:   fu.ChangePassword,
+		FailedLogins: fu.FailedLogins,
+		IsBlocked:    fu.IsBlocked,
+		CrtDate:      fu.CrtDate,
+		UptDate:      fu.UptDate,
+	}
+}
+
+// ToNonValidatedUser converts a FullUser to a NonValidatedUser model.
+// This method removes session information and password data.
+func (fu FullUser) ToNonValidatedUser() NonValidatedUser {
+	return NonValidatedUser{
+		ID:           fu.ID,
+		Name:         fu.Name,
+		Surname:      fu.Surname,
+		Email:        fu.Email,
+		Address:      fu.Address,
+		FailedLogins: fu.FailedLogins,
+		Provider:     fu.Provider,
+		IsBlocked:    fu.IsBlocked,
+		CrtDate:      fu.CrtDate,
+		UptDate:      fu.UptDate,
+	}
+}
+
+// ToSimplifiedUser converts a FullUser to a SimplifiedUser model.
+// This method keeps only essential user information for listings and references.
+func (fu FullUser) ToSimplifiedUser() SimplifiedUser {
+	return SimplifiedUser{
+		ID:      fu.ID,
+		Name:    fu.Name,
+		Surname: fu.Surname,
+		Email:   fu.Email,
+		Address: fu.Address,
+	}
+}
+
+// ToNonValidatedUser converts a User to a NonValidatedUser model.
+// This method removes session information while keeping other data.
+func (u User) ToNonValidatedUser() NonValidatedUser {
+	return NonValidatedUser{
+		ID:           u.ID,
+		Name:         u.Name,
+		Surname:      u.Surname,
+		Email:        u.Email,
+		Address:      u.Address,
+		FailedLogins: u.FailedLogins,
+		Provider:     u.Provider,
+		IsBlocked:    u.IsBlocked,
+		CrtDate:      u.CrtDate,
+		UptDate:      u.UptDate,
+	}
+}
+
+// ToSimplifiedUser converts a User to a SimplifiedUser model.
+// This method keeps only essential user information for listings and references.
+func (u User) ToSimplifiedUser() SimplifiedUser {
+	return SimplifiedUser{
+		ID:      u.ID,
+		Name:    u.Name,
+		Surname: u.Surname,
+		Email:   u.Email,
+		Address: u.Address,
+	}
+}
+
+// ToSimplifiedUser converts a NonValidatedUser to a SimplifiedUser model.
+// This method keeps only essential user information for listings and references.
+func (nvu NonValidatedUser) ToSimplifiedUser() SimplifiedUser {
+	return SimplifiedUser{
+		ID:      nvu.ID,
+		Name:    nvu.Name,
+		Surname: nvu.Surname,
+		Email:   nvu.Email,
+		Address: nvu.Address,
+	}
+}
+
+// ========================================
+// BATCH CONVERSION METHODS
+// ========================================
+
+// ToUserSlice converts a slice of FullUser to a slice of User.
+func ToUserSlice(fullUsers []FullUser) []User {
+	users := make([]User, len(fullUsers))
+	for i, fu := range fullUsers {
+		users[i] = fu.ToUser()
+	}
+	return users
+}
+
+// ToNonValidatedUserSlice converts a slice of FullUser to a slice of NonValidatedUser.
+func ToNonValidatedUserSlice(fullUsers []FullUser) []NonValidatedUser {
+	users := make([]NonValidatedUser, len(fullUsers))
+	for i, fu := range fullUsers {
+		users[i] = fu.ToNonValidatedUser()
+	}
+	return users
+}
+
+// ToSimplifiedUserSlice converts a slice of FullUser to a slice of SimplifiedUser.
+func ToSimplifiedUserSlice(fullUsers []FullUser) []SimplifiedUser {
+	users := make([]SimplifiedUser, len(fullUsers))
+	for i, fu := range fullUsers {
+		users[i] = fu.ToSimplifiedUser()
+	}
+	return users
+}
+
+// ToSimplifiedUserSliceFromUser converts a slice of User to a slice of SimplifiedUser.
+func ToSimplifiedUserSliceFromUser(users []User) []SimplifiedUser {
+	simplified := make([]SimplifiedUser, len(users))
+	for i, u := range users {
+		simplified[i] = u.ToSimplifiedUser()
+	}
+	return simplified
+}
+
+// ToSimplifiedUserSliceFromNonValidated converts a slice of NonValidatedUser to a slice of SimplifiedUser.
+func ToSimplifiedUserSliceFromNonValidated(users []NonValidatedUser) []SimplifiedUser {
+	simplified := make([]SimplifiedUser, len(users))
+	for i, u := range users {
+		simplified[i] = u.ToSimplifiedUser()
+	}
+	return simplified
+}

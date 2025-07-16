@@ -35,6 +35,7 @@ func RegisterUserRoutes(e *echo.Echo) {
 	// User CRUD operations
 	e.GET("/api/users", handleListUsers)
 	e.GET("/api/users/:id", handleGetUserByID)
+	e.GET("/api/users/session/:session_id", handleGetUserBySessionID)
 	e.POST("/api/register", handleCreateUser)
 	e.PUT("/api/users/:id", handleUpdateUser)
 	e.DELETE("/api/users/:id", handleDeleteUser)
@@ -272,6 +273,35 @@ func handleGetUserByID(c echo.Context) error {
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
+	return response.MarshalResponse(c, user)
+}
+
+// handleGetUserBySessionID retrieves a specific user by their web session id.
+// This endpoint provides access to individual user data.
+//
+// Business Rules:
+//   - Requires valid user Web Session ID as URL parameter
+//   - Returns complete user information if found
+//   - Should validate user access permissions (implement authorization middleware)
+//
+// Parameters:
+//   - c: Echo context containing the HTTP request and response
+//   - id: User ID as URL parameter (e.g., /api/users/{session_id})
+//
+// Returns:
+//   - HTTP 200 with user object on success
+//   - HTTP 400 if user SessionID is invalid or non-numeric
+//   - HTTP 404 if user not found
+//   - HTTP 500 on internal server error
+//   - Error response with appropriate status code on failure
+func handleGetUserBySessionID(c echo.Context) error {
+	sessionID := c.Param("session_id")
+
+	user, httpErr := handlers.HandleGetUserBySessionID(sessionID)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+
 	return response.MarshalResponse(c, user)
 }
 
