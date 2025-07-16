@@ -178,6 +178,8 @@ export class CardList implements OnInit {
   // ======================================
   // PAGINATION
   // ======================================
+
+
   get totalPages(): number {
     return Math.ceil(this.animals.length / this.itemsPerPage);
   }
@@ -186,6 +188,11 @@ export class CardList implements OnInit {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     return this.animals.slice(start, end);
+  }
+
+  setItemsPerPage(items: number): void {
+    this.itemsPerPage = items;
+    this.currentPage = 1; // Reset to first page when items per page changes
   }
 
   goToPage(page: number): void {
