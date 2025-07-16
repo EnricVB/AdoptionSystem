@@ -53,6 +53,15 @@
                   <option value=0>No Vacunado</option>
               </select>
             </div>
+            <div>
+              <i 
+              (click)="resetFilters()" 
+              [ngClass]="{
+              'animate-spin': isRotating}"
+               class="fa-solid fa-rotate py-3 text-xl cursor-pointer text-gray-700">
+              </i>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -61,7 +70,7 @@
 
   <!-- CARD LIST -->
   <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 
-              gap-y-16 p-4 gap-x-30
+              gap-y-16 p-4 gap-x-20
               mx-auto">
     <app-card
       class="flex justify-center items-center"
@@ -76,6 +85,35 @@
                 p-2 w-full gap-10
                 bg-[#edf1dc] shadow-sm
                 sticky bottom-0 z-10 mt-1 text-black">
+                    <div class="absolute flex gap-1.5 left-10">
+                      <div>
+                      <input type="radio" checked (change)="setItemsPerPage(8)" name="nElem" id="elem8" class="hidden peer">
+                      <label for="elem8" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
+                                              peer-checked:bg-orange-500 peer-checked:text-white 
+                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
+                                                peer-checked:shadow-inner
+                                                transition-all duration-150">8</label>
+                     
+                      </div>
+                      <div>
+                      <input type="radio" (change)="setItemsPerPage(12)" name="nElem" id="elem12" class="hidden peer">
+                      <label for="elem12" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
+                                              peer-checked:bg-orange-500 peer-checked:text-white 
+                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
+                                                peer-checked:shadow-inner
+                                                transition-all duration-150">12</label>
+                      </div>
+                      <div>
+                        <input type="radio" (change)="setItemsPerPage(16)" name="nElem" value="16" id="elem16" class="hidden peer">
+                      <label for="elem16" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
+                                              peer-checked:bg-orange-500 peer-checked:text-white 
+                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
+                                                peer-checked:shadow-inner
+                                                transition-all duration-150">16</label>
+                      </div>
+                      
+                    </div>
+
       <button
           (click)="goToPage(1)"
           [disabled]="currentPage === 1"
