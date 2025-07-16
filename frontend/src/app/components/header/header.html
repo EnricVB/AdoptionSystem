@@ -5,7 +5,7 @@
         <div class="flex items-center gap-12">
 
             <!-- Logo -->
-            <div class="flex items-center gap-3 cursor-default">
+            <a routerLink="/" class="flex items-center gap-3 cursor-pointer">
                 <img
                 src="/logo_shiba-inu.svg"
                 alt="Logo"
@@ -15,11 +15,11 @@
                 />
 
                 <span class="text-xl sm:text-2xl font-bold text-[#2c1810]">PetFinder</span>
-            </div>
+            </a>
 
             <!-- Navigation -->
             <nav class="hidden sm:flex gap-8 ml-20 text-[#2c1810] font-medium text-sm sm:text-base">
-                <a href="/adopt" class="hover:text-orange-700 transition">Adopta</a>
+                <a routerLink="/adopt" class="hover:text-orange-700 transition">Adopta</a>
                 <a href="#statistics" class="hover:text-orange-700 transition">Sobre Nosotros</a>
                 <a href="#volunteer" class="hover:text-orange-700 transition">Voluntario</a>
                 <a href="#donate" class="hover:text-orange-700 transition">Donar</a>
@@ -29,17 +29,17 @@
         <!-- Right: CTA -->
         @if (!isAlreadyLoggedIn()) {
             <div class="hidden sm:flex gap-5 ">
-                <a href="/login" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                <a routerLink="/login" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
                     Inicia sesión
                 </a>
 
-                <a href="/register" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                <a routerLink="/register" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
                     Unete
                 </a>
             </div>
         } @else {
             <div class="sm:flex gap-5">
-                <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
+                <a routerLink="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm sm:text-base font-semibold shadow-md transition-all">
                     Cerrar Sesión
                 </a>
             </div>
