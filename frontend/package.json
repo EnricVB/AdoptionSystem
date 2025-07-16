@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "build:dev": "ng build",
+    "serve": "node server.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -33,6 +34,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@primeuix/themes": "^1.2.1",
     "@tailwindcss/postcss": "^4.1.11",
+    "express": "^4.18.2",
+    "firebase": "^11.10.0",
     "font-awesome": "^4.7.0",
     "ngx-cookie-service": "^20.0.1",
     "postcss": "^8.5.6",
