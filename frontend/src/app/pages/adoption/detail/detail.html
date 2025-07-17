@@ -144,7 +144,7 @@
                 </button>
                 <button *ngIf="pet?.status === 'Available' && pet?.status !== 'FosterHome'" (click)="submitFosterHome()"
                         [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-400 hover:bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
                         [disabled]="!authService.isLoggedIn()">
 
                     <i class="fa-solid fa-home"></i>
