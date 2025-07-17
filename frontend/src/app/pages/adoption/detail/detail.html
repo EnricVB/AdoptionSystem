@@ -135,25 +135,25 @@
                     Volver
                 </button>
                 <button *ngIf="pet?.status === 'Available'" (click)="submitAdoption()"
-                        [title]="!isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!isLoggedIn()">
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
+                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn()">
 
                     <i class="fa-solid fa-heart"></i>
                     ¡Adoptame!
                 </button>
                 <button *ngIf="pet?.status === 'Available' && pet?.status !== 'FosterHome'" (click)="submitFosterHome()"
-                        [title]="!isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!isLoggedIn()">
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
+                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn()">
 
                     <i class="fa-solid fa-home"></i>
                     ¡Acogeme!
                 </button>                
                 <button *ngIf="pet?.status === 'FosterHome'" (click)="fosterHomeContact()"
-                        [title]="!isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!isLoggedIn()">
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
+                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn()">
                     <i class="fa-solid fa-check"></i>
                     Contactar
                 </button>
