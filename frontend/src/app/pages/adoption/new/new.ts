@@ -1,21 +1,39 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Species } from '@app/models';
+import { PopUp } from '@app/components/pop-up/pop-up';
+import { Species, PetGender } from '@app/models';
 import { ApiService } from '@app/services/api.service';
 
 @Component({
   selector: 'app-new',
-  imports: [CommonModule],
+  imports: [CommonModule, PopUp],
   templateUrl: './new.html',
 })
 export class NewPet {
 
   // ======================================
+  // VIEWCHILD REFERENCES
+  // ======================================
+  @ViewChild('petNameInput') petNameInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('speciesSelect') speciesSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('breedInput') breedInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('genderSelect') genderSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('weightInput') weightInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('birthdateInput') birthdateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('vaccinationSelect') vaccinationSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('descriptionTextarea') descriptionTextarea!: ElementRef<HTMLTextAreaElement>;
+
+  @ViewChild('successPopUp') successPopUp!: PopUp;
+  @ViewChild('errorPopUp') errorPopUp!: PopUp;
+
+  // ======================================
   // COMPONENT PROPERTIES
   // ======================================
+
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
+  selectedFile: File | null = null;
 
   // ======================================
   // CONSTRUCTOR
@@ -60,7 +78,18 @@ export class NewPet {
   }
 
   onFileSelected(event: any): void { 
-    
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = event.target.closest('.relative').querySelector('img');
+        if (img) {
+          img.src = e.target?.result as string;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   addVaccination(vaccineNameInput: HTMLInputElement, vaccinationDateInput: HTMLInputElement): void {
@@ -76,7 +105,7 @@ export class NewPet {
       vaccineNameInput.value = '';
       vaccinationDateInput.value = '';
     } else {
-      alert('Por favor, completa todos los campos');
+      this.errorPopUp.start('Por favor, completa todos los campos');
     }
   }
 
@@ -88,6 +117,68 @@ export class NewPet {
   // ACTION BUTTONS
   // =======================================
 
+  createAdoption(): void {
+    // Collect form data
+    const petData = {
+      name: this.petNameInput.nativeElement.value.trim(),
+      species: this.speciesSelect.nativeElement.value,
+      breed: this.breedInput.nativeElement.value.trim() || 'Desconocido',
+      gender: this.genderSelect.nativeElement.value as PetGender,
+      weight: parseFloat(this.weightInput.nativeElement.value) || 0,
+      birthdate: this.birthdateInput.nativeElement.value,
+      is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
+      description: this.descriptionTextarea.nativeElement.value.trim() || '',
+      vaccination_history: this.vaccinationHistory
+    };
+
+    // Basic validation
+    if (!petData.name || !petData.species) {
+      this.errorPopUp.start('Por favor, completa al menos el nombre y la especie de la mascota');
+      return;
+    }
+
+    // Create pet via API
+    this.apiService.createPet(petData).subscribe({
+      next: (response) => {
+        this.successPopUp.start("Mascota creada correctamente.");
+        setTimeout(() => {
+          this.router.navigate(['/adopt']);
+        }, 2000);
+      },
+
+      error: (error) => {
+        this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
+      }
+    });
+  }
+
+  clearForm(): void {
+    // Clear all form fields
+    this.petNameInput.nativeElement.value = '';
+    this.speciesSelect.nativeElement.value = '';
+    this.breedInput.nativeElement.value = '';
+    this.genderSelect.nativeElement.value = '';
+    this.weightInput.nativeElement.value = '';
+    this.birthdateInput.nativeElement.value = '';
+    this.vaccinationSelect.nativeElement.value = '';
+    this.descriptionTextarea.nativeElement.value = '';
+    this.vaccinationHistory = [];
+    this.selectedFile = null;
+    
+    // Reset image
+    const img = document.querySelector('.relative img') as HTMLImageElement;
+    if (img) {
+      img.src = 'error';
+    }
+  }
+
+  deleteImage(): void {
+    this.selectedFile = null;
+    const img = document.querySelector('.relative img') as HTMLImageElement;
+    if (img) {
+      img.src = 'error';
+    }
+  }
   
   goBack(): void {
     this.router.navigate(['/adopt']);
