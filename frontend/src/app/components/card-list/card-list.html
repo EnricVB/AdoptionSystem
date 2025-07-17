@@ -1,160 +1,124 @@
-<div class="flex flex-col items-center justify-center bg-[#f4f8e6] overflow-x-hidden">
-  @if (showFilter) {
-    <div class="bg-[#edf1dc] shadow-sm 
-                  border-b border-orange-50/10 
-                  p-4 mb-2 w-full 
-                  relative top-0 z-10">
+<div class="flex flex-col bg-[#f4f8e6] overflow-x-hidden min-h-screen">
 
-      <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col gap-6">
-          
-          <!-- Breadcrumb -->
-          <div class="flex justify-start">
-            <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-          </div>
-
-          <!-- Header -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
-            <h1 class="text-2xl font-bold text-gray-800">Mascotas en Adopción</h1>
-            
-            <!-- Filtres -->
-            <div class="flex flex-wrap gap-3">
-              <div class="relative">
-                <input 
-                  type="text" 
-                  placeholder="Buscar mascotas..."
-                  [(ngModel)]="filters.name"
-                  (ngModelChange)="fetchFilteredPets()"
-                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:translate-y-0.5 focus:ring-blue-500 focus:border-transparent">
-                <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
-              </div>
-              
-              <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Todas las especies</option>
-                <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
-              </select>
-              
-              <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Estado</option>
-                <option value="Available">Disponible</option>
-                <option value="Adopted">Adoptado</option>
-                <option value="FosterHome">En acogida</option>
-              </select>
-              
-              <select [(ngModel)]="filters.gender" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="">Género</option>
-                  <option value="Male">Macho</option>
-                  <option value="Female">Hembra</option>
-              </select>
-
-              <select [(ngModel)]="filters.vaccinated" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value=>Vacuna</option>
-                  <option value=1>Vacunado</option>
-                  <option value=0>No Vacunado</option>
-              </select>
-            </div>
-            <div>
-              <i 
-              (click)="resetFilters()" 
-              [ngClass]="{
-              'animate-spin': isRotating}"
-               class="fa-solid fa-rotate py-3 text-xl cursor-pointer text-gray-700">
-              </i>
-            </div>
-            
-          </div>
+  <!-- Breadcrumb & Header -->
+  <div class="bg-[#edf1dc] shadow-sm border-b border-orange-50/10 p-4 w-full z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex justify-between gap-4">
+        <div class="flex justify-start w-xs">
+          <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
         </div>
+        <h1 class="text-2xl w-xs text-center font-bold  text-gray-800">Mascotas en Adopción</h1>
+        <div class="w-xs"></div>
       </div>
     </div>
-  }
-
-  <!-- CARD LIST -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 
-              gap-y-16 p-4 gap-x-20
-              mx-auto">
-    <app-card
-      class="flex justify-center items-center"
-      *ngFor="let animal of paginatedAnimals"
-      [pet]="animal"
-    ></app-card>
   </div>
 
-  <!-- PAGINATION -->
-  @if (showPagination) {
-    <div class="flex items-center justify-center 
-                p-2 w-full gap-10
-                bg-[#edf1dc] shadow-sm
-                sticky bottom-0 z-10 mt-1 text-black">
-                    <div class="absolute flex gap-1.5 left-10">
-                      <div>
-                      <input type="radio" checked (change)="setItemsPerPage(8)" name="nElem" id="elem8" class="hidden peer">
-                      <label for="elem8" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
-                                              peer-checked:bg-orange-500 peer-checked:text-white 
-                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
-                                                peer-checked:shadow-inner
-                                                transition-all duration-150">8</label>
-                     
-                      </div>
-                      <div>
-                      <input type="radio" (change)="setItemsPerPage(12)" name="nElem" id="elem12" class="hidden peer">
-                      <label for="elem12" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
-                                              peer-checked:bg-orange-500 peer-checked:text-white 
-                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
-                                                peer-checked:shadow-inner
-                                                transition-all duration-150">12</label>
-                      </div>
-                      <div>
-                        <input type="radio" (change)="setItemsPerPage(16)" name="nElem" value="16" id="elem16" class="hidden peer">
-                      <label for="elem16" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
-                                              peer-checked:bg-orange-500 peer-checked:text-white 
-                                              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
-                                                peer-checked:shadow-inner
-                                                transition-all duration-150">16</label>
-                      </div>
-                      
-                    </div>
+  <!-- Main content area with sidebar -->
+  <div class="flex flex-1 w-full mx-auto px-4 py-6 gap-6">
 
-      <button
-          (click)="goToPage(1)"
-          [disabled]="currentPage === 1"
-            class="px-4 py-2 
-                  enabled:cursor-pointer rounded-sm 
-                  enabled:hover:bg-gray-500/10 disabled:opacity-50 
-                  transition-all duration-300 ease-in-out">
+    <!-- Sidebar Filters -->
+    <aside class="w-1/7 flex justify-center sm:w-64 bg-[#edf1dc] p-4 rounded-lg shadow-md h-fit sticky top-4 self-start">
+      <div class="flex flex-col gap-4">
+        <div class="relative">
+          <input 
+            type="text" 
+            placeholder="Buscar mascotas..."
+            [(ngModel)]="filters.name"
+            (ngModelChange)="fetchFilteredPets()"
+            class="pl-9 py-2 border border-gray-300 rounded-lg focus:ring-4 focus:translate-y-0.5 focus:ring-blue-500 focus:border-transparent">
+          <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+        </div>
+
+        <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
+          <option value="">Todas las especies</option>
+          <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
+        </select>
+
+        <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
+          <option value="">Estado</option>
+          <option value="Available">Disponible</option>
+          <option value="Adopted">Adoptado</option>
+          <option value="FosterHome">En acogida</option>
+        </select>
+
+        <select [(ngModel)]="filters.gender" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
+          <option value="">Género</option>
+          <option value="Male">Macho</option>
+          <option value="Female">Hembra</option>
+        </select>
+
+        <select [(ngModel)]="filters.vaccinated" (change)="fetchFilteredPets()" id="vaccine-select" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
+          <option value="">Vacuna</option>
+          <option value="1">Vacunado</option>
+          <option value="0">No Vacunado</option>
+        </select>
+
+        
+
+        <button 
+          (click)="resetFilters()" 
+          class="flex items-center justify-center gap-2 px-4 py-2 text-sm cursor-pointer bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all">
+          <i [ngClass]="{ 'animate-spin': isRotating }" class="fa-solid fa-rotate"></i>
+          Restablecer filtros
+        </button>
+         <!-- Items per page -->
+      <div class="self-center flex w-full justify-between mt-2">
+        <ng-container *ngFor="let num of [8,12,16,20]">
+          <div>
+            <input 
+              type="radio" 
+              (change)="setItemsPerPage(num)" 
+              [checked]="itemsPerPage === num"
+              name="nElem" 
+              [id]="'elem' + num"
+              class="hidden peer">
+            <label [for]="'elem' + num" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
+              peer-checked:bg-orange-500 peer-checked:text-white 
+              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
+              peer-checked:shadow-inner transition-all duration-150">{{ num }}</label>
+          </div>
+        </ng-container>
+      </div>
+
+      </div>
+    </aside>
+
+    <!-- Card Grid -->
+    <main class="flex-1 max-w-6xl mx-auto p-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-30 gap-6">
+        <app-card
+          class="flex justify-center items-center"
+          *ngFor="let animal of paginatedAnimals"
+          [pet]="animal"
+        ></app-card>
+      </div>
+
+      <!-- No results message -->
+      <div *ngIf="paginatedAnimals.length === 0" class="text-center text-gray-500 mt-10">
+        No se encontraron mascotas con los filtros seleccionados.
+      </div>
+    </main>
+
+    <aside class="w-1/7"></aside>
+  </div>
+
+  <!-- Pagination -->
+  @if (showPagination) {
+    <div class="flex items-center justify-center p-2 w-full gap-10 bg-[#edf1dc] shadow-sm sticky bottom-0 z-10 mt-1 text-black">
+      <!-- Pagination buttons -->
+      <button (click)="goToPage(1)" [disabled]="currentPage === 1" class="px-4 py-2 enabled:cursor-pointer rounded-sm hover:bg-gray-500/10 disabled:opacity-50">
         <i class="fa-solid fa-angles-left"></i>
       </button>
-
       <div class="flex items-center gap-5">
-        <button
-            (click)="previousPage()"
-            [disabled]="currentPage === 1"
-            class="px-4 py-2 
-                  enabled:cursor-pointer rounded-sm 
-                  enabled:hover:bg-gray-500/10 disabled:opacity-50 
-                  transition-all duration-300 ease-in-out">
+        <button (click)="previousPage()" [disabled]="currentPage === 1" class="px-4 py-2 enabled:cursor-pointer rounded-sm hover:bg-gray-500/10 disabled:opacity-50">
           <i class="fa-solid fa-angle-left"></i>
         </button>
-
         <span class="self-center text-lg font-medium">{{ currentPage }}/{{ totalPages }}</span>
-
-        <button
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
-            class="px-4 py-2 
-                  enabled:cursor-pointer rounded-sm 
-                  enabled:hover:bg-gray-500/10 disabled:opacity-50 
-                  transition-all duration-300 ease-in-out">
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="px-4 py-2 enabled:cursor-pointer rounded-sm hover:bg-gray-500/10 disabled:opacity-50">
           <i class="fa-solid fa-angle-right"></i>
         </button>
       </div>
-
-      <button
-          (click)="goToPage(totalPages)"
-          [disabled]="currentPage === totalPages"
-            class="px-4 py-2 
-                  enabled:cursor-pointer rounded-sm 
-                  enabled:hover:bg-gray-500/10 disabled:opacity-50 
-                  transition-all duration-300 ease-in-out">
+      <button (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages" class="px-4 py-2 enabled:cursor-pointer rounded-sm hover:bg-gray-500/10 disabled:opacity-50">
         <i class="fa-solid fa-angles-right"></i>
       </button>
     </div>
