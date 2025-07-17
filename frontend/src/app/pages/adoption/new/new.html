@@ -15,17 +15,46 @@
                         transition-all duration-300"
                 (error)="onImageError($event)">
             
+            <!-- Upload button overlay -->
+            <input type="file"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+                #file>
+                
+            <button 
+                type="button"
+                (click)="file.click()"
+                class="absolute top-4 right-4 z-20 bg-black bg-opacity-50 text-white
+                       px-3 py-2 rounded-lg hover:scale-105 transition-all duration-200
+                       flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-camera"></i>
+                <span class="text-sm">Seleccionar imagen</span>
+            </button>
+
             <!-- Overlay for better text readability -->
             <div class="absolute inset-0 bg-black"></div>
             
             <!-- Pet name overlay -->
-            <div class="absolute bottom-4 left-4 right-4 text-white z-10">
-                <h1 class="text-4xl font-bold drop-shadow-lg mb-1">
-                    Nombre
-                </h1>
-                <p class="text-xl opacity-90">
-                    Especie
-                </p>
+            <div class="absolute bottom-4 left-4 right-4 text-white z-10 
+                        flex flex-col gap-y-3">
+                <input 
+                  type="text" 
+                  placeholder="Nombre"
+                  class="pl-4 py-2 border max-w-[30%]
+                        border-gray-300 rounded-xl focus:ring-4 
+                        focus:translate-y-0.5
+                        cursor-text text-gray-600/80">
+
+              <select class="pl-4 py-2 border max-w-[50%]
+                        border-gray-300 rounded-xl focus:ring-1 
+                        focus:translate-y-0.5
+                        bg-white text-gray-600/80
+                        cursor-pointer">
+
+                <option value="" selected disabled class="text-black font-semibold">Todas las especies</option>
+                <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
+              </select>
             </div>
         </div>
 
@@ -39,21 +68,53 @@
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-paw text-orange-500"></i>
                     <span class="text-gray-600">Raza:</span>
+                    
+                    <input 
+                        type="text" 
+                        placeholder="Border Collie"
+                        class="pl-2 py-1 mt-1 border max-w-[80%]
+                                border-gray-300 rounded-xl focus:ring-4 
+                                focus:translate-y-0.5
+                                cursor-text text-black placeholder-gray-600">
+
                 </div>
 
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-venus-mars text-blue-500"></i>
                     <span class="text-gray-600">Género:</span>
+                    
+                    <select class="pl-1 py-1 border max-w-[50%]
+                                border-gray-300 rounded-xl 
+                                text-gray-600/80
+                                cursor-pointer">
+                        <option value="" selected disabled class="text-black font-semibold">Genero</option>
+                        <option value="1">Macho</option>
+                        <option value="2">Hembra</option>
+                    </select>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-weight-scale text-green-500"></i>
                     <span class="text-gray-600">Peso:</span>
-                </div>
+                    
+                    <div class="relative max-w-[71%]">
+                        <input 
+                            type="number" 
+                            placeholder="13"
+                            class="pl-2 pr-8 py-1 mt-1 border w-full
+                                    border-gray-300 rounded-xl focus:ring-4 
+                                    focus:translate-y-0.5
+                                    cursor-text text-black placeholder-gray-600">
+                        <span class="absolute right-2 top-1/2 transform -translate-y-[6px] text-gray-500 text-xs">kg</span>
+                    </div>
 
+                </div>
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-heart text-red-500"></i>
-                    <span class="text-gray-600">Estado:</span>
+                    <i class="fa-solid fa-heart text-red-500 ml-0.5"></i>
+                    <span class="text-gray-600 ml-0.5">Estado:</span>
+                    <span class="text-green-600 bg-green-100 font-medium px-2 py-1 rounded ml-1 text-xs">
+                        Disponible
+                    </span>
                 </div>
             </div>
         </div>
@@ -66,29 +127,127 @@
                 <i class="fa-solid fa-syringe text-purple-500"></i>
 
                 <span class="text-gray-600">Vacunación:</span>
-                <span class="font-medium px-2 py-1 rounded text-xs">
-                    Vacunado
-                </span>
+                    
+                <select class="ml-11.5 pl-2 py-0.5 border
+                            border-gray-300 rounded-2xl 
+                            text-gray-800/80
+                            cursor-pointer">
+                    <option value="" selected disabled class="text-black font-semibold">Vacunación</option>
+                    <option value="1">Vacunado</option>
+                    <option value="2">No Vacunado</option>
+                </select>
             </div>
 
             <div class="flex items-center gap-2 text-xs mt-4 mx-4">
                 <i class="fa-regular fa-calendar text-yellow-500"></i>
                 <span class="text-gray-600">Fecha de nacimiento:</span>
-                <span class="font-medium">Fecha Nacimiento</span>
+                <input type="date" class="  border border-gray-300
+                                            px-2 py-1 text-gray-600">
+            </div>
+        </div>
+
+        <div class="border-b border-gray-300 mx-3"></div>
+
+        <!-- Vaccination History Section -->
+        <div class="p-6 bg-white">
+            <h2 class="text-xs font-semibold text-gray-800 mb-4 uppercase">Historial de Vacunación</h2>
+
+            <!-- Vaccine Input -->
+            <div class="w-full mb-3 px-3 py-3
+                        bg-gray-50 rounded-md border border-gray-200
+                        flex gap-4 justify-between items-center">
+
+                <input 
+                    type="text"
+                    #vaccineName
+                    placeholder="Nombre de la vacuna"
+                    class="px-3 py-2 border border-gray-300 rounded-md w-full
+                           focus:ring-2 focus:outline-none text-gray-800 placeholder-gray-600/80">
+
+                <input 
+                    type="date"
+                    #vaccinationDate
+                    class="w-1/3 px-3 py-2 border border-gray-300 rounded-md
+                           focus:ring-2 focus:outline-none text-gray-600/80">
+
+                <button 
+                    type="button"
+                    (click)="addVaccination(vaccineName, vaccinationDate)"
+                    class="bg-blue-500 text-white px-2 py-1 rounded-md
+                           hover:bg-blue-600 hover:scale-105 transition-all duration-300">
+
+                    <i class="fa-solid fa-plus relative top-0.5 text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Vaccine History -->
+            <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-x-4">
+                <div    *ngFor="let vaccination of vaccinationHistory" 
+                        class="mb-3 px-4 py-3
+                                bg-gray-50 rounded-md border border-gray-200
+                                flex gap-4 justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="font-medium text-gray-800 text-[0.85rem]">{{ vaccination.vaccine }}</span>
+                    </div>
+                    <span class="font-thin text-gray-600 text-md">{{ vaccination.date | date:'dd/MM/yyyy' }}</span>
+                    
+                    <button 
+                        type="button"
+                        (click)="removeVaccination(vaccination)"
+                        class="relative bottom-3 -right-2 text-black w-2 h-2 rounded-full
+                                hover:scale-125 transition-transform duration-300
+                                flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-times text-xs"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="border-b border-gray-300 mx-3"></div>
 
         <!-- Description Section -->
-        <div class="p-6 bg-white">
+        <div class="p-6 bg-white border-b border-gray-300">
             <h2 class="text-xs font-semibold text-gray-800 mb-4 uppercase">Descripción</h2>
 
-            <p class="text-md text-gray-600 font-thin leading-relaxed mx-4">
-                Descripción
-            </p>
+            <textarea 
+                placeholder="Escribe una descripción de la mascota..."
+                class="w-[95%] h-32 p-3 mx-4 border border-gray-300 rounded-xl 
+                       focus:ring-2 focus:outline-none resize-none
+                       text-gray-700 placeholder-gray-600/80"></textarea>
         </div>
 
-        <div class="border-b border-gray-300 mx-3"></div>
+        <!-- Action Buttons -->
+        <div class="flex gap-3 p-6 bg-white">
+            <button (click)="goBack()" 
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold 
+                            py-3 px-6 rounded-lg cursor-pointer
+                            transition-colors duration-300 
+                            flex items-center justify-center 
+                            gap-2 text-md">
+
+                <i class="fa-solid fa-arrow-left"></i>
+                Volver
+            </button>
+        
+            <button 
+                class="flex-1 bg-amber-400  text-white font-semibold 
+                        py-3 px-6 rounded-lg cursor-pointer
+                        flex items-center justify-center 
+                        gap-2 text-md
+                        hover:bg-amber-300 transition-colors duration-300">
+                <i class="fa-solid fa-check"></i>
+                Crear
+            </button>
+        
+            <button 
+                class="flex-1 bg-red-500  text-white font-semibold 
+                        py-3 px-6 rounded-lg cursor-pointer
+                        flex items-center justify-center 
+                        gap-2 text-md
+                        hover:bg-red-600 transition-colors duration-300">
+                <i class="fa-solid fa-trash"></i>
+                Limpiar
+            </button>
+        </div>
     </div>
 </div>
