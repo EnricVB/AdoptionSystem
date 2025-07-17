@@ -42,7 +42,7 @@ input:-webkit-autofill {
 }
 
 input::placeholder {
-  color: rgba(0, 0, 0, 0.5) !important;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 /* Button Styles */
