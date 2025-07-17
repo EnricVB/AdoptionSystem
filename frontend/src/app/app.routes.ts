@@ -7,6 +7,7 @@ import { ChangePass } from './pages/login/change-pass/change-pass';
 import { Register } from './pages/register/register';
 import { Twofa } from './pages/twofa/twofa';
 import { Adoption } from './pages/adoption/adoption';
+import { NewPet } from './pages/adoption/new/new';
 
 export const routes: Routes = [
     { 
@@ -52,6 +53,11 @@ export const routes: Routes = [
         path: 'adopt', 
         component: Adoption,
         data: { animation: 'adopt' }
+    },
+    {
+        path: 'adopt/new',
+        component: NewPet,
+        data: { animation: 'adopt-new' }
     },
     {
         path: 'adopt/:id',
