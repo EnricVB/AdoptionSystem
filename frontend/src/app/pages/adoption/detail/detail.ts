@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '@app/services/api.service';
 import { CommonModule } from '@angular/common';
 import { Pet, PetStatus, User } from '@app/models';
 import { CookieService } from '@app/services/cookie.service';
 import { AuthService } from '@app/services/auth.service';
+import { PopUp } from '@app/components/pop-up/pop-up';
 
 @Component({
   selector: 'app-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, PopUp],
   templateUrl: './detail.html',
 })
 export class Detail implements OnInit {
@@ -16,6 +17,9 @@ export class Detail implements OnInit {
   // ======================================
   // COMPONENT PROPERTIES
   // ======================================
+
+  @ViewChild('successPopUp') successPopUp!: PopUp;
+  @ViewChild('errorPopUp') errorPopUp!: PopUp;
   
   petId!: number;
   pet: Pet | null = null;
@@ -143,19 +147,18 @@ export class Detail implements OnInit {
   // SUBSCRIBE METHODS
   // ======================================
   private nextSendPetFosterHomeContact(response: any): void {
-    alert('Solicitud de contacto enviada correctamente.');
+    this.successPopUp.start('Solicitud de contacto enviada correctamente.');
   }
 
   private nextSubmitPetAdoptionRequest(response: any): void {
-    alert('Solicitud de adopción enviada correctamente.');
+    this.successPopUp.start('Solicitud de adopción enviada correctamente.');
   }
 
   private nextSubmitPetFosterHomeRequest(response: any): void {
-    alert('Solicitud de acogida enviada correctamente.');
+    this.successPopUp.start('Solicitud de acogida enviada correctamente.');
   }
 
   private submitError(err: any): void {
-    alert('Error al enviar la solicitud.');
-    console.error('Error:', err);
+    this.errorPopUp.start('Error al enviar la solicitud.');
   }
 }

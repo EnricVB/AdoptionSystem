@@ -306,8 +306,12 @@ export class ApiService {
     name: string;
     species: string;
     breed?: string;
+    gender?: string;
+    weight?: number;
     birthdate?: string;
+    is_vaccinated?: boolean;
     description?: string;
+    vaccination_history?: { vaccine: string; date: string }[];
   }): Observable<any> {
     return this.http.post<any>(
       `${this.baseUrl}/pets`, 
