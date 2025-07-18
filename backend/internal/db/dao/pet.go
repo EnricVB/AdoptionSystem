@@ -61,6 +61,8 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 			Description:        pet.Description,
 			BirthDate:          pet.BirthDate,
 			VaccinationHistory: pet.VaccinationHistory,
+			Weight:             pet.Weight,
+			Gender:             pet.Gender,
 		}
 	}
 	return simplifiedPets, nil

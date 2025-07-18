@@ -1,12 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Wave } from "../wave/wave";
 import { SimplifiedPet } from '@app/models';
 
 @Component({
   selector: 'app-card',
-  imports: [CommonModule, Wave],
+  imports: [CommonModule],
   templateUrl: './card.html',
 })
 export class Card {
@@ -21,8 +20,6 @@ export class Card {
     const today = new Date();
     const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 + today.getMonth() - birth.getMonth();
 
-    console.log('Calculating age for birthdate:', birthdate, birth); // Debug log
-
     if (ageInMonths < 12) {
       return `${ageInMonths} ${ageInMonths === 1 ? 'mes' : 'meses'}`;
     } else if(ageInMonths >= 12) {
@@ -31,6 +28,17 @@ export class Card {
     }
 
     return 'Edad no especificada';
+  }
+
+  getGenderName() {
+    switch (this.pet.gender) {
+      case 'Male':
+        return 'Macho';
+      case 'Female':
+        return 'Hembra';
+      default:
+        return 'Desconocido';
+    }
   }
 
   onCardClick(): void {

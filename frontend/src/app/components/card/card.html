@@ -8,10 +8,8 @@
   
   <!-- CARD IMAGE AND ADOPTED STATUS -->
   <div
-    class="relative h-50 overflow-hidden rounded-t-xl bg-cover bg-center m-2"
+    class="relative h-50 overflow-hidden rounded-xl bg-cover bg-center m-2"
     [ngStyle]="{ 'background-image': 'url(' + pet.image_url + ')' }">
-
-    <wave color="#fdfcf9" class="absolute top-42 w-full"></wave>
 
     <div *ngIf="pet.status === 'Adopted'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Ya ha sido adoptado">
       <i class="fa-solid fa-circle-check text-3xl text-green-600 transform mt-0.15"></i>
@@ -43,9 +41,9 @@
         <span class="font-thin text-sm truncate">{{ getAgeFromBirthdate(pet.birthdate) }}</span>
       </div>
 
-      <div class="flex items-center gap-2 flex-1 min-w-0">
-        <i class="fa-solid fa-syringe"></i>
-        <span class="font-thin text-sm truncate">{{ pet.is_vaccinated ? 'Vacunado' : 'No vacunado' }}</span>
+      <div class="flex items-center justify-end gap-2 flex-1 min-w-0">
+        <i class="fa-solid fa-venus-mars"></i>
+        <span class="font-thin text-sm truncate">{{ getGenderName() }}</span>
       </div>
     </div>
   </div>
