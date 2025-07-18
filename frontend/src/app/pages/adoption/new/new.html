@@ -117,6 +117,7 @@
                             type="number" 
                             #weightInput
                             placeholder="13"
+                            min="0"
                             class="pl-2 pr-8 py-1 mt-1 border w-full
                                     border-gray-300 rounded-xl focus:ring-4 
                                     focus:translate-y-0.5
@@ -144,7 +145,9 @@
 
                 <span class="text-gray-600">Vacunación:</span>
                     
-                <select #vaccinationSelect class="ml-11.5 pl-2 py-0.5 border
+                <select #vaccinationSelect 
+                        (change)="onVaccinationChange($event)"
+                        class="ml-11.5 pl-2 py-0.5 border
                             border-gray-300 rounded-2xl 
                             text-gray-800/80
                             cursor-pointer">
@@ -165,7 +168,7 @@
         <div class="border-b border-gray-300 mx-3"></div>
 
         <!-- Vaccination History Section -->
-        <div class="p-6 bg-white">
+        <div class="p-6 bg-white" *ngIf="showVaccinationHistory">
             <h2 class="text-xs font-semibold text-gray-800 mb-4 uppercase">Historial de Vacunación</h2>
 
             <!-- Vaccine Input -->

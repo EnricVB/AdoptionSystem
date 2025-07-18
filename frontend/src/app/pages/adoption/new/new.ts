@@ -34,6 +34,7 @@ export class NewPet {
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
   selectedFile: File | null = null;
+  showVaccinationHistory: boolean = false;
 
   // ======================================
   // CONSTRUCTOR
@@ -97,6 +98,12 @@ export class NewPet {
     const vaccinationDate = vaccinationDateInput.value;
 
     if (vaccineName && vaccinationDate) {
+      // Validar que la fecha sea válida
+      if (isNaN(Date.parse(vaccinationDate))) {
+        this.errorPopUp.start('La fecha de vacunación no es válida');
+        return;
+      }
+
       this.vaccinationHistory.push({ 
         vaccine: vaccineName, 
         date: vaccinationDate 
@@ -105,12 +112,16 @@ export class NewPet {
       vaccineNameInput.value = '';
       vaccinationDateInput.value = '';
     } else {
-      this.errorPopUp.start('Por favor, completa todos los campos');
+      this.errorPopUp.start('Por favor, completa todos los campos de vacunación');
     }
   }
 
   removeVaccination(vaccination: { vaccine: string; date: string }): void {
     this.vaccinationHistory = this.vaccinationHistory.filter(v => v !== vaccination);
+  }
+
+  onVaccinationChange(event: any): void {
+    this.showVaccinationHistory = event.target.value === '1';
   }
 
   // =======================================
@@ -121,19 +132,35 @@ export class NewPet {
     // Collect form data
     const petData = {
       name: this.petNameInput.nativeElement.value.trim(),
-      species: this.speciesSelect.nativeElement.value,
+      species_id: parseInt(this.speciesSelect.nativeElement.value),
       breed: this.breedInput.nativeElement.value.trim() || 'Desconocido',
       gender: this.genderSelect.nativeElement.value as PetGender,
       weight: parseFloat(this.weightInput.nativeElement.value) || 0,
-      birthdate: this.birthdateInput.nativeElement.value,
-      is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
+      birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
       description: this.descriptionTextarea.nativeElement.value.trim() || '',
-      vaccination_history: this.vaccinationHistory
+      status: 'Available',
+      is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
+      vaccination_history: this.vaccinationHistory.map(vaccination => ({
+        vaccine_name: vaccination.vaccine,
+        vaccination_date: this.toRFC3339(vaccination.date)
+      })),
     };
 
     // Basic validation
-    if (!petData.name || !petData.species) {
-      this.errorPopUp.start('Por favor, completa al menos el nombre y la especie de la mascota');
+    if (!petData.name) {
+      this.errorPopUp.start('El nombre de la mascota es obligatorio.');
+      return;
+    } else if (!petData.species_id || isNaN(petData.species_id)) {
+      this.errorPopUp.start('La especie de la mascota es obligatoria.');
+      return;
+    } else if (!petData.gender) {
+      this.errorPopUp.start('El género de la mascota es obligatorio.');
+      return;
+    } else if (isNaN(petData.weight) || petData.weight <= 0) {
+      this.errorPopUp.start('El peso de la mascota debe ser un número positivo.');
+      return;
+    } else if (!petData.birthdate) {
+      this.errorPopUp.start('La fecha de nacimiento es obligatoria.');
       return;
     }
 
@@ -148,6 +175,8 @@ export class NewPet {
 
       error: (error) => {
         this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
+        console.log('Error creating pet: ', error);
+        console.log('Error details:', error.error); // Más detalles del error
       }
     });
   }
@@ -164,6 +193,7 @@ export class NewPet {
     this.descriptionTextarea.nativeElement.value = '';
     this.vaccinationHistory = [];
     this.selectedFile = null;
+    this.showVaccinationHistory = false;
     
     // Reset image
     const img = document.querySelector('.relative img') as HTMLImageElement;
@@ -182,5 +212,25 @@ export class NewPet {
   
   goBack(): void {
     this.router.navigate(['/adopt']);
+  }
+
+  // ======================================
+  // UTILITY METHODS
+  // ======================================
+ 
+  private toRFC3339(dateStr: string): string {
+    // El input date ya viene en formato YYYY-MM-DD
+    // Solo necesitamos validar que sea una fecha válida
+    if (!dateStr) {
+      throw new Error('Date string is empty');
+    }
+
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date format');
+    }
+
+    // Devolver la fecha en formato RFC3339 completo que Go puede parsear
+    return `${dateStr}T00:00:00Z`; // "2025-12-31T00:00:00Z"
   }
 }

@@ -16,10 +16,13 @@ export class Card {
   } 
 
   getAgeFromBirthdate(birthdate: string): string {
-    const birth = new Date(birthdate);
+    const [day, month, year] = birthdate.split('/');
+    const birth = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const today = new Date();
     const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 + today.getMonth() - birth.getMonth();
-    
+
+    console.log('Calculating age for birthdate:', birthdate, birth); // Debug log
+
     if (ageInMonths < 12) {
       return `${ageInMonths} ${ageInMonths === 1 ? 'mes' : 'meses'}`;
     } else if(ageInMonths >= 12) {

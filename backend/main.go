@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -18,6 +19,12 @@ This function initializes the database connection and sets up the CORS middlewar
 It also registers user routes defined in the API package and starts the Echo server on port 8080.
 */
 func main() {
+	// Cargar variables de entorno
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, using system environment variables")
+	}
+
 	defer setupDatabase().Close()
 	setupCORS()
 }
