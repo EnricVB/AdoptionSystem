@@ -8,9 +8,14 @@
 package dao
 
 import (
+	r_models "backend/internal/api/routes/models"
 	"backend/internal/db"
 	m "backend/internal/models"
+	"encoding/base64"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -289,6 +294,46 @@ func DeletePetByID(id uint) error {
 	result := gormDB.Delete(&m.Pet{}, id)
 	if result.Error != nil {
 		return fmt.Errorf("error al eliminar mascota con id %d: %v", id, result.Error)
+	}
+
+	return nil
+}
+
+func UploadPetImage(base64Image r_models.Base64Image) error {
+	// Validate that the base64 content is not empty
+	if base64Image.Base64 == "" {
+		return fmt.Errorf("contenido de imagen base64 vacío")
+	}
+
+	// Create uploads directory if it doesn't exist
+	uploadsDir := "uploads"
+	if err := os.MkdirAll(uploadsDir, 0755); err != nil {
+		return fmt.Errorf("error al crear directorio uploads: %v", err)
+	}
+
+	// Construir la ruta completa del archivo
+	filePath := filepath.Join(uploadsDir, base64Image.Name)
+
+	// Create the directory structure for the file path
+	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+		return fmt.Errorf("error al crear directorio para archivo: %v", err)
+	}
+
+	// Decode base64 content
+	base64Content := base64Image.Base64
+	if commaIndex := strings.Index(base64Content, ","); commaIndex != -1 {
+		base64Content = base64Content[commaIndex+1:]
+	}
+
+	imageData, err := base64.StdEncoding.DecodeString(base64Content)
+	if err != nil {
+		return fmt.Errorf("error al decodificar imagen base64: %v", err)
+	}
+
+	// Write the image data to the file
+	err = os.WriteFile(filePath, imageData, 0644)
+	if err != nil {
+		return fmt.Errorf("error al guardar imagen: %v", err)
 	}
 
 	return nil

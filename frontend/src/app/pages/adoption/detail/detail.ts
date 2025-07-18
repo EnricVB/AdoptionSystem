@@ -24,6 +24,7 @@ export class Detail implements OnInit {
   petId!: number;
   pet: Pet | null = null;
   error: string | null = null;
+  petImageUrl: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -35,22 +36,32 @@ export class Detail implements OnInit {
     // Initialization logic can go here if needed
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.petId = Number(this.route.snapshot.paramMap.get('id'));
-    
+
     if (this.petId) {
-      this.fetchPetDetails();
+      await this.fetchPetDetails();
     } else {
       this.error = 'ID de mascota no válido';
     }
+
+    this.loadPetImage();
   }
 
-  private fetchPetDetails(): void {
+  private fetchPetDetails(): Promise<void> {
     this.error = null;
     
-    this.apiService.getPetById(this.petId).subscribe({
-      next: (data) => this.handlePetDetailsSuccess(data.content),
-      error: (err) => this.handlePetDetailsError(err)
+    return new Promise((resolve, reject) => {
+      this.apiService.getPetById(this.petId).subscribe({
+        next: (data) => {
+          this.handlePetDetailsSuccess(data.content);
+          resolve();
+        },
+        error: (err) => {
+          this.handlePetDetailsError(err);
+          reject(err);
+        }
+      });
     });
   }
 
@@ -161,4 +172,27 @@ export class Detail implements OnInit {
   private submitError(err: any): void {
     this.errorPopUp.start('Error al enviar la solicitud.');
   }
+
+  // ======================================
+  // UTILITY METHODS
+  // ======================================
+  loadPetImage(): void {
+    if (!this.pet?.image_url) {
+      return;
+    }
+
+    this.apiService.getPetImageUrlsByFolder(this.pet.image_url).subscribe({
+      next: (urls) => {
+        if (urls.length > 0) {
+          this.petImageUrl = urls[0];
+        }
+      },
+      error: (error) => {
+        console.error(`Error loading images for folder ${this.pet?.image_url}:`, error);
+        if (this.pet?.image_url) {
+          this.petImageUrl = this.apiService.getPetImageUrl(this.pet.image_url);
+        }
+      }
+    });
+  } 
 }

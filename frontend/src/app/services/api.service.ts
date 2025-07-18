@@ -9,7 +9,8 @@ import {
   PetAdoptionRequest, 
   PetFosterHomeRequest, 
   PetFosterHomeContactRequest,
-  RequestResponse 
+  RequestResponse, 
+  Base64Image
 } from '@app/models';
 
 /**
@@ -312,6 +313,7 @@ export class ApiService {
     birthdate?: string;
     is_vaccinated?: boolean;
     description?: string;
+    image_url?: string;
     vaccination_history?: { vaccine_name: string; vaccination_date: string }[];
   }): Observable<any> {
     return this.http.post<any>(
@@ -488,6 +490,84 @@ export class ApiService {
       `${this.baseUrl}/species/${speciesId}`, 
       { headers: this.defaultHeaders }
     );
+  }
+
+  uploadPetImage(image: Base64Image): Observable<any> {
+     return this.http.post<any>(
+      `${this.baseUrl}/pets/upload-image`, 
+      image, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
+  /**
+   * Get the full URL for a pet image
+   * 
+   * @param imagePath - Relative path to the image (e.g., "Inu/51935913.png")
+   * @returns Complete URL to access the image
+   */
+  getPetImageUrl(imagePath: string): string {
+    if (!imagePath) {
+      return '';
+    }
+    return `${this.baseUrl}/pets/images/${imagePath}`;
+  }
+
+  /**
+   * Get a pet image as a blob (useful for downloading or processing)
+   * 
+   * @param imagePath - Relative path to the image (e.g., "Inu/51935913.png")
+   * @returns Observable<Blob> containing the image data
+   */
+  getPetImageBlob(imagePath: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/pets/images/${imagePath}`, {
+      responseType: 'blob'
+    });
+  }
+  
+  /**
+   * Get all image URLs from a specific folder
+   * 
+   * @param folderName - Name of the folder (e.g., "Inu")
+   * @returns Observable with array of image information including URLs
+   */
+  getPetImagesByFolder(folderName: string): Observable<{
+    images: Array<{
+      filename: string;
+      relative_path: string;
+      url: string;
+    }>;
+  }> {
+    return this.http.get<{
+      images: Array<{
+        filename: string;
+        relative_path: string;
+        url: string;
+      }>;
+    }>(`${this.baseUrl}/pets/images-list/${folderName}`, {
+      headers: this.defaultHeaders
+    });
+  }
+
+  /**
+   * Get only the URLs of all images in a folder (convenience method)
+   * 
+   * @param folderName - Name of the folder (e.g., "Inu")
+   * @returns Observable with array of complete image URLs
+   */
+  getPetImageUrlsByFolder(folderName: string): Observable<string[]> {
+    return new Observable(observer => {
+      this.getPetImagesByFolder(folderName).subscribe({
+        next: (response) => {
+          const urls = response.images.map(image => 
+            `${this.baseUrl}/pets/images/${image.relative_path}`
+          );
+          observer.next(urls);
+          observer.complete();
+        },
+        error: (error) => observer.error(error)
+      });
+    });
   }
 
   // ========================================

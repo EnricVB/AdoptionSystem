@@ -15,6 +15,8 @@ import (
 	"backend/internal/utils/time"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -49,6 +51,15 @@ func RegisterPetRoutes(e *echo.Echo) {
 	e.POST("/api/pets/adopt", handlePetAdoptionRequest)
 	e.POST("/api/pets/foster-home", handlePetFosterHomeRequest)
 	e.POST("/api/pets/foster-home/contact", handlePetFosterHomeContact)
+
+	// Image upload endpoint
+	e.POST("/api/pets/upload-image", handleUploadPetImage)
+
+	// Image serving endpoint - captures full path including subdirectories
+	e.GET("/api/pets/images/*", handleServeImage)
+
+	// List images in a folder endpoint
+	e.GET("/api/pets/images-list/:folder", handleListImagesInFolder)
 }
 
 // ========================================
@@ -373,9 +384,8 @@ func handlePetAdoptionRequest(c echo.Context) error {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
 
-	return response.MarshalResponse(c, map[string]string{
-		"status": "adoption request sent",
-	})
+	return response.MarshalResponse(c, "OK")
+
 }
 
 // handlePetFosterHomeRequest processes foster home request submissions.
@@ -438,9 +448,8 @@ func handlePetFosterHomeRequest(c echo.Context) error {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
 
-	return response.MarshalResponse(c, map[string]string{
-		"status": "foster home request sent",
-	})
+	return response.MarshalResponse(c, "OK")
+
 }
 
 // handlePetFosterHomeContact processes requests to send contact messages to foster families.
@@ -518,7 +527,127 @@ func handlePetFosterHomeContact(c echo.Context) error {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
 
-	return response.MarshalResponse(c, map[string]string{
-		"status": "foster home contact request sent",
-	})
+	return response.MarshalResponse(c, "OK")
+}
+
+func handleUploadPetImage(c echo.Context) error {
+	var request r_models.Base64Image
+
+	// Bind and validate request body
+	if err := c.Bind(&request); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest,
+			fmt.Sprintf("datos de solicitud de contacto inválidos: %v", err))
+	}
+
+	// Delegate image upload handling to the handler layer
+	httpErr := handlers.HandleUploadPetImage(request)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+
+	return response.MarshalResponse(c, "OK")
+}
+
+// handleServeImage serves images from the uploads directory
+// Returns the requested image file if it exists
+//
+// HTTP Method: GET
+// Endpoint: /api/pets/images/*
+// Parameters:
+//   - * (wildcard): The relative path to the image (e.g., "Inu/51935913.png")
+//
+// Response:
+//   - Success: Image file with appropriate content-type header
+//   - Error: HTTP 404 if image not found, HTTP 400 for invalid path
+func handleServeImage(c echo.Context) error {
+	// Get the image path from the wildcard parameter
+	// Echo puts the wildcard content in c.Param("*")
+	imagePath := c.Param("*")
+
+	// Validate the path parameter
+	if imagePath == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "path de imagen requerido",
+		})
+	}
+
+	// Construct the full file path
+	fullPath := fmt.Sprintf("uploads/%s", imagePath)
+
+	// Validate that the file exists and is within the uploads directory
+	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "imagen no encontrada",
+		})
+	}
+
+	// Serve the file
+	return c.File(fullPath)
+}
+
+// handleListImagesInFolder lists all images in a specific folder
+// Returns an array of image filenames within the specified folder
+//
+// HTTP Method: GET
+// Endpoint: /api/pets/images-list/:folder
+// Parameters:
+//   - folder: The folder name to list images from (e.g., "Inu")
+//
+// Response:
+//   - Success: JSON array with image filenames and their relative paths
+//   - Error: HTTP 404 if folder not found, HTTP 400 for invalid folder name
+func handleListImagesInFolder(c echo.Context) error {
+	// Get the folder name from URL parameter
+	folderName := c.Param("folder")
+
+	// Validate the folder parameter
+	if folderName == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "nombre de carpeta requerido",
+		})
+	}
+
+	// Construct the full folder path
+	folderPath := filepath.Join("uploads", folderName)
+
+	// Check if the folder exists
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "carpeta no encontrada",
+		})
+	}
+
+	// Read the folder contents
+	files, err := os.ReadDir(folderPath)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "error al leer carpeta",
+		})
+	}
+
+	// Filter for image files and build response
+	var images []map[string]string
+	imageExtensions := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".gif":  true,
+		".webp": true,
+		".bmp":  true,
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			ext := strings.ToLower(filepath.Ext(file.Name()))
+			if imageExtensions[ext] {
+				images = append(images, map[string]string{
+					"filename":      file.Name(),
+					"relative_path": fmt.Sprintf("%s/%s", folderName, file.Name()),
+					"url":           fmt.Sprintf("/api/pets/images/%s/%s", folderName, file.Name()),
+				})
+			}
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{"images": images})
 }

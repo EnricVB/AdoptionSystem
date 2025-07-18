@@ -98,7 +98,6 @@ export class CardList implements OnInit {
       next: (data) => this.handleFilteredPetsSuccess(data),
       error: (err) => this.handleFilteredPetsError(err)
     });
-    console.log('Filters applied:', filters);
   }
 
   isRotating = false;
