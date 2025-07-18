@@ -22,7 +22,7 @@ func main() {
 	// Cargar variables de entorno
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Warning: .env file not found, using system environment variables")
+		log.Println("Warning: .dev.env file not found, using system environment variables")
 	}
 
 	defer setupDatabase().Close()
