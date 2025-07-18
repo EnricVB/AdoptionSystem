@@ -34,7 +34,7 @@ export class ApiService {
   // ========================================
   
   /** Base URL for all API calls */
-  private readonly baseUrl = 'https://adoptionsystem.onrender.com/api';
+  private readonly baseUrl = 'http://localhost:8080/api';
   
   /** Default HTTP headers for all requests */
   private readonly defaultHeaders = new HttpHeaders({
