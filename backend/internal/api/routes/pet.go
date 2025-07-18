@@ -138,7 +138,7 @@ func handleCreatePet(c echo.Context) error {
 			fmt.Sprintf("Datos de mascota inválidos: %v", err))
 	}
 
-	// Validate required fields
+	// Validate required fieldsº
 	if pet.Name == "" || pet.SpeciesID == 0 {
 		return response.ErrorResponse(c, http.StatusBadRequest,
 			"El nombre y la especie son campos requeridos")
@@ -148,8 +148,10 @@ func handleCreatePet(c echo.Context) error {
 	if pet.BirthDate.IsZero() {
 		pet.BirthDate = time.DefaultDate()
 	}
-	if pet.AdoptDate.IsZero() {
-		pet.AdoptDate = time.DefaultDate()
+
+	if pet.AdoptDate != nil && pet.AdoptDate.IsZero() {
+		adoptDate := time.DefaultDate()
+		pet.AdoptDate = &adoptDate
 	}
 
 	// Delegate pet creation to handler layer
@@ -210,7 +212,8 @@ func handleUpdatePet(c echo.Context) error {
 		pet.BirthDate = time.DefaultDate()
 	}
 	if pet.AdoptDate.IsZero() {
-		pet.AdoptDate = time.DefaultDate()
+		adoptDate := time.DefaultDate()
+		pet.AdoptDate = &adoptDate
 	}
 
 	// Delegate pet update to handler layer

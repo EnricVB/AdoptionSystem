@@ -44,10 +44,10 @@ type Pet struct {
 	Weight             float64              `json:"weight" gorm:"column:Weight;type:decimal(5,2);default:0.00"`                // Pet's weight in kg
 	Status             PetStatus            `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
 	BirthDate          time.Time            `json:"birthdate" gorm:"column:Birthdate"`                                         // Pet's date of birth
-	AdoptDate          time.Time            `json:"adopt_date" gorm:"column:Adoptdate"`                                        // Date when the pet was adopted
+	AdoptDate          *time.Time           `json:"adopt_date" gorm:"column:Adoptdate"`                                        // Date when the pet was adopted
 	Description        string               `json:"description" gorm:"column:Description"`                                     // Detailed description of the pet
-	AdoptUserID        uint                 `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet
-	AdoptUser          User                 `json:"adopt_user" gorm:"foreignKey:AdoptUserID"`                                  // Relationship to User
+	AdoptUserID        *uint                `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet (nullable)
+	AdoptUser          *User                `json:"adopt_user" gorm:"foreignKey:AdoptUserID"`                                  // Relationship to User
 	ImageURL           string               `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
 	IsVaccinated       bool                 `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status
 	VaccinationHistory []VaccinationHistory `json:"vaccination_history" gorm:"foreignKey:PetID"`                               // Relationship to VaccinationHistory
@@ -85,8 +85,8 @@ type SimplifiedPet struct {
 	Gender             PetGender            `json:"gender" gorm:"type:enum('Male','Female');column:Gender"`                    // Pet's gender
 	Weight             float64              `json:"weight" gorm:"column:Weight;type:decimal(5,2);default:0.00"`                // Pet's weight in kg
 	Status             PetStatus            `json:"status" gorm:"type:enum('Available','FosterHome','Adopted');column:Status"` // Pet's adoption status
-	AdoptUserID        uint                 `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet
-	AdoptUser          User                 `json:"adopt_user"`                                                                // Relationship to User
+	AdoptUserID        *uint                `json:"adopt_user_id" gorm:"column:Adopt_User"`                                    // ID of the user who adopted the pet
+	AdoptUser          *User                `json:"adopt_user"`                                                                // Relationship to User
 	BirthDate          time.Time            `json:"birthdate" gorm:"column:Birthdate"`                                         // Pet's date of birth
 	ImageURL           string               `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
 	IsVaccinated       bool                 `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status

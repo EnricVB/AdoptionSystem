@@ -200,8 +200,10 @@ func AdoptPet(petID uint, userID uint) (*models.Pet, error) {
 
 	// Update pet status to adopted
 	pet.Status = m.PetStatusAdopted
-	pet.AdoptUserID = userID
-	pet.AdoptDate = time.Now()
+	pet.AdoptUserID = &userID
+
+	adoptDate := time.Now()
+	pet.AdoptDate = &adoptDate
 
 	err = dao.UpdatePet(pet)
 	if err != nil {

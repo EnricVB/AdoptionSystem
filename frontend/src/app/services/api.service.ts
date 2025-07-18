@@ -304,14 +304,15 @@ export class ApiService {
    */
   createPet(petData: {
     name: string;
-    species: string;
+    species_id: number;
     breed?: string;
     gender?: string;
     weight?: number;
+    status?: string;
     birthdate?: string;
     is_vaccinated?: boolean;
     description?: string;
-    vaccination_history?: { vaccine: string; date: string }[];
+    vaccination_history?: { vaccine_name: string; vaccination_date: string }[];
   }): Observable<any> {
     return this.http.post<any>(
       `${this.baseUrl}/pets`, 
