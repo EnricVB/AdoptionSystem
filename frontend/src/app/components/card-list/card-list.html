@@ -30,25 +30,25 @@
         </div>
 
         <select [(ngModel)]="filters.species_id" (change)="fetchFilteredPets()" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
-          <option value="">Todas las especies</option>
+          <option value="" class="font-bold">Todas las especies</option>
           <option *ngFor="let specie of species" [value]="specie.id">{{ specie.name }}</option>
         </select>
 
         <select [(ngModel)]="filters.status" (change)="fetchFilteredPets()" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
-          <option value="">Estado</option>
+          <option value="" class="font-bold">Estado</option>
           <option value="Available">Disponible</option>
           <option value="Adopted">Adoptado</option>
           <option value="FosterHome">En acogida</option>
         </select>
 
         <select [(ngModel)]="filters.gender" (change)="fetchFilteredPets()" id="gender-select" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
-          <option value="">Género</option>
+          <option value="" class="font-bold">Género</option>
           <option value="Male">Macho</option>
           <option value="Female">Hembra</option>
         </select>
 
         <select [(ngModel)]="filters.vaccinated" (change)="fetchFilteredPets()" id="vaccine-select" class="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg">
-          <option value="">Vacuna</option>
+          <option value="" class="font-bold">Vacuna</option>
           <option value="1">Vacunado</option>
           <option value="0">No Vacunado</option>
         </select>
