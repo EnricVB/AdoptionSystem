@@ -12,3 +12,8 @@ type PetFosterHomeContact struct {
 	Reason        string `json:"reason"`          // Reason for contacting the foster family
 	Message       string `json:"message"`         // Message to be sent to the foster family
 }
+
+type Base64Image struct {
+	Base64 string `json:"base64"` // Base64 encoded image string
+	Name   string `json:"name"`   // Name of the image file
+}

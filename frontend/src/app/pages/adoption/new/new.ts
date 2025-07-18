@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, model } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
-import { Species, PetGender } from '@app/models';
+import { Species, PetGender, Base64Image } from '@app/models';
 import { ApiService } from '@app/services/api.service';
 
 @Component({
@@ -128,7 +128,23 @@ export class NewPet {
   // ACTION BUTTONS
   // =======================================
 
-  createAdoption(): void {
+  async createAdoption(): Promise<void> {
+    // Upload image if selected
+    let base64Image: Base64Image | null = null;
+
+    if (this.selectedFile) {
+      try {
+        base64Image = await this.toBase64(this.selectedFile);
+
+        this.apiService.uploadPetImage(base64Image).subscribe({
+          next: (response) => this.handleImageUploadSuccess(response),
+          error: (error) => this.handleImageUploadError(error)
+        });
+      } catch (error) {
+        this.handleImageUploadError(error);
+      }
+    }
+
     // Collect form data
     const petData = {
       name: this.petNameInput.nativeElement.value.trim(),
@@ -139,10 +155,11 @@ export class NewPet {
       birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
       description: this.descriptionTextarea.nativeElement.value.trim() || '',
       status: 'Available',
+      image_url: base64Image ? base64Image.name.substring(0, base64Image.name.indexOf('/')) : '',
       is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
       vaccination_history: this.vaccinationHistory.map(vaccination => ({
-        vaccine_name: vaccination.vaccine,
-        vaccination_date: this.toRFC3339(vaccination.date)
+      vaccine_name: vaccination.vaccine,
+      vaccination_date: this.toRFC3339(vaccination.date)
       })),
     };
 
@@ -166,19 +183,29 @@ export class NewPet {
 
     // Create pet via API
     this.apiService.createPet(petData).subscribe({
-      next: (response) => {
-        this.successPopUp.start("Mascota creada correctamente.");
-        setTimeout(() => {
-          this.router.navigate(['/adopt']);
-        }, 2000);
-      },
-
-      error: (error) => {
-        this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
-        console.log('Error creating pet: ', error);
-        console.log('Error details:', error.error); // Más detalles del error
-      }
+      next: (response) => this.handleCreatePetSuccess(response),
+      error: (error) => this.handleCreatePetError(error)
     });
+  }
+
+  private handleCreatePetSuccess(response: any): void {
+    this.successPopUp.start("Mascota creada correctamente.");
+    setTimeout(() => {
+      this.router.navigate(['/adopt']);
+    }, 2000);
+  }
+
+  private handleCreatePetError(error: any): void {
+    this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
+    console.log('Error creating pet: ', error);
+  }
+
+  private handleImageUploadSuccess(response: any): void {
+    console.log('Image uploaded successfully:', response);
+  }
+
+  private handleImageUploadError(error: any): void {
+    console.log('Error uploading image: ', error);
   }
 
   clearForm(): void {
@@ -232,5 +259,33 @@ export class NewPet {
 
     // Devolver la fecha en formato RFC3339 completo que Go puede parsear
     return `${dateStr}T00:00:00Z`; // "2025-12-31T00:00:00Z"
+  }
+
+  private toBase64(file: File): Promise<Base64Image> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const result = reader.result as string;
+          const base64String = result.split(',')[1]; // Remove data:image/...;base64, prefix
+          
+          const base64Image: Base64Image = {
+            base64: base64String,
+            name: `$${Math.random().toString(36).substring(2, 8)}/${Date.now()}.png`
+          };
+          
+          resolve(base64Image);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Error reading file'));
+      };
+      
+      reader.readAsDataURL(file);
+    });
   }
 }

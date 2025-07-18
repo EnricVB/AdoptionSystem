@@ -4,6 +4,7 @@
 package services
 
 import (
+	r_models "backend/internal/api/routes/models"
 	"backend/internal/db/dao"
 	"backend/internal/models"
 	m "backend/internal/models"
@@ -246,5 +247,16 @@ func SendPetFosterHomeContact(to string, pet m.Pet, user m.SimplifiedUser, conta
 		return fmt.Errorf("error al enviar contacto de casa de acogida: %v", err)
 	}
 
+	return nil
+}
+
+func UploadPetImage(base64 r_models.Base64Image) error {
+	// Call the service to handle image upload
+	err := dao.UploadPetImage(base64)
+	if err != nil {
+		return fmt.Errorf("error al cargar imagen de mascota: %v", err)
+	}
+
+	// Return success response
 	return nil
 }

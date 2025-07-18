@@ -59,3 +59,8 @@ export interface SimplifiedPet {
   is_vaccinated: boolean;
   vaccination_history: VaccinationHistory[];
 }
+
+export interface Base64Image {
+	base64: string;
+	name: string;
+}

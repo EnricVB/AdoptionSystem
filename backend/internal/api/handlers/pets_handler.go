@@ -8,6 +8,7 @@
 package handlers
 
 import (
+	r_models "backend/internal/api/routes/models"
 	m "backend/internal/models"
 	s "backend/internal/services/backend_calls"
 	response "backend/internal/utils/rest"
@@ -373,6 +374,16 @@ func HandleSendPetFosterHomeContact(to string, pet m.Pet, user m.SimplifiedUser,
 
 	// Delegate email sending to service layer
 	err := s.SendPetFosterHomeContact(to, pet, user, contact, reason, message)
+	if err != nil {
+		return response.Error(http.StatusInternalServerError, err.Error())
+	}
+
+	return response.EmptyError
+}
+
+func HandleUploadPetImage(base64 r_models.Base64Image) response.HTTPError {
+	// Call the service to handle image upload
+	err := s.UploadPetImage(base64)
 	if err != nil {
 		return response.Error(http.StatusInternalServerError, err.Error())
 	}

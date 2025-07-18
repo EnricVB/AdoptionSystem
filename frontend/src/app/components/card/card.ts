@@ -1,17 +1,43 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SimplifiedPet } from '@app/models';
+import { ApiService } from '@app/services/api.service';
 
 @Component({
   selector: 'app-card',
   imports: [CommonModule],
   templateUrl: './card.html',
 })
-export class Card {
+export class Card implements OnInit {
   @Input() pet!: SimplifiedPet;
+  
+  petImageUrl: string = '';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    public apiService: ApiService
+  ) {
+  } 
+
+  ngOnInit(): void {
+    this.loadPetImage();
+  }
+
+  loadPetImage(): void {
+    this.apiService.getPetImageUrlsByFolder(this.pet.name).subscribe({
+      next: (urls) => {
+        if (urls.length > 0) {
+          this.petImageUrl = urls[0];
+        }
+      },
+      error: (error) => {
+        console.error(`Error loading images for ${this.pet.name}:`, error);
+        if (this.pet.image_url) {
+          this.petImageUrl = this.apiService.getPetImageUrl(this.pet.image_url);
+        }
+      }
+    });
   } 
 
   getAgeFromBirthdate(birthdate: string): string {
