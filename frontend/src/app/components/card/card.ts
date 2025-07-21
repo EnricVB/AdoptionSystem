@@ -25,21 +25,25 @@ export class Card implements OnInit {
   }
 
   loadPetImage(): void {
-    this.apiService.getPetImageUrlsByFolder(this.pet.name).subscribe({
+    if (!this.pet?.image_url) {
+      return;
+    }
+
+    this.apiService.getPetImageUrlsByFolder(this.pet.image_url).subscribe({
       next: (urls) => {
         if (urls.length > 0) {
           this.petImageUrl = urls[0];
         }
       },
       error: (error) => {
-        console.error(`Error loading images for ${this.pet.name}:`, error);
-        if (this.pet.image_url) {
+        console.error(`Error loading images for folder ${this.pet?.image_url}:`, error);
+        if (this.pet?.image_url) {
           this.petImageUrl = this.apiService.getPetImageUrl(this.pet.image_url);
         }
       }
     });
   } 
-
+  
   getAgeFromBirthdate(birthdate: string): string {
     const [day, month, year] = birthdate.split('/');
     const birth = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
