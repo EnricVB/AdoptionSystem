@@ -35,6 +35,8 @@ type FullUser struct {
 
 	ChangePassword bool `json:"change_password" gorm:"default:false;column:Change_Password"` // Flag indicating if user must change password on next login
 
+	IsAdmin bool `json:"is_admin" gorm:"default:false;column:Is_Admin"` // Whether the user has administrative privileges
+
 	CrtDate time.Time `json:"crt_date" gorm:"autoCreateTime"` // Record creation timestamp
 	UptDate time.Time `json:"upt_date" gorm:"autoUpdateTime"` // Record last update timestamp
 }
@@ -51,12 +53,13 @@ type User struct {
 	Email        string    `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"`
 	SessionID    string    `json:"session_id" gorm:"type:varchar(50);uniqueIndex;column:Session_ID"`
 	Address      string    `json:"address" gorm:"type:varchar(255)"`
-	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
-	ProviderID   string    `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`           // Provider-specific user ID
+	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"`
+	ProviderID   string    `json:"provider_id" gorm:"type:varchar(255);column:Provider_ID"`
 	Password     string    `json:"password" gorm:"type:varchar(255);not null"`
 	ChangePass   bool      `json:"change_pass" gorm:"default:false;column:Change_Password"`
 	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`
 	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`
+	IsAdmin      bool      `json:"is_admin" gorm:"default:false;column:Is_Admin"`
 	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`
 	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`
 }
@@ -75,6 +78,7 @@ type NonValidatedUser struct {
 	FailedLogins uint      `json:"failed_logins" gorm:"default:0;column:Failed_Logins"`
 	Provider     string    `json:"provider" gorm:"default:'local';type:varchar(255);column:Provider"` // Authentication provider (local, google, etc.)
 	IsBlocked    bool      `json:"is_blocked" gorm:"default:false;column:Is_Blocked"`
+	IsAdmin      bool      `json:"is_admin" gorm:"default:false;column:Is_Admin"`
 	CrtDate      time.Time `json:"crt_date" gorm:"autoCreateTime"`
 	UptDate      time.Time `json:"upt_date" gorm:"autoUpdateTime"`
 }
@@ -90,6 +94,7 @@ type SimplifiedUser struct {
 	Surname string `json:"surname" gorm:"type:varchar(100);not null"`           // User's last name
 	Email   string `json:"email" gorm:"type:varchar(150);uniqueIndex;not null"` // User's email address (unique)
 	Address string `json:"address" gorm:"type:varchar(255)"`                    // User's physical address
+	IsAdmin bool   `json:"is_admin" gorm:"default:false;column:Is_Admin"`       // Whether the user has administrative privileges
 }
 
 // ========================================
@@ -115,6 +120,7 @@ func (fu FullUser) ToUser() User {
 		IsBlocked:    fu.IsBlocked,
 		CrtDate:      fu.CrtDate,
 		UptDate:      fu.UptDate,
+		IsAdmin:      fu.IsAdmin,
 	}
 }
 
@@ -130,6 +136,7 @@ func (fu FullUser) ToNonValidatedUser() NonValidatedUser {
 		FailedLogins: fu.FailedLogins,
 		Provider:     fu.Provider,
 		IsBlocked:    fu.IsBlocked,
+		IsAdmin:      fu.IsAdmin,
 		CrtDate:      fu.CrtDate,
 		UptDate:      fu.UptDate,
 	}
@@ -144,6 +151,7 @@ func (fu FullUser) ToSimplifiedUser() SimplifiedUser {
 		Surname: fu.Surname,
 		Email:   fu.Email,
 		Address: fu.Address,
+		IsAdmin: fu.IsAdmin,
 	}
 }
 
@@ -159,6 +167,7 @@ func (u User) ToNonValidatedUser() NonValidatedUser {
 		FailedLogins: u.FailedLogins,
 		Provider:     u.Provider,
 		IsBlocked:    u.IsBlocked,
+		IsAdmin:      u.IsAdmin,
 		CrtDate:      u.CrtDate,
 		UptDate:      u.UptDate,
 	}
@@ -173,6 +182,7 @@ func (u User) ToSimplifiedUser() SimplifiedUser {
 		Surname: u.Surname,
 		Email:   u.Email,
 		Address: u.Address,
+		IsAdmin: u.IsAdmin,
 	}
 }
 
@@ -185,6 +195,7 @@ func (nvu NonValidatedUser) ToSimplifiedUser() SimplifiedUser {
 		Surname: nvu.Surname,
 		Email:   nvu.Email,
 		Address: nvu.Address,
+		IsAdmin: nvu.IsAdmin,
 	}
 }
 

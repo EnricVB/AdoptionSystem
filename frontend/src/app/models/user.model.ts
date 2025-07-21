@@ -15,6 +15,7 @@ export interface FullUser {
   provider: string;
   provider_id: string;
   change_password: boolean;
+  is_admin: boolean;
   crt_date: string; // ISO date string
   upt_date: string; // ISO date string
 }
@@ -32,6 +33,7 @@ export interface User {
   change_pass: boolean;
   failed_logins: number;
   is_blocked: boolean;
+  is_admin: boolean;
   crt_date: string; // ISO date string
   upt_date: string; // ISO date string
 }
@@ -45,6 +47,7 @@ export interface NonValidatedUser {
   failed_logins: number;
   provider: string;
   is_blocked: boolean;
+  is_admin: boolean;
   crt_date: string; // ISO date string
   upt_date: string; // ISO date string
 }
@@ -55,4 +58,5 @@ export interface SimplifiedUser {
   surname: string;
   email: string;
   address: string;
+  is_admin: boolean;
 }
