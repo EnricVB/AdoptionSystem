@@ -24,32 +24,47 @@
             <!-- Main Image -->
             <c-carousel #carousel class="w-full max-w-2xl mx-auto mb-8 relative z-10 h-110 overflow-hidden">
                 @if (carouselImages.length > 1) {
-                    <c-carousel-control direction="prev">
-                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
-                                    hover:bg-gray-200 hover:scale-105 transition-all duration-200">
-                            <i class="fa-solid fa-chevron-left text-black text-xl"></i>
-                        </div>
-                    </c-carousel-control>
+                    <!-- Custom Previous Button -->
+                    <button
+                        type="button"
+                        (click)="goToPreviousSlide()"
+                        class="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
+                                hover:bg-gray-200 hover:scale-105 transition-all duration-200">
+                        <i class="fa-solid fa-chevron-left text-black text-xl"></i>
+                    </button>
 
-                    <c-carousel-control direction="next">
-                        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
-                                    hover:bg-gray-200 hover:scale-105 transition-all duration-200">
-                            <i class="fa-solid fa-chevron-right text-black text-xl"></i>
-                        </div>
-                    </c-carousel-control>
+                    <!-- Custom Next Button -->
+                    <button
+                        type="button"
+                        (click)="goToNextSlide()"
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
+                                hover:bg-gray-200 hover:scale-105 transition-all duration-200">
+                        <i class="fa-solid fa-chevron-right text-black text-xl"></i>
+                    </button>
                 }
 
                 <c-carousel-inner>
                     @if (carouselImages.length != 0) {
                         @for (slide of carouselImages; track $index) {
-                            <c-carousel-item [active]="$index === (carousel.activeIndex() || 0)">
-                                <img
-                                    src="{{ slide }}"
-                                    alt="Pet Image"
-                                    class="relative z-10 w-full h-110 object-cover object-[center_50%] cursor-pointer"
-                                    (error)="onImageError($event)"
-                                    (click)="onImageClick($index)">
+                            <c-carousel-item [active]="$index === getSafeActiveIndex()">
+                                <div class="relative w-full h-110">
+                                    <img
+                                        src="{{ slide }}"
+                                        alt="Pet Image"
+                                        class="relative z-10 w-full h-110 object-cover object-[center_30%] cursor-pointer"
+                                        (error)="onImageError($event)"
+                                        (click)="onImageClick($index)">
 
+                                    <!-- Delete button for each image -->
+                                    <button
+                                        type="button"
+                                        (click)="deleteImage($index)"
+                                        class="absolute top-4 left-5 z-20 bg-red-500 text-white
+                                            px-3 py-2.5 rounded-lg hover:scale-105 transition-all duration-200
+                                            flex items-center gap-2 cursor-pointer">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
                             </c-carousel-item>
                         }
                     } @else {
@@ -87,15 +102,6 @@
                     
                     <i class="fa-solid fa-camera"></i>
                     <span class="text-sm">Agregar imagen</span>
-                </button>
-
-                <button
-                    type="button"
-                    (click)="deleteImage()"
-                    class="absolute top-4 left-5 z-20 bg-red-500 text-white
-                        px-3 py-2.5 rounded-lg hover:scale-105 transition-all duration-200
-                        flex items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-trash"></i>
                 </button>
             } 
 
