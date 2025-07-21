@@ -4,17 +4,12 @@ import { Router } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
 import { Species, PetGender, Base64Image } from '@app/models';
 import { ApiService } from '@app/services/api.service';
-import {
-  CarouselComponent,
-  CarouselControlComponent,
-  CarouselInnerComponent,
-  CarouselItemComponent
-} from '@coreui/angular';
+import { Carousel } from "@app/components/carousel/carousel";
 
 @Component({
   selector: 'app-new',
   standalone: true,
-  imports: [CommonModule, PopUp, CarouselComponent, CarouselControlComponent, CarouselInnerComponent, CarouselItemComponent,],
+  imports: [CommonModule, PopUp, Carousel],
   templateUrl: './new.html',
 })
 export class NewPet implements OnInit {
@@ -34,10 +29,7 @@ export class NewPet implements OnInit {
   @ViewChild('successPopUp') successPopUp!: PopUp;
   @ViewChild('errorPopUp') errorPopUp!: PopUp;
 
-  @ViewChild('carousel') carousel!: CarouselComponent;
-  @ViewChild('modal') modal!: ElementRef<HTMLElement>;
-  @ViewChild('modalImage') modalImage!: ElementRef<HTMLImageElement>;
-  @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('carousel') carousel!: Carousel;
 
   // ======================================
   // COMPONENT PROPERTIES
@@ -45,8 +37,6 @@ export class NewPet implements OnInit {
 
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
-  selectedFiles: File[] = [];
-  carouselImages: string[] = [];
   showVaccinationHistory: boolean = false;
 
   // ======================================
@@ -87,69 +77,6 @@ export class NewPet implements OnInit {
   // ======================================
   // EVENT HANDLERS
   // ======================================
-  onImageError(event: any): void {
-    console.warn('Error loading image:', event.target.src);
-
-    
-    if(event.target.src.toString().includes('error')) {
-      // Replace broken image with a placeholder
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTAwQzE0NC43NzIgMTAwIDEwMCAxNDQuNzcyIDEwMCAyMDBTMTQ0Ljc3MiAzMDAgMjAwIDMwMFMyNTAgMjU1LjIyOCAyNTAgMjAwUzIwNS4yMjggMTAwIDIwMCAxMDBaTTIwMCAyNTBDMTcyLjM4NiAyNTAgMTUwIDIyNy42MTQgMTUwIDIwMEMxNTAgMTcyLjM4NiAxNzIuMzg2IDE1MCAyMDAgMTUwQzIyNy42MTQgMTUwIDI1MCAxNzIuMzg2IDI1MCAyMDBDMjUwIDIyNy42MTQgMjI3LjYxNCAyNTAgMjAwIDI1MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
-    } else {
-      this.errorPopUp.start("Error al cargar la imagen, intente nuevamente.")
-    }
-  }
-
-  onImageClick(index: number): void {
-    this.modalImage.nativeElement.src = this.carouselImages[index];
-    this.modal.nativeElement.hidden = false;
-  }
-
-  closeImage(): void {
-    this.modal.nativeElement.hidden = true;
-  }
-
-  onFileSelected(event: any): void { 
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    if (!file) {
-      return;
-    }
-
-    // Add the file to selected files
-    this.selectedFiles.push(file);
-
-    reader.onload = (e) => {
-      const imageUrl = e.target?.result as string;
-      
-      // Add the image URL to carousel images
-      this.carouselImages.push(imageUrl);
-      
-      // Move carousel to the last image (newly added)
-      const lastIndex = this.carouselImages.length - 1;
-      
-      // Use setTimeout to ensure the DOM is updated before changing the index
-      setTimeout(() => {
-        if (this.carousel && lastIndex >= 0) {
-          this.carousel.activeIndex.set(lastIndex);
-        }
-        // Force change detection to update the view
-        this.cdr.detectChanges();
-      }, 50);
-    };
-
-    reader.onerror = () => {
-      // Remove the file from selected files if reading fails
-      this.selectedFiles.pop();
-      this.errorPopUp.start('Error al cargar la imagen');
-    };
-
-    // Read the file as a data URL
-    reader.readAsDataURL(file);
-    
-    // Clear the input to allow selecting the same file again
-    event.target.value = '';
-  }
 
   addVaccination(vaccineNameInput: HTMLInputElement, vaccinationDateInput: HTMLInputElement): void {
     const vaccineName = vaccineNameInput.value.trim();
@@ -178,47 +105,6 @@ export class NewPet implements OnInit {
     this.vaccinationHistory = this.vaccinationHistory.filter(v => v !== vaccination);
   }
 
-  // ======================================
-  // CAROUSEL NAVIGATION METHODS
-  // ======================================
-  getSafeActiveIndex(): number {
-    if (this.carouselImages.length === 0) {
-      return 0;
-    }
-    const activeIndex = this.carousel?.activeIndex() || 0;
-    return Math.max(0, Math.min(activeIndex, this.carouselImages.length - 1));
-  }
-
-  goToPreviousSlide(): void {
-    if (this.carouselImages.length === 0) {
-      return;
-    }
-    
-    const currentIndex = this.carousel.activeIndex() || 0;
-    const newIndex = currentIndex > 0 ? currentIndex - 1 : this.carouselImages.length - 1;
-    
-    // Validate index is within bounds
-    if (newIndex >= 0 && newIndex < this.carouselImages.length) {
-      this.carousel.activeIndex.set(newIndex);
-      this.cdr.detectChanges();
-    }
-  }
-
-  goToNextSlide(): void {
-    if (this.carouselImages.length === 0) {
-      return;
-    }
-    
-    const currentIndex = this.carousel.activeIndex() || 0;
-    const newIndex = currentIndex < this.carouselImages.length - 1 ? currentIndex + 1 : 0;
-    
-    // Validate index is within bounds
-    if (newIndex >= 0 && newIndex < this.carouselImages.length) {
-      this.carousel.activeIndex.set(newIndex);
-      this.cdr.detectChanges();
-    }
-  }
-
   // =======================================
   // ACTION BUTTONS
   // =======================================
@@ -231,7 +117,7 @@ export class NewPet implements OnInit {
     // Upload image if selected
     let base64Image: Base64Image | null = null;
 
-    for (const file of this.selectedFiles) {
+    for (const file of this.carousel.selectedFiles) {
       try {
         base64Image = await this.toBase64(file);
 
@@ -301,70 +187,10 @@ export class NewPet implements OnInit {
     this.vaccinationHistory = [];
     this.showVaccinationHistory = false;
     
-    // Reset image arrays
-    this.selectedFiles = [];
-    this.carouselImages = [];
-    
     // Reset carousel index
     if (this.carousel) {
-      this.carousel.activeIndex.set(0);
+      this.carousel.clearImages();
     }
-    
-    // Reset file input
-    if (this.fileInput) {
-      this.fileInput.nativeElement.value = '';
-    }
-    
-    // Force change detection
-    this.cdr.detectChanges();
-  }
-
-  deleteImage(indexToDelete: number): void {
-    if (this.carouselImages.length === 0 || indexToDelete < 0 || indexToDelete >= this.carouselImages.length) {
-      return;
-    }
-    
-    // Remove from arrays
-    this.selectedFiles.splice(indexToDelete, 1);
-    this.carouselImages.splice(indexToDelete, 1);
-
-    // Only adjust carousel index if there are still images
-    if (this.carouselImages.length > 0) {
-      // Calculate safe new index
-      const currentIndex = this.carousel?.activeIndex() || 0;
-      let newIndex: number;
-      
-      // If we deleted the currently active image
-      if (indexToDelete === currentIndex) {
-        // If we deleted the last image, go to the previous one
-        newIndex = indexToDelete >= this.carouselImages.length ? this.carouselImages.length - 1 : indexToDelete;
-      } else if (indexToDelete < currentIndex) {
-        // If we deleted an image before the current one, adjust index
-        newIndex = currentIndex - 1;
-      } else {
-        // If we deleted an image after the current one, keep the same index
-        newIndex = currentIndex;
-      }
-      
-      // Ensure index is within bounds
-      newIndex = Math.max(0, Math.min(newIndex, this.carouselImages.length - 1));
-      
-      setTimeout(() => {
-        if (this.carousel) {
-          this.carousel.activeIndex.set(newIndex);
-        }
-      }, 50);
-    } else {
-      // No images left, reset to 0
-      setTimeout(() => {
-        if (this.carousel) {
-          this.carousel.activeIndex.set(0);
-        }
-      }, 50);
-    }
-    
-    // Force change detection
-    this.cdr.detectChanges();
   }
 
   // ======================================
