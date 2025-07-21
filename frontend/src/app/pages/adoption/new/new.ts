@@ -178,13 +178,54 @@ export class NewPet implements OnInit {
     this.vaccinationHistory = this.vaccinationHistory.filter(v => v !== vaccination);
   }
 
-  onVaccinationChange(event: any): void {
-    this.showVaccinationHistory = event.target.value === '1';
+  // ======================================
+  // CAROUSEL NAVIGATION METHODS
+  // ======================================
+  getSafeActiveIndex(): number {
+    if (this.carouselImages.length === 0) {
+      return 0;
+    }
+    const activeIndex = this.carousel?.activeIndex() || 0;
+    return Math.max(0, Math.min(activeIndex, this.carouselImages.length - 1));
+  }
+
+  goToPreviousSlide(): void {
+    if (this.carouselImages.length === 0) {
+      return;
+    }
+    
+    const currentIndex = this.carousel.activeIndex() || 0;
+    const newIndex = currentIndex > 0 ? currentIndex - 1 : this.carouselImages.length - 1;
+    
+    // Validate index is within bounds
+    if (newIndex >= 0 && newIndex < this.carouselImages.length) {
+      this.carousel.activeIndex.set(newIndex);
+      this.cdr.detectChanges();
+    }
+  }
+
+  goToNextSlide(): void {
+    if (this.carouselImages.length === 0) {
+      return;
+    }
+    
+    const currentIndex = this.carousel.activeIndex() || 0;
+    const newIndex = currentIndex < this.carouselImages.length - 1 ? currentIndex + 1 : 0;
+    
+    // Validate index is within bounds
+    if (newIndex >= 0 && newIndex < this.carouselImages.length) {
+      this.carousel.activeIndex.set(newIndex);
+      this.cdr.detectChanges();
+    }
   }
 
   // =======================================
   // ACTION BUTTONS
   // =======================================
+
+  onVaccinationChange(event: any): void {
+    this.showVaccinationHistory = event.target.value === '1';
+  }
 
   async createAdoption(): Promise<void> {
     // Upload image if selected
@@ -278,23 +319,48 @@ export class NewPet implements OnInit {
     this.cdr.detectChanges();
   }
 
-  deleteImage(): void {
-    if (this.carouselImages.length === 0) {
+  deleteImage(indexToDelete: number): void {
+    if (this.carouselImages.length === 0 || indexToDelete < 0 || indexToDelete >= this.carouselImages.length) {
       return;
     }
     
-    const activeIndex = this.carousel.activeIndex() || 0;
-    
     // Remove from arrays
-    this.selectedFiles.splice(activeIndex, 1);
-    this.carouselImages.splice(activeIndex, 1);
+    this.selectedFiles.splice(indexToDelete, 1);
+    this.carouselImages.splice(indexToDelete, 1);
 
-    // Adjust carousel index if necessary
+    // Only adjust carousel index if there are still images
     if (this.carouselImages.length > 0) {
-      const newIndex = activeIndex >= this.carouselImages.length ? 0 : activeIndex;
-      this.carousel.activeIndex.set(newIndex);
+      // Calculate safe new index
+      const currentIndex = this.carousel?.activeIndex() || 0;
+      let newIndex: number;
+      
+      // If we deleted the currently active image
+      if (indexToDelete === currentIndex) {
+        // If we deleted the last image, go to the previous one
+        newIndex = indexToDelete >= this.carouselImages.length ? this.carouselImages.length - 1 : indexToDelete;
+      } else if (indexToDelete < currentIndex) {
+        // If we deleted an image before the current one, adjust index
+        newIndex = currentIndex - 1;
+      } else {
+        // If we deleted an image after the current one, keep the same index
+        newIndex = currentIndex;
+      }
+      
+      // Ensure index is within bounds
+      newIndex = Math.max(0, Math.min(newIndex, this.carouselImages.length - 1));
+      
+      setTimeout(() => {
+        if (this.carousel) {
+          this.carousel.activeIndex.set(newIndex);
+        }
+      }, 50);
     } else {
-      this.carousel.activeIndex.set(0);
+      // No images left, reset to 0
+      setTimeout(() => {
+        if (this.carousel) {
+          this.carousel.activeIndex.set(0);
+        }
+      }, 50);
     }
     
     // Force change detection
