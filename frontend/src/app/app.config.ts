@@ -1,10 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
-
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations, provideNoopAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,7 +12,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions({
       skipInitialTransition: true,
     })),
-    providePrimeNG({
-    })
+    provideAnimations(),
+    provideNoopAnimations(),
   ]
 };
+

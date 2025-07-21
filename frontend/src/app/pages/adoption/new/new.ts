@@ -1,16 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, ElementRef, model } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
 import { Species, PetGender, Base64Image } from '@app/models';
 import { ApiService } from '@app/services/api.service';
+import {
+  CarouselComponent,
+  CarouselControlComponent,
+  CarouselInnerComponent,
+  CarouselItemComponent
+} from '@coreui/angular';
 
 @Component({
   selector: 'app-new',
-  imports: [CommonModule, PopUp],
+  standalone: true,
+  imports: [CommonModule, PopUp, CarouselComponent, CarouselControlComponent, CarouselInnerComponent, CarouselItemComponent,],
   templateUrl: './new.html',
 })
-export class NewPet {
+export class NewPet implements OnInit {
 
   // ======================================
   // VIEWCHILD REFERENCES
@@ -27,13 +34,19 @@ export class NewPet {
   @ViewChild('successPopUp') successPopUp!: PopUp;
   @ViewChild('errorPopUp') errorPopUp!: PopUp;
 
+  @ViewChild('carousel') carousel!: CarouselComponent;
+  @ViewChild('modal') modal!: ElementRef<HTMLElement>;
+  @ViewChild('modalImage') modalImage!: ElementRef<HTMLImageElement>;
+  @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
+
   // ======================================
   // COMPONENT PROPERTIES
   // ======================================
 
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
+  carouselImages: string[] = [];
   showVaccinationHistory: boolean = false;
 
   // ======================================
@@ -41,7 +54,8 @@ export class NewPet {
   // ======================================
   constructor(
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
@@ -74,23 +88,67 @@ export class NewPet {
   // EVENT HANDLERS
   // ======================================
   onImageError(event: any): void {
-    // Replace broken image with a placeholder
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTAwQzE0NC43NzIgMTAwIDEwMCAxNDQuNzcyIDEwMCAyMDBTMTQ0Ljc3MiAzMDAgMjAwIDMwMFMyNTAgMjU1LjIyOCAyNTAgMjAwUzIwNS4yMjggMTAwIDIwMCAxMDBaTTIwMCAyNTBDMTcyLjM4NiAyNTAgMTUwIDIyNy42MTQgMTUwIDIwMEMxNTAgMTcyLjM4NiAxNzIuMzg2IDE1MCAyMDAgMTUwQzIyNy42MTQgMTUwIDI1MCAxNzIuMzg2IDI1MCAyMDBDMjUwIDIyNy42MTQgMjI3LjYxNCAyNTAgMjAwIDI1MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+    console.warn('Error loading image:', event.target.src);
+
+    
+    if(event.target.src.toString().includes('error')) {
+      // Replace broken image with a placeholder
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yMDAgMTAwQzE0NC43NzIgMTAwIDEwMCAxNDQuNzcyIDEwMCAyMDBTMTQ0Ljc3MiAzMDAgMjAwIDMwMFMyNTAgMjU1LjIyOCAyNTAgMjAwUzIwNS4yMjggMTAwIDIwMCAxMDBaTTIwMCAyNTBDMTcyLjM4NiAyNTAgMTUwIDIyNy42MTQgMTUwIDIwMEMxNTAgMTcyLjM4NiAxNzIuMzg2IDE1MCAyMDAgMTUwQzIyNy42MTQgMTUwIDI1MCAxNzIuMzg2IDI1MCAyMDBDMjUwIDIyNy42MTQgMjI3LjYxNCAyNTAgMjAwIDI1MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+    } else {
+      this.errorPopUp.start("Error al cargar la imagen, intente nuevamente.")
+    }
+  }
+
+  onImageClick(index: number): void {
+    this.modalImage.nativeElement.src = this.carouselImages[index];
+    this.modal.nativeElement.hidden = false;
+  }
+
+  closeImage(): void {
+    this.modal.nativeElement.hidden = true;
   }
 
   onFileSelected(event: any): void { 
     const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = event.target.closest('.relative').querySelector('img');
-        if (img) {
-          img.src = e.target?.result as string;
-        }
-      };
-      reader.readAsDataURL(file);
+    const reader = new FileReader();
+
+    if (!file) {
+      return;
     }
+
+    // Add the file to selected files
+    this.selectedFiles.push(file);
+
+    reader.onload = (e) => {
+      const imageUrl = e.target?.result as string;
+      
+      // Add the image URL to carousel images
+      this.carouselImages.push(imageUrl);
+      
+      // Move carousel to the last image (newly added)
+      const lastIndex = this.carouselImages.length - 1;
+      
+      // Use setTimeout to ensure the DOM is updated before changing the index
+      setTimeout(() => {
+        if (this.carousel && lastIndex >= 0) {
+          this.carousel.activeIndex.set(lastIndex);
+        }
+        // Force change detection to update the view
+        this.cdr.detectChanges();
+      }, 50);
+    };
+
+    reader.onerror = () => {
+      // Remove the file from selected files if reading fails
+      this.selectedFiles.pop();
+      this.errorPopUp.start('Error al cargar la imagen');
+    };
+
+    // Read the file as a data URL
+    reader.readAsDataURL(file);
+    
+    // Clear the input to allow selecting the same file again
+    event.target.value = '';
   }
 
   addVaccination(vaccineNameInput: HTMLInputElement, vaccinationDateInput: HTMLInputElement): void {
@@ -98,7 +156,7 @@ export class NewPet {
     const vaccinationDate = vaccinationDateInput.value;
 
     if (vaccineName && vaccinationDate) {
-      // Validar que la fecha sea válida
+      // Validate date format (YYYY-MM-DD)
       if (isNaN(Date.parse(vaccinationDate))) {
         this.errorPopUp.start('La fecha de vacunación no es válida');
         return;
@@ -132,10 +190,11 @@ export class NewPet {
     // Upload image if selected
     let base64Image: Base64Image | null = null;
 
-    if (this.selectedFile) {
+    for (const file of this.selectedFiles) {
       try {
-        base64Image = await this.toBase64(this.selectedFile);
+        base64Image = await this.toBase64(file);
 
+        // Upload the image to the server
         this.apiService.uploadPetImage(base64Image).subscribe({
           next: (response) => this.handleImageUploadSuccess(response),
           error: (error) => this.handleImageUploadError(error)
@@ -188,6 +247,63 @@ export class NewPet {
     });
   }
 
+  // Clear all form fields
+  clearForm(): void {
+    this.petNameInput.nativeElement.value = '';
+    this.speciesSelect.nativeElement.value = '';
+    this.breedInput.nativeElement.value = '';
+    this.genderSelect.nativeElement.value = '';
+    this.weightInput.nativeElement.value = '';
+    this.birthdateInput.nativeElement.value = '';
+    this.vaccinationSelect.nativeElement.value = '';
+    this.descriptionTextarea.nativeElement.value = '';
+    this.vaccinationHistory = [];
+    this.showVaccinationHistory = false;
+    
+    // Reset image arrays
+    this.selectedFiles = [];
+    this.carouselImages = [];
+    
+    // Reset carousel index
+    if (this.carousel) {
+      this.carousel.activeIndex.set(0);
+    }
+    
+    // Reset file input
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  deleteImage(): void {
+    if (this.carouselImages.length === 0) {
+      return;
+    }
+    
+    const activeIndex = this.carousel.activeIndex() || 0;
+    
+    // Remove from arrays
+    this.selectedFiles.splice(activeIndex, 1);
+    this.carouselImages.splice(activeIndex, 1);
+
+    // Adjust carousel index if necessary
+    if (this.carouselImages.length > 0) {
+      const newIndex = activeIndex >= this.carouselImages.length ? 0 : activeIndex;
+      this.carousel.activeIndex.set(newIndex);
+    } else {
+      this.carousel.activeIndex.set(0);
+    }
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  // ======================================
+  // HANDLERS FOR API RESPONSES
+  // ======================================
   private handleCreatePetSuccess(response: any): void {
     this.successPopUp.start("Mascota creada correctamente.");
     setTimeout(() => {
@@ -206,35 +322,6 @@ export class NewPet {
 
   private handleImageUploadError(error: any): void {
     console.log('Error uploading image: ', error);
-  }
-
-  clearForm(): void {
-    // Clear all form fields
-    this.petNameInput.nativeElement.value = '';
-    this.speciesSelect.nativeElement.value = '';
-    this.breedInput.nativeElement.value = '';
-    this.genderSelect.nativeElement.value = '';
-    this.weightInput.nativeElement.value = '';
-    this.birthdateInput.nativeElement.value = '';
-    this.vaccinationSelect.nativeElement.value = '';
-    this.descriptionTextarea.nativeElement.value = '';
-    this.vaccinationHistory = [];
-    this.selectedFile = null;
-    this.showVaccinationHistory = false;
-    
-    // Reset image
-    const img = document.querySelector('.relative img') as HTMLImageElement;
-    if (img) {
-      img.src = 'error';
-    }
-  }
-
-  deleteImage(): void {
-    this.selectedFile = null;
-    const img = document.querySelector('.relative img') as HTMLImageElement;
-    if (img) {
-      img.src = 'error';
-    }
   }
   
   goBack(): void {
