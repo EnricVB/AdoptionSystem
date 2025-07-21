@@ -1,0 +1,103 @@
+<div class="fixed inset-0 z-50 
+            flex items-center justify-center 
+            bg-black/75 backdrop-blur-sm 
+            cursor-pointer
+            transition-opacity duration-300"
+    
+    (click)="closeImage()"
+    hidden="true"
+    #modal>
+
+    <img src="error"
+        #modalImage
+        alt="Pet Image"
+        class="relative z-10 m-auto cursor-default
+                w-fit h-fit
+                 max-w-[80%] max-h-[80%] 
+                 min-w-[30%] min-h-[30%]"
+        (error)="onImageError($event)">
+</div>
+
+<c-carousel #carousel class="w-full max-w-2xl mx-auto mb-8 relative z-10 h-110 overflow-hidden">
+    @if (images.length > 1) {
+        <!-- Custom Previous Button -->
+        <button
+            type="button"
+            (click)="goToPreviousSlide()"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
+                    hover:bg-gray-200 hover:scale-105 transition-all duration-200">
+            <i class="fa-solid fa-chevron-left text-black text-xl"></i>
+        </button>
+
+        <!-- Custom Next Button -->
+        <button
+            type="button"
+            (click)="goToNextSlide()"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full bg-white/80 w-[30px] h-[30px] flex items-center justify-center cursor-pointer
+                    hover:bg-gray-200 hover:scale-105 transition-all duration-200">
+            <i class="fa-solid fa-chevron-right text-black text-xl"></i>
+        </button>
+    }
+
+    <c-carousel-inner>
+        @if (images.length != 0) {
+            @for (slide of images; track $index) {
+                <c-carousel-item [active]="$index === getSafeActiveIndex()">
+                    <div class="relative w-full h-110">
+                        <img
+                            src="{{ slide }}"
+                            alt="Pet Image"
+                            class="relative z-10 w-full h-110 object-cover object-[center_30%] cursor-pointer"
+                            (error)="onImageError($event)"
+                            (click)="onImageClick($index)">
+
+                        <!-- Delete button for each image -->
+                        @if (isEditable) {
+                            <button
+                                type="button"
+                                (click)="deleteImage($index)"
+                                class="absolute top-4 left-5 z-20 bg-red-500 text-white
+                                    px-3 py-2.5 rounded-lg hover:scale-105 transition-all duration-200
+                                    flex items-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        }
+                    </div>
+                </c-carousel-item>
+            }
+        } @else if (isEditable) {
+            <c-carousel-item [active]="true" class="h-110 bg-gray-300">
+                <div class="flex flex-col justify-center items-center text-center h-full">
+                    <button 
+                        type="button"
+                        (click)="file.click()"
+                        class="px-3 py-2 rounded-lg hover:scale-115 transition-all duration-200
+                            flex items-center gap-2 cursor-pointer">
+                        
+                        <i class="fa-solid fa-camera text-5xl"></i>
+                        <span class="text-2xl">Agregar imagen</span>
+                    </button>
+                </div>
+            </c-carousel-item>
+        }
+    </c-carousel-inner>
+</c-carousel>
+
+<input type="file"
+    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+    accept="image/*"
+    (change)="onFileSelected($event)"
+    #file>
+
+@if (images.length != 0 && isEditable) {
+    <button 
+        type="button"
+        (click)="file.click()"
+        class="absolute top-4 right-4 z-20 bg-black text-white
+            px-3 py-2 rounded-lg hover:scale-105 transition-all duration-200
+            flex items-center gap-2 cursor-pointer">
+        
+        <i class="fa-solid fa-camera"></i>
+        <span class="text-sm">Agregar imagen</span>
+    </button>
+} 
