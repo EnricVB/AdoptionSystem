@@ -5,6 +5,7 @@ import (
 	"backend/internal/db"
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -41,12 +42,12 @@ func setupCORS() {
 	api.RegisterCompanyRoutes(e)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:4200"},
+		AllowOrigins: []string{os.Getenv("FRONTEND_URL")},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
-	e.Start(":8080")
+	e.Start(":" + os.Getenv("PORT"))
 }
 
 /*
