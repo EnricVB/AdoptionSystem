@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
-import { Species, PetGender, Base64Image, Pet } from '@app/models';
+import { Species, PetGender, Base64Image, Pet, PetStatus } from '@app/models';
 import { ApiService } from '@app/services/api.service';
 import { Carousel } from "@app/components/carousel/carousel";
 
@@ -47,11 +47,9 @@ export class NewPet implements OnInit {
   
   // Available pet statuses
   petStatuses = [
-    { value: 'Available', label: 'Disponible' },
-    { value: 'Adopted', label: 'Adoptado' },
-    { value: 'Foster Care', label: 'Casa de Acogida' },
-    { value: 'Medical Care', label: 'Cuidado Médico' },
-    { value: 'Unavailable', label: 'No Disponible' }
+    { value: PetStatus.Available, label: 'Disponible' },
+    { value: PetStatus.Adopted, label: 'Adoptado' },
+    { value: PetStatus.FosterHome, label: 'Casa de Acogida' }
   ];
 
   // ======================================
@@ -138,7 +136,7 @@ export class NewPet implements OnInit {
           vaccine: vh.vaccine_name,
           date: this.formatDateForInput(vh.vaccination_date)
         }));
-        this.showVaccinationHistory = this.vaccinationHistory.length > 0;
+        this.showVaccinationHistory = this.vaccinationSelect.nativeElement.value === '1';
       }
 
       // Load images
@@ -272,6 +270,21 @@ export class NewPet implements OnInit {
     }
 
     // Collect form data
+    const statusValue = this.statusSelect.nativeElement.value || 'Available';
+    
+    // Validate status value and provide fallback
+    let validStatus: PetStatus;
+    switch (statusValue) {
+      case PetStatus.Available:
+      case PetStatus.Adopted:
+      case PetStatus.FosterHome:
+        validStatus = statusValue as PetStatus;
+        break;
+      default:
+        console.warn(`Invalid status value: ${statusValue}, defaulting to Available`);
+        validStatus = PetStatus.Available;
+    }
+
     const petData = {
       name: this.petNameInput.nativeElement.value.trim(),
       species_id: parseInt(this.speciesSelect.nativeElement.value),
@@ -280,7 +293,7 @@ export class NewPet implements OnInit {
       weight: parseFloat(this.weightInput.nativeElement.value) || 0,
       birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
       description: this.descriptionTextarea.nativeElement.value.trim() || '',
-      status: this.statusSelect.nativeElement.value || 'Available',
+      status: validStatus,
       image_url: base64Image ? base64Image.name.substring(0, base64Image.name.indexOf('/')) : '',
       is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
       vaccination_history: this.vaccinationHistory.map(vaccination => ({
@@ -316,22 +329,54 @@ export class NewPet implements OnInit {
 
     // Upload new images if selected
     let base64Image: Base64Image | null = null;
+    let imageFolder = this.currentPet?.image_url || '';
 
-    for (const file of this.carousel.selectedFiles) {
-      try {
-        base64Image = await this.toBase64(file, this.currentPet?.image_url);
+    // Process image uploads first if there are new files
+    if (this.carousel.selectedFiles.length > 0) {
+      for (const file of this.carousel.selectedFiles) {
+        try {
+          base64Image = await this.toBase64(file, this.currentPet?.image_url);
 
-        // Upload the image to the server
-        this.apiService.uploadPetImage(base64Image).subscribe({
-          next: (response) => this.handleImageUploadSuccess(response),
-          error: (error) => this.handleImageUploadError(error)
-        });
-      } catch (error) {
-        this.handleImageUploadError(error);
+          // Upload the image to the server and wait for completion
+          await new Promise<void>((resolve, reject) => {
+            this.apiService.uploadPetImage(base64Image!).subscribe({
+              next: (response) => {
+                this.handleImageUploadSuccess(response);
+                // Extract folder name from the uploaded image
+                if (base64Image && base64Image.name.includes('/')) {
+                  imageFolder = base64Image.name.substring(0, base64Image.name.indexOf('/'));
+                }
+                resolve();
+              },
+              error: (error) => {
+                this.handleImageUploadError(error);
+                reject(error);
+              }
+            });
+          });
+        } catch (error) {
+          this.handleImageUploadError(error);
+          return; // Stop execution if image upload fails
+        }
       }
     }
 
     // Collect form data
+    const statusValue = this.statusSelect.nativeElement.value || 'Available';
+    
+    // Validate status value and provide fallback
+    let validStatus: PetStatus;
+    switch (statusValue) {
+      case PetStatus.Available:
+      case PetStatus.Adopted:
+      case PetStatus.FosterHome:
+        validStatus = statusValue as PetStatus;
+        break;
+      default:
+        console.warn(`Invalid status value: ${statusValue}, defaulting to Available`);
+        validStatus = PetStatus.Available;
+    }
+
     const petData = {
       id: this.petId,
       name: this.petNameInput.nativeElement.value.trim(),
@@ -341,13 +386,16 @@ export class NewPet implements OnInit {
       weight: parseFloat(this.weightInput.nativeElement.value) || 0,
       birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
       description: this.descriptionTextarea.nativeElement.value.trim() || '',
-      status: this.statusSelect.nativeElement.value || 'Available',
+      status: validStatus,
+      image_url: imageFolder, // Include image folder even in update
       is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
       vaccination_history: this.vaccinationHistory.map(vaccination => ({
         vaccine_name: vaccination.vaccine,
         vaccination_date: this.toRFC3339(vaccination.date)
       }))
     };
+
+    console.log('Updating pet with data:', petData);
 
     // Validate required fields
     if (!petData.name) {
@@ -420,7 +468,6 @@ export class NewPet implements OnInit {
   }
 
   private handleImageUploadSuccess(response: any): void {
-    console.log('Image uploaded successfully:', response);
   }
 
   private handleImageUploadError(error: any): void {

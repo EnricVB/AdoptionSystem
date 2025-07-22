@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { ApiService } from '@app/services/api.service';
 import {
   CarouselComponent,
   CarouselInnerComponent,
@@ -34,6 +35,7 @@ export class Carousel {
   // ======================================
   constructor(
     private cdr: ChangeDetectorRef,
+    private apiService: ApiService,
   ) {
     // Initialization logic can go here if needed
   }
@@ -54,47 +56,36 @@ export class Carousel {
       return;
     }
     
+    // If the image is a data URL, we can skip the API call
+    if (!this.isDataUrl(this.images[indexToDelete])) {
+      this.deleteImageFromServer(this.images[indexToDelete]);
+    }
+    
     // Remove from arrays
     this.selectedFiles.splice(indexToDelete, 1);
     this.images.splice(indexToDelete, 1);
 
-    // Only adjust carousel index if there are still images
-    if (this.images.length > 0) {
-      // Calculate safe new index
-      const currentIndex = this.carousel?.activeIndex() || 0;
-      let newIndex: number;
-      
-      // If we deleted the currently active image
-      if (indexToDelete === currentIndex) {
-        // If we deleted the last image, go to the previous one
-        newIndex = indexToDelete >= this.images.length ? this.images.length - 1 : indexToDelete;
-      } else if (indexToDelete < currentIndex) {
-        // If we deleted an image before the current one, adjust index
-        newIndex = currentIndex - 1;
-      } else {
-        // If we deleted an image after the current one, keep the same index
-        newIndex = currentIndex;
+    // Adjust carousel index 
+    setTimeout(() => {
+      if (this.carousel) {
+        this.carousel.activeIndex.set(0);
       }
-      
-      // Ensure index is within bounds
-      newIndex = Math.max(0, Math.min(newIndex, this.images.length - 1));
-      
-      setTimeout(() => {
-        if (this.carousel) {
-          this.carousel.activeIndex.set(newIndex);
-        }
-      }, 50);
-    } else {
-      // No images left, reset to 0
-      setTimeout(() => {
-        if (this.carousel) {
-          this.carousel.activeIndex.set(0);
-        }
-      }, 50);
-    }
+    }, 50);
     
     // Force change detection
     this.cdr.detectChanges();
+  }
+
+  private deleteImageFromServer(imageUrl: string): void {
+    // Call the API to delete the image
+    this.apiService.deleteImageByUrl(imageUrl).subscribe({
+      next: () => { },
+      error: () => { }
+    });
+  }
+
+  private isDataUrl(url: string): boolean {
+    return typeof url === 'string' && url.startsWith('data:');
   }
 
   onImageClick(index: number): void {

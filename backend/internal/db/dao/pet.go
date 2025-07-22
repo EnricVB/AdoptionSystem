@@ -247,19 +247,54 @@ func UpdatePet(pet *m.Pet) error {
 	// Open database connection
 	gormDB := db.ORMOpen()
 
+	// Start a transaction for data consistency
+	tx := gormDB.Begin()
+	if tx.Error != nil {
+		return fmt.Errorf("error al iniciar transacción: %v", tx.Error)
+	}
+
 	// Update modification timestamp
 	pet.UptDate = time.Now()
-	result := gormDB.Model(&m.Pet{}).
+
+	// Update pet basic information (excluding ImageURL and vaccination history)
+	result := tx.Model(&m.Pet{}).
 		Where("id = ?", pet.ID).
-		Omit("ImageURL").
+		Omit("ImageURL", "VaccinationHistory").
 		Updates(pet)
 
 	if result.Error != nil {
+		tx.Rollback()
 		return fmt.Errorf("error al actualizar mascota con id %d: %v", pet.ID, result.Error)
 	}
 
+	// Update vaccination history
+	// First, delete existing vaccination history for this pet
+	deleteResult := tx.Where("Pet_ID = ?", pet.ID).Delete(&m.VaccinationHistory{})
+	if deleteResult.Error != nil {
+		tx.Rollback()
+		return fmt.Errorf("error al eliminar historial de vacunación existente: %v", deleteResult.Error)
+	}
+
+	// Insert new vaccination history records if any
+	if len(pet.VaccinationHistory) > 0 {
+		for i := range pet.VaccinationHistory {
+			pet.VaccinationHistory[i].PetID = pet.ID
+		}
+
+		createResult := tx.Create(&pet.VaccinationHistory)
+		if createResult.Error != nil {
+			tx.Rollback()
+			return fmt.Errorf("error al crear nuevo historial de vacunación: %v", createResult.Error)
+		}
+	}
+
+	// Commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("error al confirmar transacción: %v", err)
+	}
+
 	// Preload relaciones después de actualizar
-	gormDB.Preload("Species").Preload("AdoptUser").First(pet, pet.ID)
+	gormDB.Preload("Species").Preload("AdoptUser").Preload("VaccinationHistory").First(pet, pet.ID)
 	return nil
 }
 
@@ -334,6 +369,78 @@ func UploadPetImage(base64Image r_models.Base64Image) error {
 	err = os.WriteFile(filePath, imageData, 0644)
 	if err != nil {
 		return fmt.Errorf("error al guardar imagen: %v", err)
+	}
+
+	return nil
+}
+
+// DeletePetImageByURL deletes a pet image file from the file system by its URL or path.
+// This function handles the physical deletion of image files from the uploads directory.
+//
+// File System Operations:
+// - Validates the image path format and safety
+// - Resolves relative paths within the uploads directory
+// - Performs actual file deletion from disk
+// - Handles various URL formats (full URLs, relative paths)
+//
+// Security Considerations:
+// - Prevents directory traversal attacks by validating path
+// - Ensures deletion only occurs within uploads directory
+// - Validates file existence before deletion
+//
+// Parameters:
+//   - imageUrl: The URL or file path of the image to delete (e.g., "uploads/folder/image.jpg", "http://domain/uploads/folder/image.jpg")
+//
+// Returns:
+//   - error: File system error or nil on success
+func DeletePetImageByURL(imageUrl string) error {
+	// Extract the file path from the URL
+	var filePath string
+
+	// Handle different URL formats
+	if strings.HasPrefix(imageUrl, "http://") || strings.HasPrefix(imageUrl, "https://") {
+		// Extract path from full URL (e.g., "http://localhost:8080/api/pets/images/folder/image.jpg" -> "uploads/folder/image.jpg")
+		if strings.Contains(imageUrl, "/api/pets/images/") {
+			parts := strings.Split(imageUrl, "/api/pets/images/")
+			if len(parts) < 2 {
+				return fmt.Errorf("formato de URL inválido: %s", imageUrl)
+			}
+			filePath = filepath.Join("uploads", parts[1])
+		} else {
+			return fmt.Errorf("formato de URL no reconocido: %s", imageUrl)
+		}
+	} else if strings.HasPrefix(imageUrl, "uploads/") {
+		// Already a relative path
+		filePath = imageUrl
+	} else {
+		// Assume it's a relative path within uploads
+		filePath = filepath.Join("uploads", imageUrl)
+	}
+
+	// Security check: ensure the path is within the uploads directory
+	absPath, err := filepath.Abs(filePath)
+	if err != nil {
+		return fmt.Errorf("error al resolver ruta del archivo: %v", err)
+	}
+
+	uploadsAbs, err := filepath.Abs("uploads")
+	if err != nil {
+		return fmt.Errorf("error al resolver ruta de uploads: %v", err)
+	}
+
+	if !strings.HasPrefix(absPath, uploadsAbs) {
+		return fmt.Errorf("ruta de archivo insegura: %s", filePath)
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return fmt.Errorf("archivo no encontrado: %s", filePath)
+	}
+
+	// Delete the file
+	err = os.Remove(filePath)
+	if err != nil {
+		return fmt.Errorf("error al eliminar archivo: %v", err)
 	}
 
 	return nil

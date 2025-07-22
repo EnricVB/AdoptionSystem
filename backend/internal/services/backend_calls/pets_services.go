@@ -260,3 +260,27 @@ func UploadPetImage(base64 r_models.Base64Image) error {
 	// Return success response
 	return nil
 }
+
+// DeletePetImageByURL deletes a pet image by its URL or file path.
+// This service handles the deletion of pet images from the file system.
+//
+// Business Logic:
+// - Validates the image URL/path format
+// - Delegates to DAO layer for actual file deletion
+// - Used when editing pets and removing specific images
+//
+// Parameters:
+//   - imageUrl: The URL or file path of the image to delete
+//
+// Returns:
+//   - error: File system error or nil on success
+func DeletePetImageByURL(imageUrl string) error {
+	// Call the DAO to handle image deletion
+	err := dao.DeletePetImageByURL(imageUrl)
+	if err != nil {
+		return fmt.Errorf("error al eliminar imagen de mascota: %v", err)
+	}
+
+	// Return success response
+	return nil
+}

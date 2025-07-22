@@ -55,6 +55,9 @@ func RegisterPetRoutes(e *echo.Echo) {
 	// Image upload endpoint
 	e.POST("/api/pets/upload-image", handleUploadPetImage)
 
+	// Image deletion endpoint
+	e.POST("/api/pets/delete-image", handleDeletePetImage)
+
 	// Image serving endpoint - captures full path including subdirectories
 	e.GET("/api/pets/images/*", handleServeImage)
 
@@ -550,6 +553,55 @@ func handleUploadPetImage(c echo.Context) error {
 	}
 
 	return response.MarshalResponse(c, "OK")
+}
+
+// handleDeletePetImage processes requests to delete a pet image by its URL.
+// Used when editing pets and removing specific images from the carousel.
+//
+// HTTP Method: POST
+// Endpoint: /api/pets/delete-image
+// Content-Type: application/json
+//
+// Request Body:
+//   - url: The URL or relative path of the image to delete
+//
+// Response:
+//   - Success: Confirmation message indicating the image was deleted
+//   - Error: HTTP error with appropriate status code and error message
+//
+// Business Flow:
+// 1. Validates request data binding
+// 2. Extracts image URL from request body
+// 3. Validates that the URL is provided
+// 4. Delegates deletion to handler layer
+// 5. Returns confirmation of successful deletion
+func handleDeletePetImage(c echo.Context) error {
+	// Define request structure
+	var request struct {
+		URL string `json:"url" validate:"required"`
+	}
+
+	// Bind and validate request body
+	if err := c.Bind(&request); err != nil {
+		return response.ErrorResponse(c, http.StatusBadRequest,
+			fmt.Sprintf("datos de solicitud inválidos: %v", err))
+	}
+
+	// Validate that URL is provided
+	if request.URL == "" {
+		return response.ErrorResponse(c, http.StatusBadRequest, "URL de imagen es requerida")
+	}
+
+	// Delegate image deletion handling to the handler layer
+	httpErr := handlers.HandleDeletePetImageByURL(request.URL)
+	if httpErr.Code != 0 {
+		return response.ConvertToErrorResponse(c, httpErr)
+	}
+
+	return response.MarshalResponse(c, map[string]string{
+		"status":  "deleted",
+		"message": "Imagen eliminada exitosamente",
+	})
 }
 
 // handleServeImage serves images from the uploads directory

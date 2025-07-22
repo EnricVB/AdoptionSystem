@@ -500,6 +500,14 @@ export class ApiService {
     );
   }
 
+  deleteImageByUrl(imageUrl: string): Observable<any> {
+     return this.http.post<any>(
+      `${this.baseUrl}/pets/delete-image`, 
+      { url: imageUrl }, 
+      { headers: this.defaultHeaders }
+    );
+  }
+
   /**
    * Get the full URL for a pet image
    * 
