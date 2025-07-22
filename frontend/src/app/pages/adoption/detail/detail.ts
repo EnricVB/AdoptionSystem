@@ -113,6 +113,10 @@ export class Detail implements OnInit {
     this.router.navigate(['/adopt']);
   }
 
+  edit(): void {
+    this.router.navigate(['/adopt/edit', this.petId]);
+  }
+
   async fosterHomeContact(): Promise<void> {
     if (!this.pet) return;
 

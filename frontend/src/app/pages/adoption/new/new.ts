@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
-import { Species, PetGender, Base64Image } from '@app/models';
+import { Species, PetGender, Base64Image, Pet } from '@app/models';
 import { ApiService } from '@app/services/api.service';
 import { Carousel } from "@app/components/carousel/carousel";
 
@@ -23,6 +23,7 @@ export class NewPet implements OnInit {
   @ViewChild('genderSelect') genderSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('weightInput') weightInput!: ElementRef<HTMLInputElement>;
   @ViewChild('birthdateInput') birthdateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('statusSelect') statusSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('vaccinationSelect') vaccinationSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('descriptionTextarea') descriptionTextarea!: ElementRef<HTMLTextAreaElement>;
 
@@ -38,6 +39,20 @@ export class NewPet implements OnInit {
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
   showVaccinationHistory: boolean = false;
+  
+  // Edit mode properties
+  isEditMode: boolean = false;
+  petId: number | null = null;
+  currentPet: Pet | null = null;
+  
+  // Available pet statuses
+  petStatuses = [
+    { value: 'Available', label: 'Disponible' },
+    { value: 'Adopted', label: 'Adoptado' },
+    { value: 'Foster Care', label: 'Casa de Acogida' },
+    { value: 'Medical Care', label: 'Cuidado Médico' },
+    { value: 'Unavailable', label: 'No Disponible' }
+  ];
 
   // ======================================
   // CONSTRUCTOR
@@ -45,6 +60,7 @@ export class NewPet implements OnInit {
   constructor(
     private apiService: ApiService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
   ) {
   }
@@ -53,10 +69,126 @@ export class NewPet implements OnInit {
   // LIFECYCLE
   // ======================================
   ngOnInit(): void {
+    this.checkRouteParams();
     this.fetchSpecies();
   }
 
-    // ======================================
+  // ======================================
+  // ROUTE HANDLING
+  // ======================================
+  private checkRouteParams(): void {
+    // Check if we have a pet ID in the route (edit mode)
+    const petIdParam = this.route.snapshot.paramMap.get('id');
+
+    if (petIdParam) {
+      this.petId = parseInt(petIdParam, 10);
+      this.isEditMode = true;
+      this.loadPetData();
+    }
+    
+    // Check for query parameters (pre-filled data)
+    this.route.queryParams.subscribe(params => {
+      if (Object.keys(params).length > 0) {
+        this.prefillFormData(params);
+      }
+    });
+  }
+
+  private loadPetData(): void {
+    if (this.petId) {
+      this.apiService.getPetById(this.petId).subscribe({
+        next: (data) => this.handlePetDataSuccess(data),
+        error: (err) => this.handlePetDataError(err)
+      });
+    }
+  }
+
+  private handlePetDataSuccess(data: { content: Pet }): void {
+    this.currentPet = data.content;
+    this.populateFormWithPetData();
+  }
+
+  private handlePetDataError(error: any): void {
+    console.error('Error fetching pet data: ', error);
+    this.errorPopUp.start('Error al cargar los datos de la mascota');
+
+    setTimeout(() => {
+      this.goBack();
+    }, 2000);
+  }
+
+  private populateFormWithPetData(): void {
+    if (!this.currentPet) return;
+
+    // Wait for ViewChild elements to be available
+    setTimeout(() => {
+      if (this.petNameInput) this.petNameInput.nativeElement.value = this.currentPet!.name || '';
+      if (this.speciesSelect) this.speciesSelect.nativeElement.value = this.currentPet!.species_id?.toString() || '';
+      if (this.breedInput) this.breedInput.nativeElement.value = this.currentPet!.breed || '';
+      if (this.genderSelect) this.genderSelect.nativeElement.value = this.currentPet!.gender || '';
+      if (this.weightInput) this.weightInput.nativeElement.value = this.currentPet!.weight?.toString() || '';
+      if (this.birthdateInput) this.birthdateInput.nativeElement.value = this.formatDateForInput(this.currentPet!.birthdate) || '';
+      if (this.statusSelect) this.statusSelect.nativeElement.value = this.currentPet!.status || 'Available';
+      if (this.descriptionTextarea) this.descriptionTextarea.nativeElement.value = this.currentPet!.description || '';
+      if (this.vaccinationSelect) this.vaccinationSelect.nativeElement.value = this.currentPet!.is_vaccinated ? '1' : '2';
+
+      // Load vaccination history
+      if (this.currentPet!.vaccination_history) {
+        this.vaccinationHistory = this.currentPet!.vaccination_history.map(vh => ({
+          vaccine: vh.vaccine_name,
+          date: this.formatDateForInput(vh.vaccination_date)
+        }));
+        this.showVaccinationHistory = this.vaccinationHistory.length > 0;
+      }
+
+      // Load images
+      if (this.currentPet!.image_url) {
+        this.apiService.getPetImageUrlsByFolder(this.currentPet!.image_url).subscribe({
+          next: (urls) => {
+            if (urls.length > 0) {
+              this.carousel.images = urls;
+            } else {
+              this.carousel.images = [this.apiService.getPetImageUrl(this.currentPet!.image_url)];
+            }
+          },
+          error: (err) => {
+            this.errorPopUp.start('Error al cargar las imágenes de la mascota');
+            console.error('Error fetching pet images: ', err);
+          }
+        });
+      }
+
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  private prefillFormData(params: any): void {
+    // Wait for ViewChild elements to be available
+    setTimeout(() => {
+      if (params.name && this.petNameInput) this.petNameInput.nativeElement.value = params.name;
+      if (params.species_id && this.speciesSelect) this.speciesSelect.nativeElement.value = params.species_id;
+      if (params.breed && this.breedInput) this.breedInput.nativeElement.value = params.breed;
+      if (params.gender && this.genderSelect) this.genderSelect.nativeElement.value = params.gender;
+      if (params.weight && this.weightInput) this.weightInput.nativeElement.value = params.weight;
+      if (params.birthdate && this.birthdateInput) this.birthdateInput.nativeElement.value = this.formatDateForInput(params.birthdate);
+      if (params.description && this.descriptionTextarea) this.descriptionTextarea.nativeElement.value = params.description;
+      if (params.is_vaccinated && this.vaccinationSelect) this.vaccinationSelect.nativeElement.value = params.is_vaccinated;
+
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  private formatDateForInput(dateString: string): string {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  }
+
+  // ======================================
   // DATA FETCHING & HANDLING
   // ======================================
   fetchSpecies(): void { 
@@ -113,8 +245,16 @@ export class NewPet implements OnInit {
     this.showVaccinationHistory = event.target.value === '1';
   }
 
-  async createAdoption(): Promise<void> {
-    // Upload image if selected
+  async savePet(): Promise<void> {
+    if (this.isEditMode && this.petId) {
+      await this.updatePet();
+    } else {
+      await this.createPet();
+    }
+  }
+
+  async createPet(): Promise<void> {
+    // Upload images if selected
     let base64Image: Base64Image | null = null;
 
     for (const file of this.carousel.selectedFiles) {
@@ -140,24 +280,21 @@ export class NewPet implements OnInit {
       weight: parseFloat(this.weightInput.nativeElement.value) || 0,
       birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
       description: this.descriptionTextarea.nativeElement.value.trim() || '',
-      status: 'Available',
+      status: this.statusSelect.nativeElement.value || 'Available',
       image_url: base64Image ? base64Image.name.substring(0, base64Image.name.indexOf('/')) : '',
       is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
       vaccination_history: this.vaccinationHistory.map(vaccination => ({
-      vaccine_name: vaccination.vaccine,
-      vaccination_date: this.toRFC3339(vaccination.date)
+        vaccine_name: vaccination.vaccine,
+        vaccination_date: this.toRFC3339(vaccination.date)
       })),
     };
 
-    // Basic validation
+    // Validate required fields
     if (!petData.name) {
       this.errorPopUp.start('El nombre de la mascota es obligatorio.');
       return;
-    } else if (!petData.species_id || isNaN(petData.species_id)) {
-      this.errorPopUp.start('La especie de la mascota es obligatoria.');
-      return;
-    } else if (!petData.gender) {
-      this.errorPopUp.start('El género de la mascota es obligatorio.');
+    } else if (petData.species_id <= 0) {
+      this.errorPopUp.start('Debe seleccionar una especie válida.');
       return;
     } else if (isNaN(petData.weight) || petData.weight <= 0) {
       this.errorPopUp.start('El peso de la mascota debe ser un número positivo.');
@@ -174,7 +311,65 @@ export class NewPet implements OnInit {
     });
   }
 
-  // Clear all form fields
+  async updatePet(): Promise<void> {
+    if (!this.petId) return;
+
+    // Upload new images if selected
+    for (const file of this.carousel.selectedFiles) {
+      try {
+        const base64Image = await this.toBase64(file);
+        this.apiService.uploadPetImage(base64Image).subscribe({
+          next: (response) => this.handleImageUploadSuccess(response),
+          error: (error) => this.handleImageUploadError(error)
+        });
+      } catch (error) {
+        this.handleImageUploadError(error);
+      }
+    }
+
+    // Collect form data
+    const petData = {
+      id: this.petId,
+      name: this.petNameInput.nativeElement.value.trim(),
+      species_id: parseInt(this.speciesSelect.nativeElement.value),
+      breed: this.breedInput.nativeElement.value.trim() || 'Desconocido',
+      gender: this.genderSelect.nativeElement.value as PetGender,
+      weight: parseFloat(this.weightInput.nativeElement.value) || 0,
+      birthdate: this.toRFC3339(this.birthdateInput.nativeElement.value),
+      description: this.descriptionTextarea.nativeElement.value.trim() || '',
+      status: this.statusSelect.nativeElement.value || 'Available',
+      is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
+      vaccination_history: this.vaccinationHistory.map(vaccination => ({
+        vaccine_name: vaccination.vaccine,
+        vaccination_date: this.toRFC3339(vaccination.date)
+      }))
+    };
+
+    // Validate required fields
+    if (!petData.name) {
+      this.errorPopUp.start('El nombre de la mascota es obligatorio.');
+      return;
+    } else if (petData.species_id <= 0) {
+      this.errorPopUp.start('Debe seleccionar una especie válida.');
+      return;
+    } else if (isNaN(petData.weight) || petData.weight <= 0) {
+      this.errorPopUp.start('El peso de la mascota debe ser un número positivo.');
+      return;
+    } else if (!petData.birthdate) {
+      this.errorPopUp.start('La fecha de nacimiento es obligatoria.');
+      return;
+    }
+
+    // Update pet via API
+    this.apiService.updatePet(this.petId, petData).subscribe({
+      next: (response) => this.handleUpdatePetSuccess(response),
+      error: (error) => this.handleUpdatePetError(error)
+    });
+  }
+
+  // ======================================
+  // SUCCESS & ERROR HANDLERS
+  // ======================================
   clearForm(): void {
     this.petNameInput.nativeElement.value = '';
     this.speciesSelect.nativeElement.value = '';
@@ -199,13 +394,25 @@ export class NewPet implements OnInit {
   private handleCreatePetSuccess(response: any): void {
     this.successPopUp.start("Mascota creada correctamente.");
     setTimeout(() => {
-      this.router.navigate(['/adopt']);
+      this.goBack();
     }, 2000);
   }
 
   private handleCreatePetError(error: any): void {
     this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
     console.log('Error creating pet: ', error);
+  }
+
+  private handleUpdatePetSuccess(response: any): void {
+    this.successPopUp.start("Mascota actualizada correctamente.");
+    setTimeout(() => {
+      this.goBack();
+    }, 2000);
+  }
+
+  private handleUpdatePetError(error: any): void {
+    this.errorPopUp.start("Ha ocurrido un problema al actualizar la mascota.");
+    console.log('Error updating pet: ', error);
   }
 
   private handleImageUploadSuccess(response: any): void {
@@ -217,7 +424,11 @@ export class NewPet implements OnInit {
   }
   
   goBack(): void {
-    this.router.navigate(['/adopt']);
+    if (this.isEditMode) {
+      this.router.navigate(['/adopt/', this.petId]);
+    } else {
+      this.router.navigate(['/adopt']);
+    }
   }
 
   // ======================================
