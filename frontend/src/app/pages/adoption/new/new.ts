@@ -315,9 +315,13 @@ export class NewPet implements OnInit {
     if (!this.petId) return;
 
     // Upload new images if selected
+    let base64Image: Base64Image | null = null;
+
     for (const file of this.carousel.selectedFiles) {
       try {
-        const base64Image = await this.toBase64(file);
+        base64Image = await this.toBase64(file, this.currentPet?.image_url);
+
+        // Upload the image to the server
         this.apiService.uploadPetImage(base64Image).subscribe({
           next: (response) => this.handleImageUploadSuccess(response),
           error: (error) => this.handleImageUploadError(error)
@@ -451,7 +455,7 @@ export class NewPet implements OnInit {
     return `${dateStr}T00:00:00Z`; // "2025-12-31T00:00:00Z"
   }
 
-  private toBase64(file: File): Promise<Base64Image> {
+  private toBase64(file: File, foldersName?: string): Promise<Base64Image> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
@@ -459,10 +463,11 @@ export class NewPet implements OnInit {
         try {
           const result = reader.result as string;
           const base64String = result.split(',')[1]; // Remove data:image/...;base64, prefix
+          const folderName = foldersName ? `${foldersName}/` : `$${Math.random().toString(36).substring(2, 8)}`;
           
           const base64Image: Base64Image = {
             base64: base64String,
-            name: `$${Math.random().toString(36).substring(2, 8)}/${Date.now()}.png`
+            name: `${folderName}/${Date.now()}.png`
           };
           
           resolve(base64Image);

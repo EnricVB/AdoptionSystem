@@ -222,9 +222,13 @@ func handleUpdatePet(c echo.Context) error {
 	if pet.BirthDate.IsZero() {
 		pet.BirthDate = time.DefaultDate()
 	}
-	if pet.AdoptDate.IsZero() {
-		adoptDate := time.DefaultDate()
-		pet.AdoptDate = &adoptDate
+
+	if pet.CrtDate.IsZero() {
+		pet.CrtDate = time.DefaultDate()
+	}
+
+	if pet.UptDate.IsZero() {
+		pet.UptDate = time.DefaultDate()
 	}
 
 	// Delegate pet update to handler layer

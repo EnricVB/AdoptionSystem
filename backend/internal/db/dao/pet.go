@@ -251,7 +251,7 @@ func UpdatePet(pet *m.Pet) error {
 	pet.UptDate = time.Now()
 	result := gormDB.Model(&m.Pet{}).
 		Where("id = ?", pet.ID).
-		Select("*").
+		Omit("ImageURL").
 		Updates(pet)
 
 	if result.Error != nil {
