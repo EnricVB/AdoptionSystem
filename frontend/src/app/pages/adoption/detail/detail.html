@@ -137,27 +137,27 @@
                     Volver
                 </button>
                 <button *ngIf="pet?.status === 'Available'" (click)="submitAdoption()"
-                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!authService.isLoggedIn()">
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : (isAdoptionLoading ? 'Procesando...' : '')"
+                        [class]="!authService.isLoggedIn() || isAdoptionLoading ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn() || isAdoptionLoading">
 
-                    <i class="fa-solid fa-heart"></i>
-                    ¡Adoptame!
+                    <i [class]="isAdoptionLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-heart'"></i>
+                    {{ isAdoptionLoading ? 'Procesando...' : '¡Adoptame!' }}
                 </button>
                 <button *ngIf="pet?.status === 'Available' && pet?.status !== 'FosterHome'" (click)="submitFosterHome()"
-                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!authService.isLoggedIn()">
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : (isFosterHomeLoading ? 'Procesando...' : '')"
+                        [class]="!authService.isLoggedIn() || isFosterHomeLoading ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn() || isFosterHomeLoading">
 
-                    <i class="fa-solid fa-home"></i>
-                    ¡Acogeme!
+                    <i [class]="isFosterHomeLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-home'"></i>
+                    {{ isFosterHomeLoading ? 'Procesando...' : '¡Acogeme!' }}
                 </button>                
                 <button *ngIf="pet?.status === 'FosterHome'" (click)="fosterHomeContact()"
-                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : ''"
-                        [class]="!authService.isLoggedIn() ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
-                        [disabled]="!authService.isLoggedIn()">
-                    <i class="fa-solid fa-check"></i>
-                    Contactar
+                        [title]="!authService.isLoggedIn() ? 'Debes iniciar sesión' : (isFosterContactLoading ? 'Enviando...' : '')"
+                        [class]="!authService.isLoggedIn() || isFosterContactLoading ? 'flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 text-md' : 'flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2 text-md'"
+                        [disabled]="!authService.isLoggedIn() || isFosterContactLoading">
+                    <i [class]="isFosterContactLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-check'"></i>
+                    {{ isFosterContactLoading ? 'Enviando...' : 'Contactar' }}
                 </button>
                 <button *ngIf="pet?.status === 'Adopted'" 
                         class="flex-1 bg-gray-400 text-white font-semibold 

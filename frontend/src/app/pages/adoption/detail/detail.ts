@@ -32,6 +32,11 @@ export class Detail implements OnInit {
 
   carouselImages: string[] = [];
 
+  // Loading states for buttons with cooldown
+  isAdoptionLoading: boolean = false;
+  isFosterHomeLoading: boolean = false;
+  isFosterContactLoading: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -118,10 +123,22 @@ export class Detail implements OnInit {
   }
 
   async fosterHomeContact(): Promise<void> {
-    if (!this.pet) return;
+    if (!this.pet || this.isFosterContactLoading) return;
 
     const reason = "Solicitud de adopción para " + this.pet.name;
     const message = "Hola, estoy interesado en acoger a " + this.pet.name + ", que está en su hogar de acogida. Por favor, contáctenme para más detalles.";
+
+    if (!this.authService.getLoggedInUser) {
+      this.errorPopUp.start('Debe iniciar sesión para contactar al hogar de acogida.');
+      return;
+    }
+
+    if (!this.pet.adopt_user_id) {
+      this.errorPopUp.start('Error al contactar al hogar de acogida.');
+      return;
+    }
+
+    this.setCooldown('isFosterContactLoading');
 
     this.apiService.sendPetFosterHomeContact(
       this.pet.id,
@@ -136,7 +153,9 @@ export class Detail implements OnInit {
   }
 
   async submitAdoption(): Promise<void> {
-    if (!this.pet) return;
+    if (!this.pet || this.isAdoptionLoading) return;
+    
+    this.setCooldown('isAdoptionLoading');
     
     this.apiService.submitPetAdoptionRequest(
       this.pet.id,
@@ -148,7 +167,9 @@ export class Detail implements OnInit {
   }
 
   async submitFosterHome(): Promise<void> {
-    if (!this.pet) return;
+    if (!this.pet || this.isFosterHomeLoading) return;
+
+    this.setCooldown('isFosterHomeLoading');
 
     this.apiService.submitPetFosterHomeRequest(
       this.pet.id,
@@ -195,6 +216,13 @@ export class Detail implements OnInit {
   // ======================================
   // UTILITY METHODS
   // ======================================
+
+  private setCooldown(loadingProperty: 'isAdoptionLoading' | 'isFosterHomeLoading' | 'isFosterContactLoading'): void {
+    this[loadingProperty] = true;
+    setTimeout(() => {
+      this[loadingProperty] = false;
+    }, 1000); // 1 second cooldown
+  }
 
   loadPetImage(): void {
     if (!this.pet?.image_url) {
