@@ -390,3 +390,26 @@ func HandleUploadPetImage(base64 r_models.Base64Image) response.HTTPError {
 
 	return response.EmptyError
 }
+
+// HandleDeletePetImageByURL processes requests to delete a pet image by its URL.
+// This handler manages the deletion of pet images from the file system.
+//
+// Parameters:
+//   - imageUrl: The URL or file path of the image to delete
+//
+// Returns:
+//   - response.HTTPError: HTTP error or EmptyError on success
+func HandleDeletePetImageByURL(imageUrl string) response.HTTPError {
+	// Validate input
+	if imageUrl == "" {
+		return response.Error(http.StatusBadRequest, "URL de imagen es requerida")
+	}
+
+	// Call the service to handle image deletion
+	err := s.DeletePetImageByURL(imageUrl)
+	if err != nil {
+		return response.Error(http.StatusInternalServerError, err.Error())
+	}
+
+	return response.EmptyError
+}
