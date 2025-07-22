@@ -60,6 +60,11 @@ export const routes: Routes = [
         data: { animation: 'adopt-new' }
     },
     {
+        path: 'adopt/edit/:id',
+        component: NewPet,
+        data: { animation: 'adopt-edit' }
+    },
+    {
         path: 'adopt/:id',
         loadComponent: () => import('./pages/adoption/detail/detail').then(m => m.Detail),
         data: { animation: 'adopt-detail' }

@@ -6,6 +6,13 @@
         <!-- Header / Banner Image -->
         <div class="relative h-110 bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
             
+            <button *ngIf="this.authService.getLoggedInUser?.is_admin" (click)="edit()" 
+                    class=" absolute top-4 right-4 z-30 w-[40px] cursor-pointer
+                            bg-white rounded-sm p-2 shadow-md 
+                            hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-pencil text-gray-700"></i>
+            </button>
+            
             <!-- Main Image -->
             <app-carousel [images]="carouselImages" [isEditable]="false"></app-carousel>
             
