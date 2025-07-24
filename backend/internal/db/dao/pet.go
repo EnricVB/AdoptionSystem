@@ -108,7 +108,7 @@ func GetPetByID(id uint) (*m.Pet, error) {
 	return &pet, nil
 }
 
-func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, error) {
+func GetFilteredPets(name string, minAge int, maxAge int, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, error) {
 	db := db.ORMOpen()
 
 	var pets []m.Pet
@@ -131,6 +131,18 @@ func GetFilteredPets(name string, status string, speciesID int, gender string, v
 		if validStatuses[status] {
 			query = query.Where("status = ?", status)
 		}
+	}
+
+	// Filtro por edad (birthdate)
+	if minAge > 0 {
+		// Mascotas nacidas antes de (hoy - minAge años)
+		minBirthdate := time.Now().AddDate(-minAge, 0, 0)
+		query = query.Where("birthdate <= ?", minBirthdate)
+	}
+	if maxAge > 0 {
+		// Mascotas nacidas después de (hoy - maxAge años)
+		maxBirthdate := time.Now().AddDate(-maxAge, 0, 0)
+		query = query.Where("birthdate >= ?", maxBirthdate)
 	}
 
 	// Filtro por especie

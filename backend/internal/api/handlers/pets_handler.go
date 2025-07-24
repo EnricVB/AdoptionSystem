@@ -171,7 +171,7 @@ func HandleDeletePet(id uint) response.HTTPError {
 // Returns:
 //   - []m.SimplifiedPet: List of pets matching the filter criteria
 //   - response.HTTPError: HTTP error or EmptyError on success
-func HandleGetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, response.HTTPError) {
+func HandleGetFilteredPets(name string, minAge int, maxAge int, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, response.HTTPError) {
 	// Define valid status values
 	validStatuses := map[string]bool{
 		"":           true, // No filter
@@ -200,8 +200,16 @@ func HandleGetFilteredPets(name string, status string, speciesID int, gender str
 		return nil, response.Error(http.StatusBadRequest, "Género de mascota no válido")
 	}
 
+	if minAge < 0 || maxAge < 0 {
+		return nil, response.Error(http.StatusBadRequest, "Edad mínima y máxima deben ser mayores o iguales a 0")
+	}
+
+	if maxAge < minAge {
+		return nil, response.Error(http.StatusBadRequest, "Edad máxima debe ser mayor o igual a la edad mínima")
+	}
+
 	// Delegate filtered pet retrieval to service layer
-	pets, err := s.GetFilteredPets(name, status, speciesID, gender, vaccinated, urgent)
+	pets, err := s.GetFilteredPets(name, minAge, maxAge, status, speciesID, gender, vaccinated, urgent)
 	if err != nil {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}

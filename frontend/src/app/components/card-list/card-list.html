@@ -17,7 +17,8 @@
   <div class="flex flex-1 w-full mx-auto px-4 py-6 gap-6">
 
     <!-- Sidebar Filters -->
-    <aside class="w-1/7 flex justify-center sm:w-64 bg-[#edf1dc] p-4 rounded-lg shadow-md h-fit sticky top-4 self-start">
+      <aside class="w-1/7 flex justify-center sm:w-64 bg-[
+#edf1dc] p-4 rounded-lg shadow-md h-fit sticky top-4 self-start">
       <div class="flex flex-col gap-4">
         <div class="relative">
           <input 
@@ -59,31 +60,35 @@
           <option value="0">No</option>
         </select>
 
+        <div class="petSlider">
+          <ngx-slider [(value)]="filters.ageRange[0]" [(highValue)]="filters.ageRange[1]" [options]="options"></ngx-slider>
+        </div>
+
         <button 
           (click)="resetFilters()" 
           class="flex items-center justify-center gap-2 px-4 py-2 text-sm cursor-pointer bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all">
           <i [ngClass]="{ 'animate-spin': isRotating }" class="fa-solid fa-rotate"></i>
           Restablecer filtros
         </button>
-         <!-- Items per page -->
-      <div class="self-center flex w-full justify-between mt-2">
-        <ng-container *ngFor="let num of [8,12,16,20]">
-          <div>
-            <input 
-              type="radio" 
-              (change)="setItemsPerPage(num)" 
-              [checked]="itemsPerPage === num"
-              name="nElem" 
-              [id]="'elem' + num"
-              class="hidden peer">
-            <label [for]="'elem' + num" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
-              peer-checked:bg-orange-500 peer-checked:text-white 
-              peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
-              peer-checked:shadow-inner transition-all duration-150">{{ num }}</label>
-          </div>
-        </ng-container>
-      </div>
 
+         <!-- Items per page -->
+        <div class="self-center flex w-full justify-between mt-2">
+          <ng-container *ngFor="let num of [8,12,16,20]">
+            <div>
+              <input 
+                type="radio" 
+                (change)="setItemsPerPage(num)" 
+                [checked]="itemsPerPage === num"
+                name="nElem" 
+                [id]="'elem' + num"
+                class="hidden peer">
+              <label [for]="'elem' + num" class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer 
+                peer-checked:bg-orange-500 peer-checked:text-white 
+                peer-checked:border-orange-500 peer-checked:translate-y-[1px] 
+                peer-checked:shadow-inner transition-all duration-150">{{ num }}</label>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </aside>
 

@@ -6,11 +6,14 @@ import { Breadcrumb, BreadcrumbItem } from '../breadcrumb/breadcrumb';
 import { ApiService } from '@app/services/api.service';
 import { SimplifiedPet, Species } from '@app/models';
 import { FormsModule } from '@angular/forms';
+import { Options, LabelType, NgxSliderModule } from "@angular-slider/ngx-slider";
 
 @Component({
   selector: 'app-card-list',
-  imports: [CommonModule, Card, FormsModule, RouterModule, Breadcrumb],
+  imports: [CommonModule, Card, FormsModule, RouterModule, Breadcrumb, NgxSliderModule],
   templateUrl: './card-list.html',
+  standalone: true,
+  styleUrls: ['./card-list.css'],
   host: {
     'style': 'view-transition-name: card-list'
   }
@@ -40,6 +43,13 @@ export class CardList implements OnInit {
   @Input() showPagination = true;
   @Input() showFilter = true;
   @Input() itemsPerPage: number = 8; 
+
+
+  options: Options = {
+    floor: 0,
+    ceil: 50,
+    showTicks: false,
+  };
 
   // ======================================
   // CONSTRUCTOR
@@ -78,22 +88,25 @@ export class CardList implements OnInit {
 
   filters = {
     name: '',
+    ageRange: [0, 1000],
     status: '',
     species_id: '',
     gender: '',
     vaccinated: '',
-    urgent: ''
+    urgent: '',
   };
 
   fetchFilteredPets(): void {
     this.error = null;
     const filters = {
       name: this.filters.name || '',
+      minAge: this.filters.ageRange[0] || 0,
+      maxAge: this.filters.ageRange[1] || 1000,
       status: this.filters.status || '',
       species_id: this.filters.species_id || '',
       gender: this.filters.gender || '',
       vaccinated: this.filters.vaccinated || '',
-      urgent: this.filters.urgent || ''
+      urgent: this.filters.urgent || '',
     };
 
     this.apiService.getFilteredPets(filters).subscribe({
@@ -109,6 +122,7 @@ export class CardList implements OnInit {
 
     this.filters = {
       name: '',
+      ageRange: [0, 1000],
       status: '',
       species_id: '',
       gender: '',
@@ -227,6 +241,7 @@ export class CardList implements OnInit {
   clearFilters(): void {
     this.filters = {
       name: '',
+      ageRange: [0, 1000],
       status: '',
       species_id: '',
       gender: '',
