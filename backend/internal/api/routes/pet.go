@@ -307,12 +307,32 @@ func handleDeletePet(c echo.Context) error {
 func handleGetFilteredPets(c echo.Context) error {
 	// Extract query parameters
 	name := strings.TrimSpace(c.QueryParam("name"))
+	minAgeStr := strings.TrimSpace(c.QueryParam("minAge"))
+	maxAgeStr := strings.TrimSpace(c.QueryParam("maxAge"))
 	status := strings.TrimSpace(c.QueryParam("status"))
 	speciesIDStr := strings.TrimSpace(c.QueryParam("species_id"))
 	gender := strings.TrimSpace(c.QueryParam("gender"))
 	vaccinated := strings.TrimSpace(c.QueryParam("vaccinated"))
 	urgentStr := strings.TrimSpace(c.QueryParam("urgent"))
 
+	// Parse minAge and maxAge parameters
+	var minAge, maxAge int = 0, 1000
+	if minAgeStr != "" {
+		var err error
+		minAge, err = strconv.Atoi(minAgeStr)
+		if err != nil {
+			return response.ErrorResponse(c, http.StatusBadRequest, "Edad mínima inválida: debe ser un número")
+		}
+	}
+	if maxAgeStr != "" {
+		var err error
+		maxAge, err = strconv.Atoi(maxAgeStr)
+		if err != nil {
+			return response.ErrorResponse(c, http.StatusBadRequest, "Edad máxima inválida: debe ser un número")
+		}
+	}
+
+	// Parse vaccinated parameter if provided
 	var urgent *bool
 	if urgentStr != "" {
 		var err error
@@ -343,7 +363,7 @@ func handleGetFilteredPets(c echo.Context) error {
 	}
 
 	// Delegate filtering logic to handler layer
-	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID, gender, vaccinated, urgent)
+	pets, httpErr := handlers.HandleGetFilteredPets(name, minAge, maxAge, status, speciesID, gender, vaccinated, urgent)
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}
