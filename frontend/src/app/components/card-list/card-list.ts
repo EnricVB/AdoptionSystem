@@ -13,7 +13,6 @@ import { Options, LabelType, NgxSliderModule } from "@angular-slider/ngx-slider"
   imports: [CommonModule, Card, FormsModule, RouterModule, Breadcrumb, NgxSliderModule],
   templateUrl: './card-list.html',
   standalone: true,
-  styleUrls: ['./card-list.css'],
   host: {
     'style': 'view-transition-name: card-list'
   }
@@ -47,7 +46,7 @@ export class CardList implements OnInit {
 
   options: Options = {
     floor: 0,
-    ceil: 50,
+    ceil: 100,
     showTicks: false,
   };
 
