@@ -68,6 +68,7 @@ func GetAllPets() ([]m.SimplifiedPet, error) {
 			VaccinationHistory: pet.VaccinationHistory,
 			Weight:             pet.Weight,
 			Gender:             pet.Gender,
+			IsUrgent:           pet.IsUrgent,
 		}
 	}
 	return simplifiedPets, nil
@@ -107,7 +108,7 @@ func GetPetByID(id uint) (*m.Pet, error) {
 	return &pet, nil
 }
 
-func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string) ([]m.SimplifiedPet, error) {
+func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, error) {
 	db := db.ORMOpen()
 
 	var pets []m.Pet
@@ -145,6 +146,10 @@ func GetFilteredPets(name string, status string, speciesID int, gender string, v
 		query = query.Where("vaccinated = ?", vaccinated)
 	}
 
+	if urgent != nil {
+		query = query.Where("is_urgent = ?", *urgent)
+	}
+
 	// Ejecutar la query
 	if err := query.Find(&pets).Error; err != nil {
 		return nil, fmt.Errorf("error al obtener mascotas filtradas: %v", err)
@@ -167,6 +172,9 @@ func GetFilteredPets(name string, status string, speciesID int, gender string, v
 			ImageURL:           pet.ImageURL,
 			VaccinationHistory: pet.VaccinationHistory,
 			BirthDate:          pet.BirthDate,
+			Weight:             pet.Weight,
+			Gender:             pet.Gender,
+			IsUrgent:           pet.IsUrgent,
 		})
 	}
 

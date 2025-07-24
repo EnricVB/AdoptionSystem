@@ -51,6 +51,7 @@ type Pet struct {
 	ImageURL           string               `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
 	IsVaccinated       bool                 `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status
 	VaccinationHistory []VaccinationHistory `json:"vaccination_history" gorm:"foreignKey:PetID"`                               // Relationship to VaccinationHistory
+	IsUrgent           bool                 `json:"is_urgent" gorm:"column:Is_Urgent;default:false"`                           // Urgency status for adoption
 	CrtDate            time.Time            `json:"crt_date" gorm:"autoCreateTime"`                                            // Record creation timestamp
 	UptDate            time.Time            `json:"upt_date" gorm:"autoUpdateTime"`                                            // Record last update timestamp
 }
@@ -91,4 +92,5 @@ type SimplifiedPet struct {
 	ImageURL           string               `json:"image_url" gorm:"column:ImageURL"`                                          // Image URL
 	IsVaccinated       bool                 `json:"is_vaccinated" gorm:"column:Vaccinated;default:false"`                      // Vaccination status
 	VaccinationHistory []VaccinationHistory `json:"vaccination_history" gorm:"foreignKey:PetID"`                               // Relationship to VaccinationHistory
+	IsUrgent           bool                 `json:"is_urgent" gorm:"column:Is_Urgent;default:false"`                           // Urgency status for adoption
 }
