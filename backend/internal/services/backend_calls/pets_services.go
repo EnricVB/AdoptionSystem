@@ -160,8 +160,8 @@ func DeletePet(id uint) error {
 // Returns:
 //   - []m.SimplifiedPet: Slice of pets matching the filter criteria
 //   - error: Database error or nil on success
-func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string) ([]m.SimplifiedPet, error) {
-	pets, err := dao.GetFilteredPets(name, status, speciesID, gender, vaccinated)
+func GetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, error) {
+	pets, err := dao.GetFilteredPets(name, status, speciesID, gender, vaccinated, urgent)
 	if err != nil {
 		return nil, fmt.Errorf("error al obtener mascotas filtradas: %v", err)
 	}

@@ -81,7 +81,8 @@ export class CardList implements OnInit {
     status: '',
     species_id: '',
     gender: '',
-    vaccinated: ''
+    vaccinated: '',
+    urgent: ''
   };
 
   fetchFilteredPets(): void {
@@ -91,10 +92,11 @@ export class CardList implements OnInit {
       status: this.filters.status || '',
       species_id: this.filters.species_id || '',
       gender: this.filters.gender || '',
-      vaccinated: this.filters.vaccinated || ''
+      vaccinated: this.filters.vaccinated || '',
+      urgent: this.filters.urgent || ''
     };
+
     this.apiService.getFilteredPets(filters).subscribe({
-      
       next: (data) => this.handleFilteredPetsSuccess(data),
       error: (err) => this.handleFilteredPetsError(err)
     });
@@ -110,7 +112,8 @@ export class CardList implements OnInit {
       status: '',
       species_id: '',
       gender: '',
-      vaccinated: ''
+      vaccinated: '',
+      urgent: ''
     }
     this.fetchPets();
 
@@ -151,10 +154,9 @@ export class CardList implements OnInit {
 
   private handleFilteredPetsSuccess(data: any): void {
     if (!data.content || !Array.isArray(data.content)) {
-    this.animals = [];
-    console.warn('No pets found or content is null.');
-    return;
-  }
+      this.animals = [];
+      return;
+    }
 
     this.animals = data.content.map((pet: any) => ({
       ...pet,
@@ -228,11 +230,10 @@ export class CardList implements OnInit {
       status: '',
       species_id: '',
       gender: '',
-      vaccinated: ''
+      vaccinated: '',
+      urgent: ''
     };
     this.currentPage = 1; // Reset to first page
     this.fetchPets(); // Reload all pets without filters
   }
-
-  // ======================================
 }

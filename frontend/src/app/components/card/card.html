@@ -22,6 +22,10 @@
     <div *ngIf="pet.status === 'Available'" class="absolute top-3 right-3 h-9.5 p-1 rounded-4xl bg-white/90 shadow" title="En espera de adopción">
       <i class="fa-solid fa-smile text-3xl text-blue-400 transform mt-0.15"></i>
     </div>
+
+    <div *ngIf="pet.is_urgent" class="absolute top-3 left-3 h-9.5 w-9.5 p-1 rounded-4xl bg-white/90 shadow" title="Urgente">
+      <i class="fa-solid fa-exclamation text-3xl text-red-600 transform pl-2.75 mt-0.15"></i>
+    </div>
   </div>
 
   <!-- CARD CONTENT -->

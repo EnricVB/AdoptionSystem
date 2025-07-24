@@ -311,6 +311,26 @@ func handleGetFilteredPets(c echo.Context) error {
 	speciesIDStr := strings.TrimSpace(c.QueryParam("species_id"))
 	gender := strings.TrimSpace(c.QueryParam("gender"))
 	vaccinated := strings.TrimSpace(c.QueryParam("vaccinated"))
+	urgentStr := strings.TrimSpace(c.QueryParam("urgent"))
+
+	var urgent *bool
+	if urgentStr != "" {
+		var err error
+		urgentInt, err := strconv.Atoi(urgentStr)
+		if err != nil {
+			return response.ErrorResponse(c, http.StatusBadRequest, "ID de especie inválido: debe ser un número")
+		}
+
+		if urgentInt == 1 {
+			urgent = new(bool)
+			*urgent = true
+		} else if urgentInt == 0 {
+			urgent = new(bool)
+			*urgent = false
+		} else {
+			urgent = nil // No urgent filter applied
+		}
+	}
 
 	// Parse species_id parameter if provided
 	var speciesID int
@@ -318,13 +338,12 @@ func handleGetFilteredPets(c echo.Context) error {
 		var err error
 		speciesID, err = strconv.Atoi(speciesIDStr)
 		if err != nil {
-			return response.ErrorResponse(c, http.StatusBadRequest,
-				"ID de especie inválido: debe ser un número")
+			return response.ErrorResponse(c, http.StatusBadRequest, "ID de especie inválido: debe ser un número")
 		}
 	}
 
 	// Delegate filtering logic to handler layer
-	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID, gender, vaccinated)
+	pets, httpErr := handlers.HandleGetFilteredPets(name, status, speciesID, gender, vaccinated, urgent)
 	if httpErr.Code != 0 {
 		return response.ConvertToErrorResponse(c, httpErr)
 	}

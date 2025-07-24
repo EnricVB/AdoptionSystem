@@ -38,6 +38,7 @@ export interface Pet {
   image_url: string;
   is_vaccinated: boolean;
   vaccination_history: VaccinationHistory[];
+  is_urgent: boolean;
   crt_date: string; // ISO date string
   upt_date: string; // ISO date string
 }
@@ -58,6 +59,7 @@ export interface SimplifiedPet {
   image_url: string;
   is_vaccinated: boolean;
   vaccination_history: VaccinationHistory[];
+  is_urgent: boolean;
 }
 
 export interface Base64Image {

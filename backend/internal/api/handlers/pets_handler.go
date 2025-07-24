@@ -171,7 +171,7 @@ func HandleDeletePet(id uint) response.HTTPError {
 // Returns:
 //   - []m.SimplifiedPet: List of pets matching the filter criteria
 //   - response.HTTPError: HTTP error or EmptyError on success
-func HandleGetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string) ([]m.SimplifiedPet, response.HTTPError) {
+func HandleGetFilteredPets(name string, status string, speciesID int, gender string, vaccinated string, urgent *bool) ([]m.SimplifiedPet, response.HTTPError) {
 	// Define valid status values
 	validStatuses := map[string]bool{
 		"":           true, // No filter
@@ -201,7 +201,7 @@ func HandleGetFilteredPets(name string, status string, speciesID int, gender str
 	}
 
 	// Delegate filtered pet retrieval to service layer
-	pets, err := s.GetFilteredPets(name, status, speciesID, gender, vaccinated)
+	pets, err := s.GetFilteredPets(name, status, speciesID, gender, vaccinated, urgent)
 	if err != nil {
 		return nil, response.Error(http.StatusInternalServerError, err.Error())
 	}

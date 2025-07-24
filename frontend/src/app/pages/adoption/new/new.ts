@@ -395,7 +395,6 @@ export class NewPet implements OnInit {
       }))
     };
 
-    console.log('Updating pet with data:', petData);
 
     // Validate required fields
     if (!petData.name) {
