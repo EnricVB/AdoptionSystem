@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  mysql-container:
+  petfinder-container:
     image: mysql:8
-    container_name: mysql-container
+    container_name: petfinder-container
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${DB_NAME:-ADOPTION_SYS}
@@ -27,7 +27,7 @@ services:
     environment:
       - GO_ENV=development
     depends_on:
-      - mysql-container
+      - petfinder-container
     restart: unless-stopped
     command: ["go", "run", "main.go"]
 
@@ -36,13 +36,16 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
+      - ./frontend/proxy.conf.json:/app/frontend/proxy.conf.json
+      - node_modules:/app/frontend/node_modules
     ports:
       - "4200:4200"
     depends_on:
       - backend
+    command: ["ng", "serve", "--host", "0.0.0.0", "--proxy-config", "proxy.conf.json"]
     restart: unless-stopped
-    command: ["npx", "ng", "serve", "--host", "0.0.0.0", "--proxy-config", "proxy.conf.json"]
-
+    
 volumes:
   mysql_data:
+  node_modules:

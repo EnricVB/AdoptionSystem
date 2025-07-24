@@ -85,10 +85,10 @@ export class Register {
   private buildRegisterPayload(): any {
     const formValue = this.registerForm.value;
     return {
-      Name: formValue.firstName,
-      Surname: formValue.lastName,
-      Email: formValue.email,
-      Password: formValue.password
+      name: formValue.firstName,
+      surname: formValue.lastName,
+      email: formValue.email,
+      password: formValue.password
     };
   }
 

@@ -300,7 +300,9 @@ func CreateUser(user *m.FullUser) error {
 	user.CrtDate = now
 	user.UptDate = now
 
-	result := gormDB.Create(user)
+	user.Password, _ = security.HashPassword(user.Password) // Hash the password
+
+	result := gormDB.Table("Users").Create(user)
 	if result.Error != nil {
 
 		return fmt.Errorf("error al crear usuario: %v", result.Error)
