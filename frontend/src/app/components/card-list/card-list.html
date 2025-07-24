@@ -89,8 +89,7 @@
           <ngx-slider 
             [(value)]="filters.ageRange[0]" 
             [(highValue)]="filters.ageRange[1]" 
-            (valueChange)="fetchFilteredPets()" 
-            (highValueChange)="fetchFilteredPets()" 
+            (userChangeEnd)="fetchFilteredPets()" 
             [options]="options">
           </ngx-slider>
         </div>
