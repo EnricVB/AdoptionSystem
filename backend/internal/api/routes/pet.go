@@ -316,7 +316,7 @@ func handleGetFilteredPets(c echo.Context) error {
 	urgentStr := strings.TrimSpace(c.QueryParam("urgent"))
 
 	// Parse minAge and maxAge parameters
-	var minAge, maxAge int = 0, 1000
+	var minAge, maxAge int = 0, 100
 	if minAgeStr != "" {
 		var err error
 		minAge, err = strconv.Atoi(minAgeStr)
