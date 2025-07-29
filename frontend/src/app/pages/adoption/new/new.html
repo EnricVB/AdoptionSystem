@@ -1,3 +1,8 @@
+<app-user-input-modal #userInputModal 
+        class="fixed pt-[15%] px-auto w-[100vw] flex justify-center z-100" 
+        (onCancel)="onModalCancel()" (onSaveChanges)="onModalAccept($event)">
+</app-user-input-modal>
+
 <div class="min-h-screen bg-gray-100 py-8 px-4">
     <!-- Card Container -->
     <div class="w-full max-w-2xl mx-auto bg-gray-50 rounded-xl shadow-xl overflow-hidden">
@@ -98,7 +103,8 @@
                             class="ml-1 pl-2 py-0.5 border
                                 border-gray-300 rounded-2xl 
                                 text-gray-800/80
-                                cursor-pointer text-xs">
+                                cursor-pointer text-xs"
+                            (change)="onStatusChange($event)">
                         <option *ngFor="let status of petStatuses" [value]="status.value">
                             {{ status.label }}
                         </option>

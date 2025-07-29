@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef, model } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PopUp } from '@app/components/pop-up/pop-up';
 import { Species, PetGender, Base64Image, Pet, PetStatus } from '@app/models';
 import { ApiService } from '@app/services/api.service';
 import { Carousel } from "@app/components/carousel/carousel";
+import { UserInputModal } from '@app/components/user-input-modal/user-input-modal';
 
 @Component({
   selector: 'app-new',
   standalone: true,
-  imports: [CommonModule, PopUp, Carousel],
+  imports: [CommonModule, PopUp, Carousel, UserInputModal],
   templateUrl: './new.html',
 })
 export class NewPet implements OnInit {
@@ -31,6 +32,7 @@ export class NewPet implements OnInit {
   @ViewChild('errorPopUp') errorPopUp!: PopUp;
 
   @ViewChild('carousel') carousel!: Carousel;
+  @ViewChild('userInputModal') userInputModal!: UserInputModal;
 
   // ======================================
   // COMPONENT PROPERTIES
@@ -39,7 +41,7 @@ export class NewPet implements OnInit {
   species: ReadonlyArray<Species> = [];
   vaccinationHistory: { vaccine: string; date: string }[] = [];
   showVaccinationHistory: boolean = false;
-  
+
   // Edit mode properties
   isEditMode: boolean = false;
   petId: number | null = null;
@@ -243,6 +245,21 @@ export class NewPet implements OnInit {
     this.showVaccinationHistory = event.target.value === '1';
   }
 
+  onStatusChange(event: any): void {
+    switch (event.target.value) {
+      case PetStatus.Available:
+        if (this.currentPet) {
+          this.currentPet.adopt_user_id = null;
+        }
+
+        break;
+      case PetStatus.Adopted:
+      case PetStatus.FosterHome:
+        this.userInputModal.showModal();
+        break;
+    }
+  }
+
   async savePet(): Promise<void> {
     if (this.isEditMode && this.petId) {
       await this.updatePet();
@@ -389,6 +406,7 @@ export class NewPet implements OnInit {
       status: validStatus,
       image_url: imageFolder, // Include image folder even in update
       is_vaccinated: this.vaccinationSelect.nativeElement.value === '1',
+      adopt_user_id: this.currentPet?.adopt_user_id || null,
       vaccination_history: this.vaccinationHistory.map(vaccination => ({
         vaccine_name: vaccination.vaccine,
         vaccination_date: this.toRFC3339(vaccination.date)
@@ -411,12 +429,36 @@ export class NewPet implements OnInit {
       return;
     }
 
+    console.log(petData)
+
     // Update pet via API
     this.apiService.updatePet(this.petId, petData).subscribe({
       next: (response) => this.handleUpdatePetSuccess(response),
       error: (error) => this.handleUpdatePetError(error)
     });
   }
+
+  // ======================================
+  // CHILD RESPONSE OUTPUTS
+  // ======================================
+
+  onModalCancel() {
+    this.statusSelect.nativeElement.value = PetStatus.Available;
+    this.userInputModal.visible = false;
+
+    if (this.currentPet) {
+      this.currentPet.adopt_user_id = null;
+    }
+  }
+
+  onModalAccept(userID: number) {
+    this.userInputModal.visible = false;
+
+    if (this.currentPet) {
+      this.currentPet.adopt_user_id = userID;
+    }
+  }
+
 
   // ======================================
   // SUCCESS & ERROR HANDLERS
@@ -451,7 +493,7 @@ export class NewPet implements OnInit {
 
   private handleCreatePetError(error: any): void {
     this.errorPopUp.start("Ha ocurrido un problema al crear la mascota.");
-    console.log('Error creating pet: ', error);
+    console.error('Error creating pet: ', error);
   }
 
   private handleUpdatePetSuccess(response: any): void {
@@ -463,14 +505,14 @@ export class NewPet implements OnInit {
 
   private handleUpdatePetError(error: any): void {
     this.errorPopUp.start("Ha ocurrido un problema al actualizar la mascota.");
-    console.log('Error updating pet: ', error);
+    console.error('Error updating pet: ', error);
   }
 
   private handleImageUploadSuccess(response: any): void {
   }
 
   private handleImageUploadError(error: any): void {
-    console.log('Error uploading image: ', error);
+    console.error('Error uploading image: ', error);
   }
   
   goBack(): void {

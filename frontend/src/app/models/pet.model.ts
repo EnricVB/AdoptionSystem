@@ -33,8 +33,8 @@ export interface Pet {
   birthdate: string; // ISO date string
   adopt_date: string; // ISO date string
   description: string;
-  adopt_user_id: number;
-  adopt_user: SimplifiedUser;
+  adopt_user_id: number | null;
+  adopt_user: SimplifiedUser | null;
   image_url: string;
   is_vaccinated: boolean;
   vaccination_history: VaccinationHistory[];
@@ -53,8 +53,8 @@ export interface SimplifiedPet {
   gender: PetGender;
   weight: number;
   status: PetStatus;
-  adopt_user_id: number;
-  adopt_user: SimplifiedUser;
+  adopt_user_id: number | null;
+  adopt_user: SimplifiedUser | null;
   birthdate: string; // ISO date string
   image_url: string;
   is_vaccinated: boolean;
