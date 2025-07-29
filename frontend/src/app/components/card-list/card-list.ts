@@ -46,7 +46,7 @@ export class CardList implements OnInit {
 
   options: Options = {
     floor: 0,
-    ceil: 100,
+    ceil: 40,
     showTicks: false,
   };
 
@@ -87,7 +87,7 @@ export class CardList implements OnInit {
 
   filters = {
     name: '',
-    ageRange: [0, 1000],
+    ageRange: [0, 100],
     status: '',
     species_id: '',
     gender: '',
@@ -100,13 +100,15 @@ export class CardList implements OnInit {
     const filters = {
       name: this.filters.name || '',
       minAge: this.filters.ageRange[0] || 0,
-      maxAge: this.filters.ageRange[1] || 1000,
+      maxAge: this.filters.ageRange[1] || 40,
       status: this.filters.status || '',
       species_id: this.filters.species_id || '',
       gender: this.filters.gender || '',
       vaccinated: this.filters.vaccinated || '',
       urgent: this.filters.urgent || '',
     };
+
+    filters.maxAge = filters.maxAge === 40 ? 1000 : filters.maxAge; // Adjust max age if needed
 
     this.apiService.getFilteredPets(filters).subscribe({
       next: (data) => this.handleFilteredPetsSuccess(data),
@@ -121,7 +123,7 @@ export class CardList implements OnInit {
 
     this.filters = {
       name: '',
-      ageRange: [0, 1000],
+      ageRange: [0, 100],
       status: '',
       species_id: '',
       gender: '',
