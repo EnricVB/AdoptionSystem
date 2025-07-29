@@ -14,13 +14,14 @@
             class="mb-3 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm shadow-sm"
         />
         <div class="max-h-64 overflow-y-auto rounded-lg shadow bg-white">
-            <ul class="divide-y divide-gray-100">
-                <li *ngFor="let user of filteredUsers" class="flex items-center px-3 py-2 hover:bg-blue-50 transition-colors cursor-pointer"
-                    [class.bg-blue-100]="user.id === selectedUserId"
+            <ul>
+                <li *ngFor="let user of filteredUsers" 
+                    class="p-2 cursor-pointer hover:bg-cyan-100 transition-all duration-200"
+                    [class.bg-blue-200]="user.id === selectedUserId"
                     (click)="selectUser(user.id)">
-                    <input type="radio" name="userSelect" [checked]="user.id === selectedUserId" class="accent-blue-600 mr-3" />
-                    <span class="font-medium text-gray-800">{{ user.name }}</span>
-                    <span class="ml-2 text-gray-500 text-xs">{{ user.email }}</span>
+                    <input class="cursor-pointer" type="radio" [checked]="user.id === selectedUserId" name="userGroup">
+                    <span class="font-semibold text-gray-600 pl-4 pr-2">{{ user.name }}</span>
+                    <span class="font-light text-gray-400 text-sm">{{ user.email }}</span>
                 </li>
                 <li *ngIf="users.length === 0" class="px-3 py-2 text-gray-400 text-center">No hay usuarios</li>
             </ul>

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { User } from '@app/models/user.model';
 import { ApiService } from '@app/services/api.service';
 import {
-  ButtonCloseDirective,
   ButtonDirective,
   ModalBodyComponent,
   ModalComponent,
