@@ -1,0 +1,39 @@
+<div *ngIf="visible" class="absolute w-screen h-screen top-0 left-0 bg-black/50 backdrop-blur-sm"></div>
+
+<c-modal id="liveDemoModal" [visible]="visible" class="bg-white rounded-xl z-1000 w-[40vw]">
+    <c-modal-header class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h5 cModalTitle class="text-lg font-semibold text-gray-900">Selecciona un Usuario</h5>
+    </c-modal-header>
+
+    <c-modal-body class="p-4 text-gray-700">
+        <input
+            type="text"
+            placeholder="Filtrar por nombre"
+            (input)="filterUsers()"
+            [(ngModel)]="nameFilter"
+            class="mb-3 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm shadow-sm"
+        />
+        <div class="max-h-64 overflow-y-auto rounded-lg shadow bg-white">
+            <ul class="divide-y divide-gray-100">
+                <li *ngFor="let user of filteredUsers" class="flex items-center px-3 py-2 hover:bg-blue-50 transition-colors cursor-pointer"
+                    [class.bg-blue-100]="user.id === selectedUserId"
+                    (click)="selectUser(user.id)">
+                    <input type="radio" name="userSelect" [checked]="user.id === selectedUserId" class="accent-blue-600 mr-3" />
+                    <span class="font-medium text-gray-800">{{ user.name }}</span>
+                    <span class="ml-2 text-gray-500 text-xs">{{ user.email }}</span>
+                </li>
+                <li *ngIf="users.length === 0" class="px-3 py-2 text-gray-400 text-center">No hay usuarios</li>
+            </ul>
+        </div>
+    </c-modal-body>
+
+    <c-modal-footer class="flex justify-end bottom-0 gap-2 p-4 border-t border-gray-200">
+        <button (click)="onCloseListener()" cButton color="secondary" class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition">
+            Close
+        </button>
+
+        <button (click)="onSaveChangesListener()" cButton color="primary" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+            Save changes
+        </button>
+    </c-modal-footer>
+</c-modal>
