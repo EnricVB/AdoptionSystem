@@ -14,8 +14,10 @@ export class CallToAction {
   constructor(private router: Router) {}
 
   navigateTo(url: string): void {
-    if (url) {
+    if (url && url.startsWith('/')) {
       this.router.navigate([url]);
+    } else if (url) {
+      window.open(url, '_blank');
     }
   }
 }
