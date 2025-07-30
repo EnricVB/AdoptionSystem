@@ -280,6 +280,7 @@ func UpdatePet(pet *m.Pet) error {
 	result := tx.Model(&m.Pet{}).
 		Where("id = ?", pet.ID).
 		Omit("ImageURL", "VaccinationHistory").
+		Select("*"). // Select all fields except ImageURL and VaccinationHistory
 		Updates(pet)
 
 	if result.Error != nil {

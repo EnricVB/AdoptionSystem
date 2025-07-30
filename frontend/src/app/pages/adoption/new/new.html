@@ -1,5 +1,5 @@
 <app-user-input-modal #userInputModal 
-        class="fixed pt-[15%] px-auto w-[100vw] flex justify-center z-100" 
+        *ngIf="userInputModal?.visible" class="fixed pt-[15%] px-auto w-[100vw] flex justify-center z-100" 
         (onCancel)="onModalCancel()" (onSaveChanges)="onModalAccept($event)">
 </app-user-input-modal>
 
