@@ -94,7 +94,7 @@ export class UserInputModal {
   // EVENT LISTENERS
   // ============================
 
-  showModal() {
+  public showModal() {
     this.visible = true;
   }
 

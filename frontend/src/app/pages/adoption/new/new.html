@@ -1,6 +1,8 @@
 <app-user-input-modal #userInputModal 
-        *ngIf="userInputModal?.visible" class="fixed pt-[15%] px-auto w-[100vw] flex justify-center z-100" 
-        (onCancel)="onModalCancel()" (onSaveChanges)="onModalAccept($event)">
+    class="fixed pt-[10%] px-auto h-min w-[100vw] flex justify-center z-100" 
+    (onCancel)="onModalCancel()" 
+    (onSaveChanges)="onModalAccept($event)"
+    [hidden]="!userInputModal?.visible">
 </app-user-input-modal>
 
 <div class="min-h-screen bg-gray-100 py-8 px-4">
